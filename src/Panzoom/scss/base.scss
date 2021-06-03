@@ -1,0 +1,33 @@
+.panzoom {
+  overflow: hidden;
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  justify-content: center;
+  align-items: center;
+
+  /* Disable default manipulations by a touchscreen user. For example, zooming features built into the browser */
+  touch-action: none;
+}
+
+.panzoom__content {
+  max-width: 100%;
+  max-height: 100%;
+
+  object-fit: scale-down;
+
+  // Remove blurriness
+  filter: none;
+  -webkit-filter: blur(0px);
+}
+
+.is-draggable {
+  cursor: move;
+  cursor: grab;
+}
+
+.is-dragging {
+  cursor: grabbing;
+}

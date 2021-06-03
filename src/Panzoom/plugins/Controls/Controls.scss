@@ -1,0 +1,36 @@
+.panzoom__controls {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+
+  display: flex;
+  flex-direction: column;
+
+  transform-origin: bottom right;
+  transform: scale(0.75);
+}
+
+.panzoom__button {
+  cursor: pointer;
+  margin: 0;
+  padding: 10px;
+  border: 0;
+  color: #222;
+  background: #eee;
+
+  @media (hover: hover) {
+    &:hover {
+      background: #ccc;
+    }
+  }
+
+  & svg {
+    vertical-align: top;
+    pointer-events: none;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+}

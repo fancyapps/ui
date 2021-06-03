@@ -1,0 +1,12 @@
+{
+  "browser": true,
+  "devel": false,
+  "undef": true,
+  "unused": true,
+  "forin": false,
+  "esversion": 6,
+  "globals": {
+    "Fancybox": true
+  },
+  "-W014": true
+}

@@ -1,0 +1,63 @@
+$fancybox-breakpoints: (
+  xl: (
+    bp-width: 1024px,
+    container: (
+      --carousel-button-svg-width: 27px,
+      --carousel-button-svg-height: 27px,
+    ),
+    button-close-outside: (
+      right: 40px,
+    ),
+    button-next: (
+      right: 40px,
+    ),
+    button-prev: (
+      left: 40px,
+    ),
+    slide: (
+      padding: 64px 100px,
+    ),
+  ),
+) !default;
+
+$fancybox-container-color: var(--fancybox-color, #fff) !default;
+$fancybox-container-padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+  env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px) !default;
+
+$fancybox-backdrop-bg: var(--fancybox-bg, rgba(24, 24, 27, 0.97)) !default;
+
+$fancybox-spinner-color: var(--fancybox-color, currentColor) !default;
+$fancybox-spinner-width: 50px !default;
+$fancybox-spinner-height: 50px !default;
+$fancybox-spinner-svg-stroke-width: 2.5 !default;
+
+$fancybox-slide-padding: 64px !default;
+
+$fancybox-content-color: var(--fancybox-content-color, #374151) !default;
+$fancybox-content-bg: var(--fancybox-content-bg, #fff) !default;
+$fancybox-content-padding: 36px !default;
+
+$fancybox-iframe-width: 100% !default;
+$fancybox-iframe-height: 80% !default;
+
+$fancybox-video-width: 960px !default;
+$fancybox-video-height: 540px !default;
+
+$fancybox-caption-margin: 0 !default;
+$fancybox-caption-padding: 1rem 0 0 0 !default;
+$fancybox-caption-color: var(--fancybox-color, currentColor) !default;
+$fancybox-caption-line-height: 1.375 !default;
+
+/*
+    Thumbs plugin
+*/
+
+$fancybox-thumbs-padding: 0px 3px !default;
+$fancybox-thumbs-spacing: 8px 3px !default;
+$fancybox-thumbs-width: var(--fancybox-thumbs-width, 96px) !default;
+$fancybox-thumbs-ratio: var(--fancybox-thumbs-ratio, 1.5) !default; /* 3/2 */
+$fancybox-thumbs-border-radius: false !default;
+$fancybox-thumbs-bg: rgba(255, 255, 255, 0.1) !default;
+
+$fancybox-thumbs-selected-opacity: false !default;
+$fancybox-thumbs-selected-border: true !default;

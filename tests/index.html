@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mocha Tests</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="https://unpkg.com/mocha/mocha.css" />
+    <link rel="stylesheet" href="../dist/panzoom.css" />
+    <link rel="stylesheet" href="../dist/fancybox.css" />
+  </head>
+  <body>
+    <div id="mocha"></div>
+    <script src="../node_modules/chai/chai.js"></script>
+    <script src="../node_modules/mocha/mocha.js"></script>
+
+    <script type="module" class="mocha-init">
+      mocha.setup("bdd");
+      mocha.checkLeaks();
+    </script>
+    <script type="module" src="./0_base_test.js"></script>
+    <script type="module" src="./1_utils_test.js"></script>
+    <script type="module" src="./2_panzoom_test.js"></script>
+    <script type="module" src="./3_carousel_test.js"></script>
+    <script type="module" src="./4_fancybox_test.js"></script>
+    <script type="module" class="mocha-exec">
+      mocha.run();
+    </script>
+  </body>
+</html>

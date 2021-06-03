@@ -1,0 +1,11 @@
+@mixin fancybox-breakpoint($key) {
+  @each $keyMap, $valueMap in $fancybox-breakpoints {
+    @if map-has-key($valueMap, $key) {
+      @media all and (min-width: map-get($valueMap, bp-width)) {
+        @each $propKey, $propValue in map-get($valueMap, $key) {
+          #{$propKey}: $propValue;
+        }
+      }
+    }
+  }
+}

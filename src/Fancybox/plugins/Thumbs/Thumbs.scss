@@ -1,0 +1,72 @@
+.fancybox__thumbs {
+  flex: 0 0 auto;
+  padding: $fancybox-thumbs-padding;
+
+  .fancybox__container.is-animated[aria-hidden="true"] & {
+    transition: unset;
+    opacity: 0;
+  }
+
+  .fancybox__container.is-animated[aria-hidden="false"] & {
+    transition: opacity var(--fancybox-ts, 0.25s) ease-in;
+    opacity: var(--fancybox-opacity, 1);
+  }
+
+  & .carousel__slide {
+    flex: 0 0 auto;
+    width: $fancybox-thumbs-width;
+
+    margin: 0;
+    padding: $fancybox-thumbs-spacing;
+
+    box-sizing: content-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    overflow: visible;
+
+    cursor: pointer;
+
+    @if ($fancybox-thumbs-selected-border != false) {
+      &.is-nav-selected::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 3px;
+        right: 3px;
+        bottom: 3px;
+        border-bottom: 3px solid currentColor;
+      }
+    }
+
+    > * {
+      pointer-events: none;
+      user-select: none;
+    }
+  }
+}
+
+.fancybox__thumb {
+  position: relative;
+  width: 100%;
+
+  /* Keep aspect ratio */
+  padding-top: calc(100% / (#{$fancybox-thumbs-ratio}));
+
+  background-size: cover;
+  background-position: center center;
+  background-color: $fancybox-thumbs-bg;
+  background-repeat: no-repeat;
+
+  @if ($fancybox-thumbs-border-radius != false) {
+    border-radius: $fancybox-thumbs-border-radius;
+  }
+
+  @if ($fancybox-thumbs-selected-opacity != false) {
+    .is-nav-selected & {
+      opacity: $fancybox-thumbs-selected-opacity;
+    }
+  }
+}

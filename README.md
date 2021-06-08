@@ -32,9 +32,7 @@ import "@fancyapps/ui/dist/fancybox.css";
 
 A pre-bundled scripts that contain components are available on [CDN](https://www.jsdelivr.com/package/npm/@fancyapps/ui?path=dist).
 
-:::note
-Because Fancybox is build on top of both Carousel and Panzoom components, you only have to include `fancybox.umd.js` and all 3 components will be available through the `window` object.
-:::
+> **_NOTE:_** Because Fancybox is build on top of both Carousel and Panzoom components, you only have to include `fancybox.umd.js` and all 3 components will be available through the `window` object.
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>

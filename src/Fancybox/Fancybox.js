@@ -94,7 +94,9 @@ const defaults = {
     CLOSE: "Close",
     NEXT: "Next",
     PREV: "Previous",
+
     MODAL: "You can close this modal content with the ESC key",
+
     ERROR: "Something Went Wrong, Please Try Again Later",
     IMAGE_ERROR: "Image Not Found",
     ELEMENT_NOT_FOUND: "HTML Element Not Found",

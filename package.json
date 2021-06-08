@@ -1,5 +1,5 @@
 {
-  "name": "ui",
+  "name": "@fancyapps/ui",
   "version": "4.0.0-alpha.0",
   "description": "JavaScript UI Component Library",
   "main": "dist/fancybox.umd.js",
@@ -85,5 +85,6 @@
     ">0.2%",
     "not dead",
     "not op_mini all"
-  ]
+  ],
+  "dependencies": {}
 }

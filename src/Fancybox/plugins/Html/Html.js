@@ -116,7 +116,7 @@ export class Html {
       slide.vendor = "youtube";
 
       type = "video";
-    } else if ((rez = src.match(/^.+vimeo.com\/(?:.*\/)?([\d]+)(?:.*)?/))) {
+    } else if ((rez = src.match(/^.+vimeo.com\/(?:\/)?([\d]+)(.*)?/))) {
       const params = buildURLQuery(this.fancybox.option("Html.vimeo"));
       const videoId = encodeURIComponent(rez[1]);
 
@@ -149,7 +149,7 @@ export class Html {
       } else if ((rez = src.match(/\.(mp4|mov|ogv|webm)((\?|#).*)?$/i))) {
         type = "html5video";
 
-        slide.format = "video/" + (rez[1] === "ogv" ? "ogg" : rez[1]);
+        slide.format = slide.format || "video/" + (rez[1] === "ogv" ? "ogg" : rez[1]);
       } else if (src.match(/(^data:image\/[a-z0-9+\/=]*,)|(\.(jp(e|g|eg)|gif|png|bmp|webp|svg|ico)((\?|#).*)?$)/i)) {
         type = "image";
       } else if (src.match(/\.(pdf)((\?|#).*)?$/i)) {
@@ -427,7 +427,7 @@ export class Html {
           this.fancybox
             .option("Html.html5video.tpl")
             .replace(/\{\{src\}\}/gi, slide.src)
-            .replace("{{format}}", slide.videoFormat || (slide.html5video && slide.html5video.format) || "")
+            .replace("{{format}}", slide.format || (slide.html5video && slide.html5video.format) || "")
             .replace("{{poster}}", slide.thumb || "")
         );
 

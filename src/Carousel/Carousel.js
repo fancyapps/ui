@@ -197,10 +197,12 @@ export class Carousel extends Base {
       return;
     }
 
+    // if (this.option("center") && !this.option("fill")) {
     panzoom.boundX = {
       from: this.pages[this.pages.length - 1].left * -1,
       to: this.pages[0].left * -1,
     };
+    // }
   }
 
   initPanzoom() {

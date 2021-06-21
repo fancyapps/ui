@@ -9,12 +9,6 @@ import { Carousel } from "../Carousel/Carousel.js";
 import { Plugins } from "./plugins/index.js";
 
 const defaults = {
-  // If browser scrollbar should be hidden
-  hideScrollbar: true,
-
-  // Virtual slides
-  items: [],
-
   // Index of active slide on the start
   startIndex: 0,
 
@@ -33,6 +27,33 @@ const defaults = {
   // Should backdrop and UI elements fade in/out on start/close
   animated: true,
 
+  // If browser scrollbar should be hidden
+  hideScrollbar: true,
+
+  // Element containing main structure
+  parentEl: null,
+
+  // Custom class name or multiple space-separated class names for the container
+  mainClass: null,
+
+  // Set focus on first focusable element after displaying content
+  autoFocus: true,
+
+  // Trap focus inside Fancybox
+  trapFocus: true,
+
+  // Set focus back to trigger element after closing Fancybox
+  placeFocusBack: true,
+
+  // Action to take when the user clicks on the backdrop
+  click: "close", // "close" | "next"
+
+  // Position of the close button - over the content or at top right corner of viewport
+  closeButton: "inside", // "inside" | "outside"
+
+  // Allow user to drag content up/down to close instance
+  dragToClose: true,
+
   // Enable keyboard navigation
   keyboard: {
     Escape: "close",
@@ -46,57 +67,32 @@ const defaults = {
     ArrowLeft: "prev",
   },
 
-  // HTML template for various elements
+  // HTML templates for various elements
   template: {
+    // Close button icon
     closeButton:
       '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M20 20L4 4m16 0L4 20"/></svg>',
-
+    // Loading indicator icon
     spinner:
       '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="25 25 50 50" tabindex="-1"><circle cx="50" cy="50" r="20"/></svg>',
 
-    /* If `main` option is not provided, the structure is generated like this:
-    <div class="fancybox__container" role="dialog" aria-modal="true" aria-hidden="true" aria-label="{{MODAL}}" tabindex="-1">
-      <div class="fancybox__backdrop"></div>
-      <div class="fancybox__carousel"></div>
-    </div>
-    */
+    // Main container element
     main: null,
   },
 
-  // Element containing main structure
-  parentEl: null,
+  /* Note: If the `template.main` option is not provided, the structure is generated as follows by default:
+  <div class="fancybox__container" role="dialog" aria-modal="true" aria-hidden="true" aria-label="{{MODAL}}" tabindex="-1">
+    <div class="fancybox__backdrop"></div>
+    <div class="fancybox__carousel"></div>
+  </div>
+  */
 
-  // Custom class or space-separated classes for the main element
-  mainClass: null,
-
-  // Set focus on first focusable element after displaying content
-  autoFocus: true,
-
-  // Trap focus inside fancybox
-  trapFocus: true,
-
-  // Set focus back to trigger element after closing fancybox
-  placeFocusBack: true,
-
-  // Action to take when the user clicks on the backdrop
-  click: "close", // close / next
-
-  // Position of the close button - over the content or at top right corner of viewport
-  closeButton: "inside", // "inside" | "outside"
-
-  // Allow user to drag content up/down to close instance
-  dragToClose: true,
-
-  // Example how to import other translations:
-  // `import de from "./l10n/de";`
-  // and then set `l10n: de` as an option
+  // Localization of strings
   l10n: {
     CLOSE: "Close",
     NEXT: "Next",
     PREV: "Previous",
-
     MODAL: "You can close this modal content with the ESC key",
-
     ERROR: "Something Went Wrong, Please Try Again Later",
     IMAGE_ERROR: "Image Not Found",
     ELEMENT_NOT_FOUND: "HTML Element Not Found",
@@ -115,11 +111,11 @@ class Fancybox extends Base {
    * @constructs Fancybox
    * @param {Object} [options] - Options for Fancybox
    */
-  constructor(options = {}) {
-    const handleOptions = function (options) {
-      const firstOpts = extend(true, {}, options.items[options.startIndex || 0] || {});
+  constructor(items, options = {}) {
+    const handleOptions = function (items, options) {
+      const firstOpts = extend(true, {}, items[options.startIndex] || {});
 
-      options.items.forEach((item) => {
+      items.forEach((item) => {
         const $trigger = item.$trigger;
 
         if ($trigger) {
@@ -148,9 +144,10 @@ class Fancybox extends Base {
       return rez;
     })();
 
-    super(handleOptions(options));
+    super(handleOptions(items, options));
 
     this.state = "init";
+    this.items = items;
 
     this.bindHandlers();
 
@@ -307,7 +304,7 @@ class Fancybox extends Base {
    * @returns {Array} Slides
    */
   getSlides() {
-    const slides = [...this.options.items];
+    const slides = [...this.items];
 
     slides.forEach((slide) => {
       // Support items without `src`, e.g., when `data-fancybox` attribute added directly to `<img>` element
@@ -606,8 +603,7 @@ class Fancybox extends Base {
   }
 
   /**
-   * Retrieve active slide
-   * This will be first slide from current page of main carousel
+   * Get the active slide. This will be the first slide from the current page of the main carousel.
    */
   getSlide() {
     const carousel = this.Carousel;
@@ -625,7 +621,7 @@ class Fancybox extends Base {
   }
 
   /**
-   * Place focus on first focusable element inside current slide
+   * Place focus on the first focusable element inside current slide
    * @param {Event} [event] - Focus event
    */
   focus(event) {
@@ -722,8 +718,8 @@ class Fancybox extends Base {
   }
 
   /**
-   * Hide vertical page scrollbar and adjust `body` right padding value to prevent content from shofting
-   * (e.g., `body` will be wider and content can expand )
+   * Hide vertical page scrollbar and adjust right padding value of `body` element to prevent content from shifting
+   * (otherwise the `body` element may become wider and the content may expand horizontally).
    */
   hideScrollbar() {
     if (!canUseDOM) {
@@ -782,6 +778,7 @@ class Fancybox extends Base {
       slide.$el.classList.remove(slide._className);
     }
   }
+
   /**
    * Set new content for given slide
    * @param {Object} slide - Carousel slide
@@ -833,7 +830,7 @@ class Fancybox extends Base {
     this.manageCloseButton(slide);
 
     if (slide.state !== "loading") {
-      this.trigger("afterLoad", slide);
+      this.trigger("load", slide);
 
       this.revealContent(slide);
     }
@@ -1047,7 +1044,7 @@ class Fancybox extends Base {
   }
 
   /**
-   * Start closing current instance
+   * Start closing the current instance
    * @param {Event} [event] - Optional click event
    */
   close(event) {
@@ -1160,9 +1157,7 @@ class Fancybox extends Base {
    * @returns {Object} Fancybox instance
    */
   static show(items, options = {}) {
-    options.items = items;
-
-    return new Fancybox(options);
+    return new Fancybox(items, options);
   }
 
   /**
@@ -1345,8 +1340,8 @@ class Fancybox extends Base {
 
     // * Create new fancybox instance
     return new Fancybox(
+      items,
       extend({}, options, {
-        items: items,
         startIndex: index,
         $trigger: target,
       })
@@ -1354,13 +1349,11 @@ class Fancybox extends Base {
   }
 
   /**
-   * Add selector to opener list for basic event delegation
-   * When user clicks on the document, the script will check if click target matches any selector,
-   * and will start Fancybox if one is found
-   * @param {String} opener - Selector that should match trigger elements
-   * @param {Object} options - Custom options
+   * Attach a click handler function that starts Fancybox to the selected items, as well as to all future matching elements.
+   * @param {String} selector - Selector that should match trigger elements
+   * @param {Object} [options] - Custom options
    */
-  static assign(opener, options = {}) {
+  static bind(selector, options = {}) {
     if (!canUseDOM) {
       return;
     }
@@ -1378,15 +1371,15 @@ class Fancybox extends Base {
       }
     }
 
-    Fancybox.openers.set(opener, options);
+    Fancybox.openers.set(selector, options);
   }
 
   /**
-   * Remove selector from the the opener list
-   * @param {String} opener - Selector
+   * Remove the click handler that was attached with `bind()`
+   * @param {String} selector - A selector which should match the one originally passed to .bind()
    */
-  static trash(opener) {
-    Fancybox.openers.delete(opener);
+  static unbind(selector) {
+    Fancybox.openers.delete(selector);
 
     if (!Fancybox.openers.size) {
       Fancybox.destroy();
@@ -1394,16 +1387,22 @@ class Fancybox extends Base {
   }
 
   /**
-   * Clean up bindings
+   * Immediately destroy all instances (without closing animation) and clean up all bindings..
    */
   static destroy() {
+    let fb;
+
+    while ((fb = Fancybox.getInstance())) {
+      fb.destroy();
+    }
+
     Fancybox.openers = new Map();
 
     document.body.removeEventListener("click", Fancybox.fromEvent, false);
   }
 
   /**
-   * Returns instance by identifier or the top most instance, if identifier is not provided
+   * Retrieve instance by identifier or the top most instance, if identifier is not provided
    * @param {String|Numeric} [id] - Optional instance identifier
    */
   static getInstance(id) {
@@ -1427,7 +1426,7 @@ class Fancybox extends Base {
   }
 
   /**
-   * Close currently active instances
+   * Close all or topmost currently active instance.
    * @param {boolean} [all] - All or only topmost active instance
    */
   static close(all = true) {
@@ -1458,6 +1457,6 @@ Fancybox.isMobile = () =>
   navigator ? /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) : false;
 
 // Auto init with default options
-Fancybox.assign("[data-fancybox]");
+Fancybox.bind("[data-fancybox]");
 
 export { Fancybox };

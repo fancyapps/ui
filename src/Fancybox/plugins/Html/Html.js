@@ -78,7 +78,7 @@ export class Html {
    * Check if each gallery item has type when fancybox starts
    */
   onPrepare() {
-    this.fancybox.options.items.forEach((slide) => {
+    this.fancybox.items.forEach((slide) => {
       this.processType(slide);
     });
   }
@@ -101,6 +101,10 @@ export class Html {
     const src = slide.src || "";
     let type = slide.type || this.fancybox.options.type,
       rez = null;
+
+    if (src && typeof src !== "string") {
+      return;
+    }
 
     if (
       (rez = src.match(

@@ -34,7 +34,7 @@ const defaults = {
   // Should the gap be filled before first and after last slide if `infinite: false`
   fill: true,
 
-  // Should carousel settle at specific page after drag event
+  // Should Carousel settle at any position after a swipe.
   dragFree: false,
 
   classNames: {

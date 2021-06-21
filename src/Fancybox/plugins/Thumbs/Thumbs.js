@@ -2,8 +2,11 @@ import { extend } from "../../../shared/utils/extend.js";
 import { Carousel } from "../../../Carousel/Carousel.js";
 
 const defaults = {
+  // Automatically show thumbnails when opened
   autoStart: true,
+  // The minimum number of images in the gallery to display thumbnails
   minSlideCount: 3,
+  // Keyboard shortcut to toggle thumbnail container
   key: "t",
 };
 
@@ -121,7 +124,7 @@ export class Thumbs {
   getSlides() {
     const slides = [];
 
-    this.fancybox.options.items.forEach((slide) => {
+    this.fancybox.items.forEach((slide) => {
       const thumb = slide.thumb;
 
       if (thumb) {

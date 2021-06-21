@@ -27,13 +27,13 @@ const defaults = {
   ignoreCoveredThumbnail: false,
 
   // Action to be performed when user clicks on the image
-  click: "toggleZoom", // "toggleZoom" | "next" | "close"
+  click: "toggleZoom", // "toggleZoom" | "next" | "close" | null
 
   // Action to be performed when double-click event is detected on the image
-  doubleClick: "", // "toggleZoom"
+  doubleClick: null, // "toggleZoom" | null
 
   // Action to be performed when user rotates a wheel button on a pointing device
-  wheel: "zoom", // "zoom" | "slide" | "close"
+  wheel: "zoom", // "zoom" | "slide" | "close" | null
 
   // How image should be resized to fit its container
   fit: "contain", // "contain" | "contain-w" | "cover"
@@ -195,9 +195,9 @@ export class Image {
         panOnlyZoomed: true,
 
         // Disable default click/wheel events; custom callbacks will replace them
-        click: false,
-        doubleClick: false,
-        wheel: false,
+        click: null,
+        doubleClick: null,
+        wheel: null,
 
         on: {
           afterAnimate: (panzoom) => {

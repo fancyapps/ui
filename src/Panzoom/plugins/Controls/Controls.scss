@@ -1,12 +1,12 @@
 .panzoom__controls {
   position: absolute;
-  bottom: 16px;
-  right: 16px;
+  top: 16px;
+  left: 16px;
 
   display: flex;
   flex-direction: column;
 
-  transform-origin: bottom right;
+  transform-origin: top left;
   transform: scale(0.75);
 }
 
@@ -15,6 +15,7 @@
   margin: 0;
   padding: 10px;
   border: 0;
+  border-radius: 0;
   color: #222;
   background: #eee;
 

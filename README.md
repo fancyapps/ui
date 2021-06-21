@@ -60,7 +60,7 @@ There are two ways to use Fancybox.
 
 #### Declarative
 
-Add a `data-fancybox` attribute to any element to enable Fancybox. Galleries are created by adding the same attribute `data-fancybox` value to multiple elements. Use `data-src` or `href` attribute to specify the source of the content.
+Add a `data-fancybox` attribute to any element to enable Fancybox. Galleries are created by adding the same attribute `data-fancybox` value to multiple elements. Use `data-src` or `href` attribute to specify the source of the content. Add a `data-caption` attribute if you want to show a caption under the content.
 
 ```jsx
 <a href="https://lipsum.app/id/1/1024x768" data-fancybox="gallery" data-caption="Optional caption">
@@ -98,6 +98,14 @@ Add a `data-fancybox` attribute to any element to enable Fancybox. Galleries are
     <input type="text" value="See if changes remain after closing the dialog" />
   </p>
 </div>
+```
+
+Customize options:
+
+```js
+Fancybox.bind("[data-fancybox]", {
+  // Your options go here
+});
 ```
 
 #### Programmatic
@@ -213,4 +221,4 @@ Optionally, use CSS to customize container
 
 ## License
 
-This is commercial software. See LICENSE.md for more info.
+This is commercial software. See [LICENSE.md](LICENSE.md) for more info.

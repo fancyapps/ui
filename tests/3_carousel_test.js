@@ -320,7 +320,7 @@ describe("Carousel", function () {
 
     instance.$element.parentNode.style.width = "600px";
 
-    await delay(100);
+    await delay(300);
 
     expect(instance.elemDimWidth).to.equal(2520);
     expect(instance.slides[6].width).to.equal(360);
@@ -343,7 +343,7 @@ describe("Carousel", function () {
 
     mainElement.parentNode.style.width = "400px";
 
-    await delay(100);
+    await delay(300);
 
     expect(sandbox.querySelector(".carousel__nav")).to.be.instanceOf(HTMLElement);
 
@@ -364,7 +364,7 @@ describe("Carousel", function () {
 
     mainElement.parentNode.style.width = "400px";
 
-    await delay(100);
+    await delay(300);
 
     expect(sandbox.querySelector(".carousel__dots")).to.be.instanceOf(HTMLElement);
     expect(sandbox.querySelector(".carousel__dots").children.length).to.equal(2);
@@ -586,7 +586,7 @@ describe("Carousel", function () {
       clientY: y + 50,
     });
 
-    await delay(100);
+    await delay(300);
 
     triggerEvent(instance.Panzoom.$viewport, "pointerup", {
       pointerId: 1,
@@ -625,7 +625,7 @@ describe("Carousel", function () {
       clientY: y + 50,
     });
 
-    await delay(100);
+    await delay(300);
 
     triggerEvent(instance.Panzoom.$viewport, "pointerup", {
       pointerId: 1,

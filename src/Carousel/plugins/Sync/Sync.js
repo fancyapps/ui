@@ -24,8 +24,11 @@ export class Sync {
     this.onTargetChange(true);
 
     this.nav.on("createSlide", this.onNavCreateSlide);
-    this.sync.on("change", this.onTargetChange);
+    this.nav.on("Panzoom.updateMetrics", this.onTargetChange);
+
     this.nav.Panzoom.on("click", this.onNavClick);
+
+    this.sync.on("change", this.onTargetChange);
   }
 
   /**
@@ -111,8 +114,8 @@ export class Sync {
   detach() {
     if (this.sync) {
       this.nav.off("ready", this.onNavReady);
-
       this.nav.off("createSlide", this.onNavCreate);
+      this.nav.on("Panzoom.updateMetrics", this.onTargetChange);
 
       this.sync.off("change", this.onTargetChange);
     }

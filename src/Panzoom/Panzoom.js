@@ -713,8 +713,6 @@ export class Panzoom extends Base {
         this.pendingResizeUpdate =
           this.pendingResizeUpdate ||
           setTimeout(() => {
-            this.pendingResizeUpdate = null;
-
             let rect = entries && entries[0].contentRect;
 
             // Polyfill does not provide `contentRect`
@@ -727,7 +725,9 @@ export class Panzoom extends Base {
             ) {
               this.updateMetrics();
             }
-          }, 50);
+
+            this.pendingResizeUpdate = null;
+          }, this.option("updateRate", 250));
       });
 
     this.resizeObserver.observe($viewport);

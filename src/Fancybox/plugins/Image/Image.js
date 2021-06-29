@@ -96,7 +96,7 @@ export class Image {
       "Carousel.change": this.onPageChange,
       "Carousel.createSlide": this.onCreateSlide,
       "Carousel.deleteSlide": this.onRemoveSlide,
-      "Carousel.refresh": this.onRefresh,
+      "Carousel.Panzoom.updateMetrics": this.onRefresh,
     };
   }
 
@@ -272,8 +272,6 @@ export class Image {
 
     this.initSlidePanzoom(slide);
 
-    this.fancybox.trigger("load", slide);
-
     this.revealContent(slide);
   }
 
@@ -303,11 +301,13 @@ export class Image {
    * @param {Object} slide
    */
   revealContent(slide) {
+    this.updateDimensions(slide);
+
     // Animate only on first run
     if (
       this.fancybox.Carousel.prevPage === null &&
       slide.index === this.fancybox.options.startIndex &&
-      this.canZoom()
+      this.canZoom(slide)
     ) {
       this.zoomIn();
     } else {
@@ -318,7 +318,7 @@ export class Image {
   /**
    * Determine if it is possible to do zoom-in animation
    */
-  canZoom() {
+  canZoom(slide) {
     const fancybox = this.fancybox,
       $container = fancybox.$container;
 
@@ -328,8 +328,7 @@ export class Image {
       return rez;
     }
 
-    const slide = fancybox.getSlide(),
-      $thumb = slide.$thumb;
+    const $thumb = slide.$thumb;
 
     if (!$thumb || slide.state === "loading") {
       return rez;
@@ -624,7 +623,7 @@ export class Image {
     });
 
     // If possible, start the zoom animation, it will interrupt the default closing process
-    if (this.fancybox.state === "closing" && this.canZoom()) {
+    if (this.fancybox.state === "closing" && this.canZoom(fancybox.getSlide())) {
       this.zoomOut();
     }
   }

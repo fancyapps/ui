@@ -1,5 +1,6 @@
 .fancybox__thumbs {
   flex: 0 0 auto;
+  position: relative;
   padding: $fancybox-thumbs-padding;
 
   .fancybox__container.is-animated[aria-hidden="true"] & {

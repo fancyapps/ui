@@ -19,6 +19,7 @@ function createSandbox(content) {
   const sandbox = document.createElement("div");
   sandbox.style.cssText =
     "position:fixed;top:calc(50vh - 75px);left:calc(50vw - 112px);overflow:visible;visibility:hidden;";
+  // "position:fixed;top:calc(50vh - 75px);left:calc(50vw - 112px);overflow:visible; outline:1px solid red;";
   sandbox.innerHTML = content;
   document.body.appendChild(sandbox);
 

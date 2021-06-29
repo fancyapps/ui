@@ -372,6 +372,7 @@ class Fancybox extends Base {
 
           slides: slides,
           initialPage: this.options.startIndex,
+          slidesPerPage: 1,
 
           infiniteX: this.option("infinite"),
           infiniteY: true,
@@ -830,8 +831,6 @@ class Fancybox extends Base {
     this.manageCloseButton(slide);
 
     if (slide.state !== "loading") {
-      this.trigger("load", slide);
-
       this.revealContent(slide);
     }
 
@@ -878,16 +877,27 @@ class Fancybox extends Base {
 
     slide.$content.style.visibility = "";
 
-    if (slide.state === "error" || this.Carousel.prevPage !== null || slide.index !== this.options.startIndex) {
+    // Add CSS class name that reveals content (default animation is "fadeIn")
+    let showClass = false;
+
+    if (
+      !(
+        slide.state === "error" ||
+        slide.state === "ready" ||
+        this.Carousel.prevPage !== null ||
+        slide.index !== this.options.startIndex
+      )
+    ) {
+      showClass = slide.showClass === undefined ? this.option("showClass") : slide.showClass;
+    }
+
+    if (!showClass) {
       this.done(slide);
 
       return;
     }
 
     slide.state = "animating";
-
-    // Add CSS class name that reveals content (default animation is "fadeIn")
-    const showClass = slide.showClass === undefined ? this.option("showClass") : slide.showClass;
 
     this.animateCSS(slide.$content, showClass, () => {
       this.done(slide);
@@ -956,10 +966,10 @@ class Fancybox extends Base {
    * @param {String} message - Error message, can contain HTML code and template variables
    */
   setError(slide, message) {
+    slide.state = "error";
+
     this.hideLoading(slide);
     this.clearContent(slide);
-
-    slide.state = "error";
 
     // Create new content
     const div = document.createElement(`div`);
@@ -975,6 +985,8 @@ class Fancybox extends Base {
    */
   showLoading(slide) {
     slide.state = "loading";
+
+    this.trigger("load", slide);
 
     slide.$el.classList.add("is-loading");
 
@@ -1001,13 +1013,17 @@ class Fancybox extends Base {
    * @param {Object} slide - Carousel slide
    */
   hideLoading(slide) {
-    const $spinner = slide.$el.querySelector(".fancybox__spinner");
+    const $spinner = slide.$el && slide.$el.querySelector(".fancybox__spinner");
 
     if ($spinner) {
       $spinner.remove();
+
+      slide.$el.classList.remove("is-loading");
     }
 
-    slide.$el.classList.remove("is-loading");
+    if (slide.state === "loading") {
+      slide.state = "ready";
+    }
   }
 
   /**
@@ -1075,7 +1091,6 @@ class Fancybox extends Base {
 
     this.$container.setAttribute("aria-hidden", "true");
 
-    // this.$container.classList.remove("show");
     this.$container.classList.add("is-closing");
 
     // Clear inactive slides

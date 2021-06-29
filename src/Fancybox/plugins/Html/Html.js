@@ -280,6 +280,8 @@ export class Html {
     };
 
     $iframe.onload = () => {
+      fancybox.hideLoading(slide);
+
       let isFirstLoad = false;
 
       if ($iframe.dataset.ready !== "yes") {
@@ -291,8 +293,6 @@ export class Html {
         return;
       }
 
-      fancybox.hideLoading(slide);
-
       $iframe.parentNode.style.visibility = "";
 
       if (slide.autoSize !== false) {
@@ -300,7 +300,7 @@ export class Html {
       }
 
       if (isFirstLoad) {
-        fancybox.animateCSS($content, fancybox.option("showClass"));
+        fancybox.revealContent(slide);
       }
     };
 

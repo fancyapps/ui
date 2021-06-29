@@ -20,6 +20,7 @@ export const ResizeObserver =
       if (this.observables.some((observable) => observable.el === el)) {
         return;
       }
+
       const newObservable = {
         el: el,
         size: {
@@ -27,6 +28,7 @@ export const ResizeObserver =
           width: el.clientWidth,
         },
       };
+
       this.observables.push(newObservable);
     }
 
@@ -50,9 +52,11 @@ export const ResizeObserver =
           }
         })
         .map((obj) => obj.el);
+
       if (changedEntries.length > 0) {
         this.callback(changedEntries);
       }
+
       window.requestAnimationFrame(this.boundCheck);
     }
   };

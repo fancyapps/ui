@@ -35,17 +35,10 @@ export class ScrollLock {
   }
 
   /**
-   * Handle `resize` event to call `updateViewport` once per repaint
+   * Handle `resize` event to call `updateViewport`
    */
   onResize() {
-    if (this.pendingUpdate) {
-      return;
-    }
-
-    this.pendingUpdate = requestAnimationFrame(() => {
-      this.pendingUpdate = null;
-      this.updateViewport();
-    });
+    this.updateViewport();
   }
 
   /**
@@ -75,10 +68,6 @@ export class ScrollLock {
     $container.style.width = width;
     $container.style.height = height;
     $container.style.transform = transform;
-
-    if (fancybox.Carousel) {
-      fancybox.Carousel.updateMetrics();
-    }
   }
 
   /**

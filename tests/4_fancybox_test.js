@@ -107,14 +107,12 @@ function delay(time = 500) {
 
 describe("Fancybox", function () {
   it("can be started using API", function () {
-    const instance = new Fancybox({
-      items: [
-        {
-          type: "html",
-          src: "Lorem ipsum dolor sit amet",
-        },
-      ],
-    });
+    const instance = new Fancybox([
+      {
+        type: "html",
+        src: "Lorem ipsum dolor sit amet",
+      },
+    ]);
 
     expect(instance).to.be.an.instanceof(Fancybox);
 
@@ -122,14 +120,12 @@ describe("Fancybox", function () {
   });
 
   it("returns instance using `Fancybox.getInstance()`", function () {
-    const instance = new Fancybox({
-      items: [
-        {
-          type: "html",
-          src: "Lorem ipsum dolor sit amet",
-        },
-      ],
-    });
+    const instance = new Fancybox([
+      {
+        type: "html",
+        src: "Lorem ipsum dolor sit amet",
+      },
+    ]);
 
     expect(instance).to.be.an.instanceof(Fancybox);
 
@@ -162,7 +158,7 @@ describe("Fancybox", function () {
     const triggerA = document.getElementById("trigger__html-modal-a");
     const triggerB = document.getElementById("trigger__html-modal-b");
 
-    Fancybox.assign("[data-fancybox]", {
+    Fancybox.bind("[data-fancybox]", {
       animated: false,
       showClass: false,
       hideClass: false,
@@ -189,7 +185,7 @@ describe("Fancybox", function () {
     const sandbox = createSandbox(htmlMarkup);
     const trigger = document.getElementById("trigger__html-modal");
 
-    Fancybox.assign("#trigger__html-modal", {
+    Fancybox.bind("#trigger__html-modal", {
       showClass: false,
       hideClass: false,
       l10n: {
@@ -242,7 +238,7 @@ describe("Fancybox", function () {
     const wrap = document.getElementById("html-modal__wrap");
     const node = document.getElementById("html-modal");
 
-    Fancybox.assign("#trigger__html-modal", {
+    Fancybox.bind("#trigger__html-modal", {
       showClass: false,
       hideClass: false,
     });
@@ -270,7 +266,7 @@ describe("Fancybox", function () {
     const sandbox = createSandbox(htmlMarkup);
     const trigger = document.getElementById("trigger__html-modal");
 
-    Fancybox.assign("#trigger__html-modal", {
+    Fancybox.bind("#trigger__html-modal", {
       animated: false,
       showClass: false,
       hideClass: false,
@@ -289,15 +285,17 @@ describe("Fancybox", function () {
   });
 
   it("updates state after closing", async function () {
-    const instance = new Fancybox({
-      items: [
+    const instance = new Fancybox(
+      [
         {
           type: "html",
           src: "Lorem ipsum dolor sit amet",
         },
       ],
-      showClass: false,
-    });
+      {
+        showClass: false,
+      }
+    );
 
     instance.close();
 
@@ -309,16 +307,18 @@ describe("Fancybox", function () {
   });
 
   it("sets focus on close button by default", async function () {
-    const instance = new Fancybox({
-      items: [
+    const instance = new Fancybox(
+      [
         {
           type: "html",
           src: "Lorem ipsum dolor sit amet",
         },
       ],
-      showClass: false,
-      hideClass: false,
-    });
+      {
+        showClass: false,
+        hideClass: false,
+      }
+    );
 
     expect(document.activeElement.classList.contains("is-close")).to.be.true;
 
@@ -326,14 +326,12 @@ describe("Fancybox", function () {
   });
 
   it("sets focus on first focusable element", async function () {
-    const instance = new Fancybox({
-      items: [
-        {
-          type: "html",
-          src: '<div id="html-modal"><p>Lorem ipsum dolor sit amet</p><p><input id="html-modal__input" type="text" value="" /></p></div>',
-        },
-      ],
-    });
+    const instance = new Fancybox([
+      {
+        type: "html",
+        src: '<div id="html-modal"><p>Lorem ipsum dolor sit amet</p><p><input id="html-modal__input" type="text" value="" /></p></div>',
+      },
+    ]);
 
     await delay(300);
 
@@ -346,18 +344,16 @@ describe("Fancybox", function () {
   });
 
   it("sets focus on element having `autofocus` attribute", async function () {
-    const instance = new Fancybox({
-      items: [
-        {
-          type: "html",
-          src: `<div id="html-modal">
+    const instance = new Fancybox([
+      {
+        type: "html",
+        src: `<div id="html-modal">
     <p>Lorem ipsum dolor sit amet</p>
     <p><input id="html-modal__input-a" type="text" value="" /></p>
     <p><input autofocus id="html-modal__input-b" type="text" value="" /></p>
   </div>`,
-        },
-      ],
-    });
+      },
+    ]);
 
     await delay(500);
 
@@ -394,7 +390,7 @@ describe("Fancybox", function () {
     const triggerA = document.getElementById("trigger__html-modal-a");
     const triggerB = document.getElementById("trigger__html-modal-b");
 
-    Fancybox.assign("[data-fancybox]", {
+    Fancybox.bind("[data-fancybox]", {
       animated: false,
       showClass: false,
       hideClass: false,
@@ -410,7 +406,7 @@ describe("Fancybox", function () {
 
       const instance = Fancybox.getInstance();
 
-      expect(instance.options.items).to.deep.equal(slides);
+      expect(instance.items).to.deep.equal(slides);
 
       instance.next();
 
@@ -448,7 +444,7 @@ describe("Fancybox", function () {
 
     let instance = Fancybox.getInstance();
 
-    expect(instance.options.items).to.deep.equal(items);
+    expect(instance.items).to.deep.equal(items);
 
     instance.close();
 
@@ -456,7 +452,7 @@ describe("Fancybox", function () {
 
     instance = Fancybox.getInstance();
 
-    expect(instance.options.items).to.deep.equal(items);
+    expect(instance.items).to.deep.equal(items);
 
     instance.close();
 
@@ -468,7 +464,7 @@ describe("Fancybox", function () {
 
     const eventList = [];
 
-    Fancybox.assign('[data-fancybox="html-gallery"]', {
+    Fancybox.bind('[data-fancybox="html-gallery"]', {
       showClass: false,
       hideClass: false,
       infinite: false,
@@ -567,7 +563,7 @@ describe("Fancybox", function () {
 
     await delay(300);
 
-    expect(instance.options.items).to.deep.equal(items);
+    expect(instance.items).to.deep.equal(items);
 
     instance.close();
 
@@ -580,7 +576,7 @@ describe("Fancybox", function () {
     const sandbox = createSandbox(imageMarkup);
     const trigger = sandbox.querySelector("a");
 
-    Fancybox.assign("[data-fancybox]", {
+    Fancybox.bind("[data-fancybox]", {
       animated: false,
       showClass: false,
       hideClass: false,
@@ -635,16 +631,18 @@ describe("Fancybox", function () {
   });
 
   it("resizes iframe to match content dimensions", async function () {
-    const instance = new Fancybox({
-      showClass: false,
-      hideClass: false,
-      items: [
+    const instance = new Fancybox(
+      [
         {
           type: "iframe",
           src: "./assets/iframe.html",
         },
       ],
-    });
+      {
+        showClass: false,
+        hideClass: false,
+      }
+    );
 
     expect(instance.getSlide().type).to.be.equal("iframe");
     expect(instance.getSlide().$iframe).to.be.an.instanceof(HTMLIFrameElement);
@@ -662,16 +660,18 @@ describe("Fancybox", function () {
   });
 
   it("resizes iframe after reload", async function () {
-    const instance = new Fancybox({
-      showClass: false,
-      hideClass: false,
-      items: [
+    const instance = new Fancybox(
+      [
         {
           type: "iframe",
           src: "./assets/iframe.html",
         },
       ],
-    });
+      {
+        showClass: false,
+        hideClass: false,
+      }
+    );
 
     instance.$container.setAttribute("style", "width:800px;height:600px;padding:0;");
 
@@ -693,15 +693,13 @@ describe("Fancybox", function () {
   });
 
   it("can disable iframe autosize", async function () {
-    const instance = new Fancybox({
-      items: [
-        {
-          type: "iframe",
-          src: "./assets/iframe.html",
-          autoSize: false,
-        },
-      ],
-    });
+    const instance = new Fancybox([
+      {
+        type: "iframe",
+        src: "./assets/iframe.html",
+        autoSize: false,
+      },
+    ]);
 
     instance.$container.setAttribute("style", "width:800px;height:600px;padding:0;");
 
@@ -716,14 +714,12 @@ describe("Fancybox", function () {
   });
 
   it("can load HTML content using ajax", async function () {
-    const instance = new Fancybox({
-      items: [
-        {
-          type: "ajax",
-          src: "./assets/ajax.html",
-        },
-      ],
-    });
+    const instance = new Fancybox([
+      {
+        type: "ajax",
+        src: "./assets/ajax.html",
+      },
+    ]);
 
     await delay(300);
 

@@ -611,13 +611,13 @@ export class Panzoom extends Base {
     const x = round(this.current.x, 100);
     const y = round(this.current.y, 100);
 
-    const scale = round(this.current.scale, 100000);
+    const scale = round(this.current.scale, 10000);
 
     if (Math.abs(x) <= 0.1 && Math.abs(y) <= 0.1 && Math.abs(scale - 1) <= 0.1) {
       this.$content.style.transform = "";
     } else {
-      // Use `translate3d` to prevent artifacts from appearing in Webkit
-      this.$content.style.transform = `translate3d(${x}px, ${y}px, 0px) scale(${scale})`;
+      // Sadly, `translate3d` causes image blurriness on Safari
+      this.$content.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     }
 
     this.trigger("afterTransform");

@@ -143,7 +143,7 @@ describe("Panzoom", function () {
       instance.toggleZoom();
     });
 
-    expect(result).to.equal("translate3d(0px, 0px, 0px) scale(2.6667)");
+    expect(result).to.equal("translate(0px, 0px) scale(2.6667)");
     expect(instance.current.scale).to.be.closeTo(2.6667, 0.1);
 
     // Scale to fit
@@ -203,7 +203,7 @@ describe("Panzoom", function () {
     // Click top left corner
     const result1 = await clickAtXY(0, 0);
 
-    expect(result1).to.equal("translate3d(187.5px, 125px, 0px) scale(2.6667)");
+    expect(result1).to.equal("translate(187.5px, 125px) scale(2.6667)");
 
     // Reset zoom level
     await clickAtXY(0, 0);
@@ -211,7 +211,7 @@ describe("Panzoom", function () {
     // Click bottom right corner
     const result2 = await clickAtXY(225, 150);
 
-    expect(result2).to.equal("translate3d(-187.5px, -125px, 0px) scale(2.6667)");
+    expect(result2).to.equal("translate(-187.5px, -125px) scale(2.6667)");
 
     destroyInstance(instance);
   });
@@ -241,7 +241,7 @@ describe("Panzoom", function () {
     });
 
     // It should be moved 20px horizontally and 40px vertically
-    expect(instance.$content.style.transform).to.equal("translate3d(20px, 40px, 0px) scale(2.6667)");
+    expect(instance.$content.style.transform).to.equal("translate(20px, 40px) scale(2.6667)");
 
     destroyInstance(instance);
   });
@@ -373,7 +373,7 @@ describe("Panzoom", function () {
     await delay();
 
     // Check if content is zoomed
-    expect(instance.$content.style.transform).to.equal("translate3d(3.75px, -7.5px, 0px) scale(1.3)");
+    expect(instance.$content.style.transform).to.equal("translate(3.75px, -7.5px) scale(1.3)");
     expect(instance.current.scale).to.equal(1.3);
 
     // Check if an event was prevented with e.preventDefault()

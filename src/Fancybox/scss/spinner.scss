@@ -8,15 +8,15 @@
   width: $fancybox-spinner-width;
   height: $fancybox-spinner-height;
 
-  cursor: pointer;
-  z-index: 1053;
-
   color: $fancybox-spinner-color;
 
   @include fancybox-breakpoint(loader);
-}
 
-.fancybox__spinner {
+  .fancybox__slide & {
+    cursor: pointer;
+    z-index: 1053;
+  }
+
   & svg {
     animation: fancybox-rotate 2s linear infinite;
     transform-origin: center center;

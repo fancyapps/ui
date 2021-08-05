@@ -2,19 +2,27 @@ import { extend } from "../shared/utils/extend.js";
 import { round } from "../shared/utils/round.js";
 
 import { ResizeObserver } from "../shared/utils/ResizeObserver.js";
-
-import { clearTextSelection } from "../shared/utils/clearTextSelection.js";
+import { PointerTracker, getMidpoint, getDistance } from "../shared/utils/PointerTracker.js";
 
 import { isScrollable } from "../shared/utils/isScrollable.js";
 import { getTextNodeFromPoint } from "../shared/utils/getTextNodeFromPoint.js";
 
-import { getFullWidth, getFullHeight } from "../shared/utils/getDimensions.js";
+import { getFullWidth, getFullHeight, calculateAspectRatioFit } from "../shared/utils/getDimensions.js";
 
 import { Base } from "../shared/Base/Base.js";
 
 import { Plugins } from "./plugins/index.js";
 
 const defaults = {
+  // Enable touch guestures
+  touch: true,
+
+  // Enable zooming
+  zoom: true,
+
+  // Enable pinch gesture to zoom in/out using two fingers
+  pinchToZoom: true,
+
   // Disable dragging if scale level is equal to value of `baseScale` option
   panOnlyZoomed: false,
 
@@ -22,19 +30,20 @@ const defaults = {
   // possible values: false | "x" | "y" | "xy"
   lockAxis: false,
 
-  // * Friction values are inside [0, 1), where 0 would change instantly, but 0.99 would update extremely slowly
+  // * All friction values are inside [0, 1) interval,
+  // * where 0 would change instantly, but 0.99 would update extremely slowly
 
   // Friction while panning/dragging
-  friction: 0.72,
+  friction: 0.64,
 
   // Friction while decelerating after drag end
-  decelFriction: 0.92,
+  decelFriction: 0.88,
 
   // Friction while scaling
-  zoomFriction: 0.72,
+  zoomFriction: 0.74,
 
   // Bounciness after hitting the edge
-  bounceForce: 0.1,
+  bounceForce: 0.2,
 
   // Initial scale level
   baseScale: 1,
@@ -45,49 +54,41 @@ const defaults = {
   // Maximum scale level
   maxScale: 2,
 
-  // Default scale step while scaling
+  // Default scale step while zooming
   step: 0.5,
-
-  // Should content be centered while scaling or moved towards given coordintes,
-  // if coordinates are outside the content
-  zoomInCentered: true,
-
-  // Enable pinch gesture to zoom in/out using two fingers
-  pinchToZoom: true,
 
   // Allow to select text,
   // if enabled, dragging will be disabled when text selection is detected
-  textSelection: true,
+  textSelection: false,
 
   // Add `click` event listener,
   // possible values: true | false | function | "toggleZoom"
   click: "toggleZoom",
-
-  // Delay required for two consecutive clicks to be interpreted as a double-click
-  clickDelay: 250,
-
-  // Enable `doubleClick` event,
-  // possible values: true | false | function | "toggleZoom"
-  doubleClick: false,
 
   // Add `wheel` event listener,
   // possible values: true | false | function |  "zoom"
   wheel: "zoom",
 
   // Value for zoom on mouse wheel
-  wheelFactor: 30,
+  wheelFactor: 42,
 
   // Number of wheel events after which it should stop preventing default behaviour of mouse wheel
-  wheelLimit: 3,
-
-  // Enable touch guestures
-  touch: true,
+  wheelLimit: 5,
 
   // Class name added to `$viewport` element to indicate if content is draggable
   draggableClass: "is-draggable",
 
   // Class name added to `$viewport` element to indicate that user is currently dragging
   draggingClass: "is-dragging",
+
+  // Content will be scaled by this number,
+  // this can also be a function which should return a number, for example:
+  // ratio: function() { return 1 / (window.devicePixelRatio || 1) }
+  ratio: 1,
+
+  // What dimension ResizeObserver should observe,
+  // possible values: "wh" | "w" | "h"
+  observe: "wh",
 };
 
 export class Panzoom extends Base {
@@ -97,38 +98,19 @@ export class Panzoom extends Base {
    * @param {HTMLElement} $viewport Panzoom container
    * @param {Object} [options] Options for Panzoom
    */
-  constructor($viewport, options = {}) {
-    options = extend(true, {}, defaults, options);
-
-    super(options);
-
-    if (!($viewport instanceof HTMLElement)) {
-      throw new Error("Viewport not found");
-    }
+  constructor($container, options = {}) {
+    super(extend(true, {}, defaults, options));
 
     this.state = "init";
 
-    this.$viewport = $viewport;
+    this.$container = $container;
 
     // Bind event handlers for referencability
-    for (const methodName of ["onPointerDown", "onPointerMove", "onPointerUp", "onWheel", "onClick"]) {
+    for (const methodName of ["onLoad", "onWheel", "onClick"]) {
       this[methodName] = this[methodName].bind(this);
     }
 
-    // Make sure content element exists
-    this.$content = this.option("content");
-
-    if (!this.$content) {
-      this.$content = this.$viewport.querySelector(".panzoom__content");
-    }
-
-    if (!this.$content) {
-      throw new Error("Content not found");
-    }
-
-    if (this.option("textSelection") === false) {
-      this.$viewport.classList.add("not-selectable");
-    }
+    this.initLayout();
 
     this.resetValues();
 
@@ -136,1168 +118,144 @@ export class Panzoom extends Base {
 
     this.trigger("init");
 
-    this.handleContent();
+    this.updateMetrics();
 
     this.attachEvents();
 
     this.trigger("ready");
 
-    // Finalize initialization
-    if (this.state === "init") {
-      const baseScale = this.option(`baseScale`);
-
-      if (baseScale === 1) {
-        this.state = "ready";
-
-        this.handleCursor();
-      } else {
-        this.panTo({ scale: baseScale, friction: 0 });
-      }
+    if (this.option("centerOnStart") !== false) {
+      this.panTo({
+        x: 0,
+        y: 0,
+        scale: this.option("baseScale"),
+        friction: 0,
+      });
     }
   }
 
   /**
-   * Check content type, add `load` and `error` callbacks for image
+   * Create references to container, viewport and content elements
    */
-  handleContent() {
-    if (this.$content instanceof HTMLImageElement) {
-      // Callback to be called after image has finished loading
-      const done = () => {
-        const imgWidth = this.$content.naturalWidth;
-        this.maxScale = this.option("maxScale");
+  initLayout() {
+    const $container = this.$container;
 
-        this.options.maxScale = function () {
-          const wrapWidth = this.contentDim.width;
-
-          return imgWidth > 0 && wrapWidth > 0 ? (imgWidth / wrapWidth) * this.maxScale : this.maxScale;
-        };
-
-        this.updateMetrics();
-
-        this.trigger(imgWidth > 0 ? "load" : "error");
-      };
-
-      if (this.$content.complete !== true) {
-        this.$content.onload = () => done();
-        this.$content.onerror = () => done();
-      } else {
-        done();
-      }
-    } else {
-      this.updateMetrics();
+    // Make sure content element exists
+    if (!($container instanceof HTMLElement)) {
+      throw new Error("Panzoom: Container not found");
     }
+
+    const $content = this.option("content") || $container.querySelector(".panzoom__content");
+
+    // Make sure content element exists
+    if (!$content) {
+      throw new Error("Panzoom: Content not found");
+    }
+
+    this.$content = $content;
+
+    const $viewport = this.option("viewport", $content.parentNode);
+
+    if (!$viewport) {
+      throw new Error("Panzoom: Viewport not found");
+    }
+
+    this.$viewport = $viewport;
   }
 
   /**
    * Restore instance variables to default values
    */
   resetValues() {
-    this.viewportDim = {
-      top: 0,
-      left: 0,
+    this.container = {
       width: 0,
       height: 0,
     };
 
-    this.contentDim = {
+    this.viewport = {
       width: 0,
       height: 0,
     };
 
-    this.friction = this.option("friction");
-
-    this.current = { x: 0, y: 0, scale: 1 };
-    this.velocity = { x: 0, y: 0, scale: 0 };
-
-    this.pan = { x: 0, y: 0, scale: 1 };
-
-    this.drag = {
-      startTime: null,
-
-      firstPosition: null,
-
-      startPosition: null,
-      startPoint: null,
-      startDistance: null,
-
-      endPosition: null,
-      endPoint: null,
-
-      distance: 0,
-      distanceX: 0,
-      distanceY: 0,
-
-      elapsedTime: 0,
-    };
-
-    this.lockAxis = null;
-
-    this.pendingAnimateUpdate = null;
-    this.pendingResizeUpdate = null;
-
-    this.pointers = [];
-  }
-
-  /**
-   * Update readings of viewport and content dimensions
-   */
-  updateMetrics() {
-    let { top, left, width, height } = this.$viewport.getBoundingClientRect();
-
-    const styles = window.getComputedStyle(this.$viewport);
-
-    width -= parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-    height -= parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
-
-    this.viewportDim = { top, left, width, height };
-
-    this.contentDim = {
-      width: this.option("width", getFullWidth(this.$content)),
-      height: this.option("hidth", getFullHeight(this.$content)),
-    };
-
-    this.trigger("updateMetrics");
-
-    this.updateBounds();
-  }
-
-  /**
-   * Update current boundaries
-   * @param {number} [scale] Optional scale of content
-   */
-  updateBounds(scale) {
-    const boundX = { from: 0, to: 0 };
-    const boundY = { from: 0, to: 0 };
-
-    if (!scale) {
-      scale = this.velocity.scale ? this.pan.scale : this.current.scale;
-    }
-
-    if (scale < 1) {
-      return [boundX, boundY];
-    }
-
-    const contentDim = this.contentDim;
-    const viewportDim = this.viewportDim;
-
-    const currentWidth = contentDim.width * scale;
-    const currentHeight = contentDim.height * scale;
-
-    boundX.to = round((currentWidth - contentDim.width) * 0.5);
-
-    if (contentDim.width > viewportDim.width) {
-      boundX.from = round(boundX.to + viewportDim.width - currentWidth);
-    } else {
-      boundX.from = round(boundX.to * -1);
-    }
-
-    boundY.to = round((currentHeight - contentDim.height) * 0.5);
-
-    if (contentDim.height > viewportDim.height) {
-      boundY.from = round(boundY.to + viewportDim.height - currentHeight);
-    } else {
-      boundY.from = round(boundY.to * -1);
-    }
-
-    this.boundX = boundX;
-    this.boundY = boundY;
-
-    this.trigger("updateBounds", scale);
-
-    return [this.boundX, this.boundY];
-  }
-
-  /**
-   * Increase zoom level
-   * @param {Number} [step] Zoom ratio; `0.5` would increase scale from 1 to 1.5
-   */
-  zoomIn(step) {
-    this.zoomTo(this.current.scale + (step || this.option("step")));
-  }
-
-  /**
-   * Decrease zoom level
-   * @param {Number} [step] Zoom ratio; `0.5` would decrease scale from 1.5 to 1
-   */
-  zoomOut(step) {
-    this.zoomTo(this.current.scale - (step || this.option("step")));
-  }
-
-  /**
-   * Toggles zoom level between max and base levels
-   * @param {Object} [options] Additional options
-   */
-  toggleZoom(props = {}) {
-    const maxScale = this.option("maxScale");
-    const baseScale = this.option("baseScale");
-
-    this.zoomTo(this.current.scale > baseScale + (maxScale - baseScale) * 0.5 ? baseScale : maxScale, props);
-  }
-
-  /**
-   * Animates to given zoom level
-   * @param {Number} scale New zoom level
-   * @param {Object} [options] Additional options
-   */
-  zoomTo(scale, options = {}) {
-    let { x = null, y = null, friction = this.option("zoomFriction") } = options;
-
-    if (!scale) {
-      scale = this.option("baseScale");
-    }
-
-    scale = Math.max(Math.min(scale, this.option("maxScale")), this.option("minScale"));
-
-    const width = this.contentDim.width;
-    const height = this.contentDim.height;
-
-    const currentWidth = width * this.current.scale;
-    const currentHeight = height * this.current.scale;
-
-    const nextWidth = width * scale;
-    const nextHeight = height * scale;
-
-    if (x === null) {
-      x = currentWidth * 0.5;
-    }
-
-    if (y === null) {
-      y = currentHeight * 0.5;
-    }
-
-    if (this.option("zoomInCentered") === false) {
-      if (x < currentWidth * 0.5) {
-        x = currentWidth;
-      }
-
-      if (x > currentWidth) {
-        x = 0;
-      }
-
-      if (y < 0) {
-        y = currentHeight;
-      }
-
-      if (y > currentHeight) {
-        y = 0;
-      }
-    }
-
-    const percentXInCurrentBox = currentWidth > 0 ? x / currentWidth : 0;
-    const percentYInCurrentBox = currentHeight > 0 ? y / currentHeight : 0;
-
-    let deltaX = (nextWidth - currentWidth) * (percentXInCurrentBox - 0.5);
-    let deltaY = (nextHeight - currentHeight) * (percentYInCurrentBox - 0.5);
-
-    if (Math.abs(deltaX) < 1) {
-      deltaX = 0;
-    }
-
-    if (Math.abs(deltaY) < 1) {
-      deltaY = 0;
-    }
-
-    x = this.current.x - deltaX;
-    y = this.current.y - deltaY;
-
-    this.panTo({ x, y, scale, friction });
-  }
-
-  /**
-   * Animates to given positon and/or zoom level
-   * @param {Object} [options] Additional options
-   */
-  panTo(options) {
-    let {
-      x = 0,
-      y = 0,
-      scale = this.current.scale,
-      friction = this.option("friction"),
-      ignoreBounds = false,
-    } = options;
-
-    if (!friction) {
-      this.stopMoving();
-    }
-
-    if (ignoreBounds !== true) {
-      const [boundX, boundY] = this.updateBounds(scale);
-
-      if (boundX) {
-        x = Math.max(Math.min(x, boundX.to), boundX.from);
-      }
-
-      if (boundY) {
-        y = Math.max(Math.min(y, boundY.to), boundY.from);
-      }
-    }
-
-    // Check if there is anything to animate
-    if (
-      friction > 0 &&
-      (Math.abs(x - this.current.x) > 0.1 ||
-        Math.abs(y - this.current.y) > 0.1 ||
-        Math.abs(scale - this.current.scale) > 0.1)
-    ) {
-      this.state = "panning";
-
-      this.friction = friction;
-
-      this.pan = {
-        x,
-        y,
-        scale,
-      };
-
-      this.velocity = {
-        x: (1 / this.friction - 1) * (x - this.current.x),
-        y: (1 / this.friction - 1) * (y - this.current.y),
-        scale: (1 / this.friction - 1) * (scale - this.current.scale),
-      };
-
-      this.animate();
-
-      return this;
-    }
-
-    if (this.pendingAnimateUpdate) {
-      cancelAnimationFrame(this.pendingAnimateUpdate);
-      this.pendingAnimateUpdate = null;
-    }
-
-    this.state = "ready";
-
-    this.stopMoving();
-
-    this.current = { x, y, scale };
-
-    this.transform();
-
-    this.handleCursor();
-
-    this.trigger("afterAnimate", true);
-
-    return this;
-  }
-
-  /**
-   * Start animation or process animation frame
-   */
-  animate() {
-    // Skip if already waiting for the next RAF
-    if (this.pendingAnimateUpdate) {
-      return;
-    }
-
-    // Update velocity depending on bounds and drag speed
-    this.applyBoundForce();
-    this.applyDragForce();
-
-    this.velocity.x *= this.friction;
-    this.velocity.y *= this.friction;
-
-    this.velocity.scale *= this.friction;
-
-    this.current.x += this.velocity.x;
-    this.current.y += this.velocity.y;
-
-    this.current.scale += this.velocity.scale;
-
-    if (
-      this.state == "dragging" ||
-      this.state == "pointerdown" ||
-      Math.abs(this.velocity.x) > 0.05 ||
-      Math.abs(this.velocity.y) > 0.05 ||
-      Math.abs(this.velocity.scale) > 0.05
-    ) {
-      // Update CSS `transform` value for the content element
-      this.transform();
-
-      // Next RAF
-      this.pendingAnimateUpdate = requestAnimationFrame(() => {
-        this.pendingAnimateUpdate = null;
-        this.animate();
-      });
-
-      // * Continue animation loop
-
-      return;
-    }
-
-    // * Stop animation
-
-    // Normalize values
-    this.current.x = round(this.current.x + this.velocity.x / (1 / this.friction - 1));
-    this.current.y = round(this.current.y + this.velocity.y / (1 / this.friction - 1));
-
-    if (Math.abs(this.current.x) < 0.5) {
-      this.current.x = 0;
-    }
-
-    if (Math.abs(this.current.y) < 0.5) {
-      this.current.y = 0;
-    }
-
-    this.current.scale = round(this.current.scale + this.velocity.scale / (1 / this.friction - 1), 10000);
-
-    if (Math.abs(this.current.scale - 1) < 0.01) {
-      this.current.scale = 1;
-    }
-
-    this.state = "ready";
-
-    this.stopMoving();
-
-    this.transform();
-
-    this.handleCursor();
-
-    this.trigger("afterAnimate");
-  }
-
-  /**
-   * Update the class name depending on whether the content is scaled
-   */
-  handleCursor() {
-    const draggableClass = this.option("draggableClass");
-
-    if (!draggableClass || !this.option("touch")) {
-      return;
-    }
-
-    if (
-      this.contentDim.width <= this.viewportDim.width &&
-      this.option("panOnlyZoomed") == true &&
-      this.current.scale <= this.option("baseScale")
-    ) {
-      this.$viewport.classList.remove(draggableClass);
-    } else {
-      this.$viewport.classList.add(draggableClass);
-    }
-  }
-
-  /**
-   * Check if content is dragged, zoomed or is animating to resting position
-   */
-  isMoved() {
-    return (
-      this.current.x !== 0 ||
-      this.current.y !== 0 ||
-      this.current.scale !== 1 ||
-      this.velocity.x > 0 ||
-      this.velocity.y > 0 ||
-      this.velocity.scale > 0
-    );
-  }
-
-  /**
-   * Reset velocity values to stop animation
-   */
-  stopMoving() {
-    this.velocity = {
+    this.content = {
+      // Full content dimensions (naturalWidth/naturalHeight for images)
+      origHeight: 0,
+      origWidth: 0,
+
+      // Current dimensions of the content
+      width: 0,
+      height: 0,
+
+      // Current position; these values reflect CSS `transform` value
       x: 0,
       y: 0,
-      scale: 0,
-    };
-  }
 
-  /**
-   * Update CSS `transform` property of content with current values,
-   * is executed at each step of the animation
-   */
-  transform() {
-    this.trigger("beforeTransform");
-
-    const x = round(this.current.x, 100);
-    const y = round(this.current.y, 100);
-
-    const scale = round(this.current.scale, 10000);
-
-    if (Math.abs(x) <= 0.1 && Math.abs(y) <= 0.1 && Math.abs(scale - 1) <= 0.1) {
-      this.$content.style.transform = "";
-    } else {
-      // Sadly, `translate3d` causes image blurriness on Safari
-      this.$content.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
-    }
-
-    this.trigger("afterTransform");
-  }
-
-  /**
-   * Apply bounce force if boundary is reached
-   */
-  applyBoundForce() {
-    if (this.state !== "decel") {
-      return;
-    }
-
-    const resultForce = { x: 0, y: 0 };
-    const bounceForce = this.option("bounceForce");
-
-    const boundX = this.boundX;
-    const boundY = this.boundY;
-
-    let pastLeft, pastRight, pastTop, pastBottom;
-
-    if (boundX) {
-      pastLeft = this.current.x < boundX.from;
-      pastRight = this.current.x > boundX.to;
-    }
-
-    if (boundY) {
-      pastTop = this.current.y < boundY.from;
-      pastBottom = this.current.y > boundY.to;
-    }
-
-    // Past left of right viewport boundaries
-    if (pastLeft || pastRight) {
-      const bound = pastLeft ? boundX.from : boundX.to;
-      const distance = bound - this.current.x;
-
-      let force = distance * bounceForce;
-
-      const restX = this.current.x + (this.velocity.x + force) / (1 / this.friction - 1);
-
-      if (!((pastLeft && restX < boundX.from) || (pastRight && restX > boundX.to))) {
-        force = distance * bounceForce - this.velocity.x;
-      }
-
-      resultForce.x = force;
-    }
-
-    // Past top of bottom viewport boundaries
-    if (pastTop || pastBottom) {
-      const bound = pastTop ? boundY.from : boundY.to;
-      const distance = bound - this.current.y;
-
-      let force = distance * bounceForce;
-
-      const restY = this.current.y + (this.velocity.y + force) / (1 / this.friction - 1);
-
-      if (!((pastTop && restY < boundY.from) || (pastBottom && restY > boundY.to))) {
-        force = distance * bounceForce - this.velocity.y;
-      }
-
-      resultForce.y = force;
-    }
-
-    this.velocity.x += resultForce.x;
-    this.velocity.y += resultForce.y;
-  }
-
-  /**
-   * Apply drag force to move content to drag position
-   */
-  applyDragForce() {
-    if (this.state !== "dragging") {
-      return;
-    }
-
-    this.velocity = {
-      x: (1 / this.friction - 1) * (this.drag.endPosition.x - this.current.x),
-      y: (1 / this.friction - 1) * (this.drag.endPosition.y - this.current.y),
-      scale: (1 / this.friction - 1) * (this.drag.endPosition.scale - this.current.scale),
-    };
-  }
-
-  /**
-   * Initialize `resizeObserver` and attach touch/mouse/click/wheel event listeners
-   */
-  attachEvents() {
-    const $viewport = this.$viewport;
-
-    // * Create and attach resize observer
-    this.resizeObserver =
-      this.resizeObserver ||
-      new ResizeObserver((entries) => {
-        this.pendingResizeUpdate =
-          this.pendingResizeUpdate ||
-          setTimeout(() => {
-            let rect = entries && entries[0].contentRect;
-
-            // Polyfill does not provide `contentRect`
-            if (!rect && this.$viewport) rect = this.$viewport.getBoundingClientRect();
-
-            // Check to see if there are any changes
-            if (
-              rect &&
-              (Math.abs(rect.width - this.viewportDim.width) > 1 || Math.abs(rect.height - this.viewportDim.height) > 1)
-            ) {
-              this.updateMetrics();
-            }
-
-            this.pendingResizeUpdate = null;
-          }, this.option("updateRate", 250));
-      });
-
-    this.resizeObserver.observe($viewport);
-
-    $viewport.addEventListener("click", this.onClick, { passive: false });
-    $viewport.addEventListener("wheel", this.onWheel, { passive: false });
-
-    // * Add touch listeners
-
-    if (!this.option("touch")) {
-      return;
-    }
-
-    // Check if pointer events are supported
-    if (window.PointerEvent) {
-      // Add Pointer Event Listener
-      $viewport.addEventListener("pointerdown", this.onPointerDown, { passive: false });
-      $viewport.addEventListener("pointermove", this.onPointerMove, { passive: false });
-      $viewport.addEventListener("pointerup", this.onPointerUp);
-      $viewport.addEventListener("pointercancel", this.onPointerUp);
-    } else {
-      // Add Touch Listeners
-      $viewport.addEventListener("touchstart", this.onPointerDown, { passive: false });
-      $viewport.addEventListener("touchmove", this.onPointerMove, { passive: false });
-      $viewport.addEventListener("touchend", this.onPointerUp);
-      $viewport.addEventListener("touchcancel", this.onPointerUp);
-
-      // Add Mouse Listeners
-      $viewport.addEventListener("mousedown", this.onPointerDown);
-    }
-  }
-
-  /**
-   * Remove observation and detach event listeners
-   */
-  detachEvents() {
-    if (this.resizeObserver) {
-      this.resizeObserver.disconnect();
-    }
-
-    this.resizeObserver = null;
-
-    if (this.pendingResizeUpdate) {
-      clearTimeout(this.pendingResizeUpdate);
-      this.pendingResizeUpdate = null;
-    }
-
-    const $viewport = this.$viewport;
-
-    if (window.PointerEvent) {
-      //  Pointer Event Listener
-      $viewport.removeEventListener("pointerdown", this.onPointerDown, { passive: false });
-      $viewport.removeEventListener("pointermove", this.onPointerMove, { passive: false });
-      $viewport.removeEventListener("pointerup", this.onPointerUp);
-      $viewport.removeEventListener("pointercancel", this.onPointerUp);
-    } else {
-      //  Touch Listeners
-      $viewport.removeEventListener("touchstart", this.onPointerDown, { passive: false });
-      $viewport.removeEventListener("touchmove", this.onPointerMove, { passive: false });
-      $viewport.removeEventListener("touchend", this.onPointerUp);
-      $viewport.removeEventListener("touchcancel", this.onPointerUp);
-
-      //  Mouse Listeners
-      $viewport.removeEventListener("mousedown", this.onPointerDown);
-    }
-
-    $viewport.removeEventListener("click", this.onClick, { passive: false });
-    $viewport.removeEventListener("wheel", this.onWheel, { passive: false });
-  }
-
-  /**
-   * Make new pointer object from event data
-   * @param {Object} event
-   */
-  copyPointer(event) {
-    return {
-      pointerId: event.pointerId,
-      clientX: event.clientX,
-      clientY: event.clientY,
-    };
-  }
-
-  /**
-   * Find index of corresponding pointer object from event
-   * @param {Object} event
-   */
-  findPointerIndex(event) {
-    let i = this.pointers.length;
-
-    while (i--) {
-      if (this.pointers[i].pointerId === event.pointerId) {
-        return i;
-      }
-    }
-
-    return -1;
-  }
-
-  /**
-   * Add or update pointer object for each finger
-   * @param {Object} event
-   */
-  addPointer(event) {
-    let i = 0;
-
-    // Add touches if applicable
-    if (event.touches && event.touches.length) {
-      for (const touch of event.touches) {
-        touch.pointerId = i++;
-        this.addPointer(touch);
-      }
-
-      return;
-    }
-
-    i = this.findPointerIndex(event);
-
-    // Update if already present
-    if (i > -1) {
-      this.pointers.splice(i, 1);
-    }
-
-    this.pointers.push(event);
-  }
-
-  /**
-   * Remove corresponding pointer object
-   * @param {Object} event
-   */
-  removePointer(event) {
-    // Add touches if applicable
-    if (event.touches) {
-      // Remove all touches
-      while (this.pointers.length) {
-        this.pointers.pop();
-      }
-      return;
-    }
-
-    const i = this.findPointerIndex(event);
-
-    if (i > -1) {
-      this.pointers.splice(i, 1);
-    }
-  }
-
-  /**
-   * Get middle point from last two touch points,
-   * if there is only one point, then it is returned
-   */
-  getMiddlePoint() {
-    let pointers = [...this.pointers];
-
-    pointers = pointers.sort((a, b) => {
-      return b.pointerId - a.pointerId;
-    });
-
-    const pointer1 = pointers.shift();
-    const pointer2 = pointers.shift();
-
-    if (pointer2) {
-      return {
-        clientX: (pointer1.clientX - pointer2.clientX) * 0.5 + pointer2.clientX,
-        clientY: (pointer1.clientY - pointer2.clientY) * 0.5 + pointer2.clientY,
-      };
-    }
-
-    return {
-      clientX: pointer1 ? pointer1.clientX : 0,
-      clientY: pointer1 ? pointer1.clientY : 0,
-    };
-  }
-
-  /**
-   * Get distance between any touch points
-   * @param {Object} pointers
-   * @param {String} [axis]
-   */
-  getDistance(pointers, axis) {
-    pointers = pointers || [...this.pointers];
-    pointers = pointers.slice();
-
-    if (!pointers || pointers.length < 2) {
-      return 0;
-    }
-
-    pointers = pointers.sort((a, b) => {
-      return b.pointerId - a.pointerId;
-    });
-
-    const event1 = pointers.shift();
-    const event2 = pointers.shift();
-
-    const xDistance = Math.abs(event2.clientX - event1.clientX);
-
-    if (axis === "x") {
-      return xDistance;
-    }
-
-    const yDistance = Math.abs(event2.clientY - event1.clientY);
-
-    if (axis === "y") {
-      return yDistance;
-    }
-
-    return Math.sqrt(Math.pow(xDistance, 2) + Math.pow(yDistance, 2));
-  }
-
-  /**
-   * Stop dragging animation and freeze current state
-   */
-  resetDragState() {
-    const { left, top } = this.$content.getClientRects()[0];
-
-    const middlePoint = this.getMiddlePoint();
-
-    const currentPosition = {
-      top,
-      left,
-      x: this.current.x,
-      y: this.current.y,
-      scale: this.current.scale,
+      // Current scale; does not reflect CSS `transform` value
+      scale: 1,
     };
 
-    extend(this.drag, {
-      startPosition: extend({}, currentPosition),
-      startPoint: extend({}, middlePoint),
-      startDistance: this.getDistance(),
+    // End values of current pan / zoom animation
+    this.transform = {
+      x: 0,
+      y: 0,
+      scale: 1,
+    };
 
-      endPosition: extend({}, currentPosition),
-      endPoint: extend({}, middlePoint),
-
-      distance: 0,
-      distanceX: 0,
-      distanceY: 0,
-    });
-
-    if (this.state === "pointerdown") {
-      this.lockAxis = null;
-
-      this.drag.startTime = new Date();
-      this.drag.firstPosition = Object.assign({}, currentPosition);
-    }
-
-    this.stopMoving();
-
-    this.friction = this.option("friction");
+    this.resetDragPosition();
   }
 
   /**
-   * Handle `pointerdown`, `touchstart` or `mousedown` event
+   * Handle `load` event
    * @param {Event} event
    */
-  onPointerDown(event) {
-    if (!event || (event.button && event.button > 0)) {
-      return;
-    }
+  onLoad(event) {
+    this.updateMetrics();
 
-    // Improve UX - disable click events while zooming content that should be
-    // interactive only when zoomed in (e.g., from within carousel)
-    if (this.option("panOnlyZoomed") && this.velocity.scale) {
-      event.preventDefault();
-      return;
-    }
+    this.panTo({ scale: this.option("baseScale"), friction: 0 });
 
-    this.resetDragState();
-
-    if (!this.pointers.length) {
-      // Allow touch action and click events on textareas inputs, selects and videos
-      let ignoreClickedElement =
-        ["BUTTON", "TEXTAREA", "OPTION", "INPUT", "SELECT", "VIDEO"].indexOf(event.target.nodeName) !== -1;
-
-      if (ignoreClickedElement) {
-        return;
-      }
-
-      // Allow text selection
-      if (this.option("textSelection") && getTextNodeFromPoint(event.target, event.clientX, event.clientY)) {
-        return;
-      }
-
-      // Allow scrolling
-      if (isScrollable(event.target)) {
-        return;
-      }
-    }
-
-    clearTextSelection();
-
-    if (this.pointers.length > 1 || (this.pointers.length && this.lockAxis)) {
-      event.preventDefault();
-
-      return;
-    }
-
-    if (this.trigger("touchStart", event) === false) {
-      return;
-    }
-
-    event.preventDefault();
-
-    this.state = "pointerdown";
-
-    this.addPointer(this.copyPointer(event));
-
-    this.resetDragState();
-
-    // Add the move and end listeners
-    if (window.PointerEvent) {
-      try {
-        event.target.setPointerCapture(event.pointerId);
-      } catch (e) {}
-    } else {
-      // Add Mouse Listeners
-      document.addEventListener("mousemove", this.onPointerMove, { passive: false });
-      document.addEventListener("mouseup", this.onPointerUp, { passive: false });
-    }
+    this.trigger("load", event);
   }
 
   /**
-   * Handle `pointermove`, `touchmove` or `mousemove` event
+   * Handle `click` event
    * @param {Event} event
    */
-  onPointerMove(event) {
-    if (event.targetTouches && event.targetTouches.length > 1) {
+  onClick(event) {
+    if (event.defaultPrevented) {
       return;
     }
 
-    if (this.state !== "pointerdown" && this.state !== "dragging") {
+    // Skip if text is selected
+    if (this.option("textSelection") && window.getSelection().toString().length) {
+      event.stopPropagation();
       return;
     }
 
-    if (this.trigger("touchMove", event) == false) {
-      event.preventDefault();
-      return;
-    }
+    const rect = this.$content.getClientRects()[0];
 
-    this.addPointer(this.copyPointer(event));
+    // Check if container has changed position (for example, when current instance is inside another one)
+    if (this.state !== "ready") {
+      if (
+        this.dragPosition.midPoint ||
+        Math.abs(rect.top - this.dragStart.rect.top) > 1 ||
+        Math.abs(rect.left - this.dragStart.rect.left) > 1
+      ) {
+        event.preventDefault();
+        event.stopPropagation();
 
-    if (this.pointers.length > 1 && this.option("pinchToZoom") === false) {
-      return;
-    }
-
-    // Disable touch action if current zoom level is below base level
-    if (
-      this.option("panOnlyZoomed") == true &&
-      this.current.scale === this.option("baseScale") &&
-      this.pointers.length < 2
-    ) {
-      event.preventDefault();
-      return;
-    }
-
-    const dragEndPoint = this.getMiddlePoint();
-    const currentPoints = [dragEndPoint, this.drag.startPoint];
-
-    this.drag.distance = this.getDistance(currentPoints);
-
-    const hasClickEvent =
-      (this.events.click && this.events.click.length) ||
-      (this.events.doubleClick && this.events.doubleClick.length) ||
-      this.option.click ||
-      this.option.doubleClick;
-
-    if (this.drag.distance < 6 && (hasClickEvent || (this.option("lockAxis") && !this.lockAxis))) {
-      return;
-    }
-
-    if (this.state == "pointerdown") {
-      this.state = "dragging";
-    }
-
-    if (this.state !== "dragging") {
-      return;
-    }
-
-    const axisToLock = this.option("lockAxis");
-
-    if (!this.lockAxis && axisToLock) {
-      if (axisToLock === "xy") {
-        const distanceX = this.getDistance(currentPoints, "x");
-        const distanceY = this.getDistance(currentPoints, "y");
-
-        const angle = Math.abs((Math.atan2(distanceY, distanceX) * 180) / Math.PI);
-
-        this.lockAxis = angle > 45 && angle < 135 ? "y" : "x";
-      } else {
-        this.lockAxis = axisToLock;
+        return;
       }
     }
 
-    event.preventDefault();
-    event.stopPropagation();
-
-    this.$viewport.classList.add(this.option("draggingClass"));
-
-    this.animate();
-
-    let scale = this.current.scale;
-
-    let dragOffsetX = 0;
-    let dragOffsetY = 0;
-
-    if (!(this.current.scale === this.option("baseScale") && this.lockAxis === "y")) {
-      dragOffsetX = dragEndPoint.clientX - this.drag.startPoint.clientX;
+    if (this.trigger("click", event) === false) {
+      return;
     }
 
-    if (!(this.current.scale === this.option("baseScale") && this.lockAxis === "x")) {
-      dragOffsetY = dragEndPoint.clientY - this.drag.startPoint.clientY;
-    }
-
-    this.drag.endPosition.x = this.drag.startPosition.x + dragOffsetX;
-    this.drag.endPosition.y = this.drag.startPosition.y + dragOffsetY;
-
-    if (this.pointers.length > 1) {
-      // Store middle point for correct positioning after touch release (when zoom level exceeds max level)
-      this.drag.middlePoint = dragEndPoint;
-
-      scale = (this.drag.startPosition.scale * this.getDistance()) / this.drag.startDistance;
-      scale = Math.max(Math.min(scale, this.option("maxScale") * 2), this.option("minScale") * 0.5);
-
-      const width = this.$content.width;
-      const height = this.$content.height;
-
-      const startWidth = width * this.drag.startPosition.scale;
-      const startHeight = height * this.drag.startPosition.scale;
-
-      const nextWidth = width * scale;
-      const nextHeight = height * scale;
-
-      const percentXInStartBox = (this.drag.startPoint.clientX - this.drag.startPosition.left) / startWidth;
-      const percentYInStartBox = (this.drag.startPoint.clientY - this.drag.startPosition.top) / startHeight;
-
-      const deltaX = (nextWidth - startWidth) * (percentXInStartBox - 0.5);
-      const deltaY = (nextHeight - startHeight) * (percentYInStartBox - 0.5);
-
-      this.drag.endPosition.x -= deltaX;
-      this.drag.endPosition.y -= deltaY;
-
-      this.drag.endPosition.scale = scale;
-
-      this.updateBounds(scale);
-    }
-
-    this.applyDragResistance();
-  }
-
-  /**
-   * Handle `pointerup`, `touchend`, etc events
-   * @param {Event} event -
-   */
-  onPointerUp(event) {
-    this.removePointer(event);
-
-    // Remove Event Listeners
-    if (window.PointerEvent) {
-      try {
-        event.target.releasePointerCapture(event.pointerId);
-      } catch (e) {}
-    } else {
-      // Remove Mouse Listeners
-      document.removeEventListener("mousemove", this.onPointerMove, { passive: false });
-      document.removeEventListener("mouseup", this.onPointerUp, { passive: false });
-    }
-
-    // Skip when one finger is raised and the other is left
-    if (this.pointers.length > 0) {
+    if (this.option("zoom") && this.option("click") === "toggleZoom") {
       event.preventDefault();
+      event.stopPropagation();
 
-      this.resetDragState();
-
-      return;
-    }
-
-    if (this.state !== "pointerdown" && this.state !== "dragging") {
-      return;
-    }
-
-    this.$viewport.classList.remove(this.option("draggingClass"));
-
-    const { top, left } = this.$content.getClientRects()[0];
-    const drag = this.drag;
-
-    extend(true, drag, {
-      elapsedTime: new Date() - drag.startTime,
-
-      distanceX: drag.endPosition.x - drag.firstPosition.x,
-      distanceY: drag.endPosition.y - drag.firstPosition.y,
-
-      endPosition: {
-        top,
-        left,
-      },
-    });
-
-    drag.distance = Math.sqrt(Math.pow(drag.distanceX, 2) + Math.pow(drag.distanceY, 2));
-
-    this.state = "decel";
-    this.friction = this.option("decelFriction");
-
-    this.pan = {
-      x: this.current.x + this.velocity.x / (1 / this.friction - 1),
-      y: this.current.y + this.velocity.y / (1 / this.friction - 1),
-      scale: this.current.scale + this.velocity.scale / (1 / this.friction - 1),
-    };
-
-    if (this.trigger("touchEnd", event) === false) {
-      return;
-    }
-
-    if (this.state !== "decel") {
-      return;
-    }
-
-    // * Check if scaled content past limits
-    // Below minimum
-    const minScale = this.option("minScale");
-
-    if (this.current.scale < minScale) {
-      this.zoomTo(minScale, { friction: 0.64 });
-
-      return;
-    }
-
-    // Exceed maximum
-    const maxScale = this.option("maxScale");
-
-    if (this.current.scale - maxScale > 0.01) {
-      const props = { friction: 0.64 };
-
-      if (drag.middlePoint) {
-        props.x = drag.middlePoint.clientX - left;
-        props.y = drag.middlePoint.clientY - top;
-      }
-
-      this.zoomTo(maxScale, props);
-    }
-  }
-
-  /**
-   * Drag resistance outside bounds
-   */
-  applyDragResistance() {
-    const boundX = this.boundX;
-    const boundY = this.boundY;
-
-    let pastLeft, pastRight, pastTop, pastBottom;
-
-    if (boundX) {
-      pastLeft = this.drag.endPosition.x < boundX.from;
-      pastRight = this.drag.endPosition.x > boundX.to;
-    }
-
-    if (boundY) {
-      pastTop = this.drag.endPosition.y < boundY.from;
-      pastBottom = this.drag.endPosition.y > boundY.to;
-    }
-
-    if (pastLeft || pastRight) {
-      const bound = pastLeft ? boundX.from : boundX.to;
-      const distance = this.drag.endPosition.x - bound;
-
-      this.drag.endPosition.x = bound + distance * 0.3;
-    }
-
-    if (pastTop || pastBottom) {
-      const bound = pastTop ? boundY.from : boundY.to;
-      const distance = this.drag.endPosition.y - bound;
-
-      this.drag.endPosition.y = bound + distance * 0.3;
+      this.zoomWithClick(event);
     }
   }
 
@@ -1310,7 +268,7 @@ export class Panzoom extends Base {
       return;
     }
 
-    if (this.option("wheel", event) == "zoom") {
+    if (this.option("zoom") && this.option("wheel")) {
       this.zoomWithWheel(event);
     }
   }
@@ -1324,128 +282,908 @@ export class Panzoom extends Base {
       this.changedDelta = 0;
     }
 
-    let scale = this.current.scale;
-
     const delta = Math.max(-1, Math.min(1, -event.deltaY || -event.deltaX || event.wheelDelta || -event.detail));
+    const scale = this.content.scale;
 
-    if ((delta < 0 && scale <= this.option("minScale")) || (delta > 0 && scale >= this.option("maxScale"))) {
+    let newScale = (scale * (100 + delta * this.option("wheelFactor"))) / 100;
+
+    if (
+      (delta < 0 && Math.abs(scale - this.option("minScale")) < 0.01) ||
+      (delta > 0 && Math.abs(scale - this.option("maxScale")) < 0.01)
+    ) {
       this.changedDelta += Math.abs(delta);
-
-      if (this.changedDelta > this.option("wheelLimit")) {
-        return;
-      }
+      newScale = scale;
     } else {
       this.changedDelta = 0;
+      newScale = Math.max(Math.min(newScale, this.option("maxScale")), this.option("minScale"));
     }
 
-    scale = (scale * (100 + delta * this.option("wheelFactor"))) / 100;
+    if (this.changedDelta > this.option("wheelLimit")) {
+      return;
+    }
 
     event.preventDefault();
 
-    const { top, left } = this.$content.getClientRects()[0];
+    if (newScale === scale) {
+      return;
+    }
 
-    const x = event.clientX - left;
-    const y = event.clientY - top;
+    const rect = this.$content.getBoundingClientRect();
 
-    this.zoomTo(scale, { x, y });
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
+
+    this.zoomTo(newScale, { x, y });
   }
 
   /**
-   * Handle `click` event, detect double-click
-   * @param {Event} event
+   * Change zoom level depending on click coordinates
+   * @param {Event} event `click` event
    */
-  onClick(event) {
-    if (event.defaultPrevented) {
-      return;
-    }
+  zoomWithClick(event) {
+    const rect = this.$content.getClientRects()[0];
 
-    // Skip if text is selected
-    if (window.getSelection().toString().length) {
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      return;
-    }
+    const x = event.clientX - rect.left;
+    const y = event.clientY - rect.top;
 
-    // Check if container has changed position (for example, when current instance is inside another one)
-    if (
-      this.drag.startPosition &&
-      this.drag.endPosition &&
-      (Math.abs(this.drag.endPosition.top - this.drag.startPosition.top) > 1 ||
-        Math.abs(this.drag.endPosition.left - this.drag.startPosition.left) > 1)
-    ) {
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      return;
-    }
+    this.toggleZoom({ x, y });
+  }
 
-    // Wait for minimum distance
-    if (this.drag.distance > (this.lockAxis ? 6 : 1)) {
-      event.preventDefault();
+  /**
+   * Attach load, wheel and click event listeners, initialize `resizeObserver` and `PointerTracker`
+   */
+  attachEvents() {
+    this.$content.addEventListener("load", this.onLoad);
 
-      event.stopPropagation();
-      event.stopImmediatePropagation();
-      return;
-    }
+    this.$container.addEventListener("wheel", this.onWheel, { passive: false });
+    this.$container.addEventListener("click", this.onClick, { passive: false });
 
-    // Calculate click positon
-    let x = null;
-    let y = null;
+    const updateRate = this.option("updateRate", /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 250 : 24);
 
-    if (event.clientX !== undefined && event.clientY !== undefined) {
-      x = event.clientX - this.$content.getClientRects()[0].left;
-      y = event.clientY - this.$content.getClientRects()[0].top;
-    }
+    this.resizeObserver = new ResizeObserver(() => {
+      if (!this.updateTimer) {
+        this.updateTimer = setTimeout(() => {
+          const rect = this.$container.getBoundingClientRect();
 
-    let hasDoubleClick = this.options.doubleClick;
+          if (!rect.width && !rect.height) {
+            this.updateTimer = null;
+            return;
+          }
 
-    // Check if there is any `doubleClick` event listener
-    if (!hasDoubleClick && this.events.doubleClick && this.events.doubleClick.length) {
-      hasDoubleClick = true;
-    }
+          // Check to see if there are any changes
+          const observe = this.option("observe");
 
-    if (!hasDoubleClick) {
-      if (this.trigger("click", event) === false) {
-        return;
+          let doUpdate = false;
+
+          if (observe.includes("w") && Math.abs(rect.width - this.container.width) > 1) {
+            doUpdate = true;
+          }
+
+          if (observe.includes("h") && Math.abs(rect.height - this.container.height) > 1) {
+            doUpdate = true;
+          }
+
+          if (doUpdate) {
+            this.endAnimation();
+
+            this.updateMetrics();
+
+            this.panTo({
+              x: this.content.x,
+              y: this.content.y,
+              scale: this.option("baseScale"),
+              friction: 0,
+            });
+          }
+
+          this.updateTimer = null;
+        }, updateRate);
       }
+    });
 
-      if (this.option("click") === "toggleZoom") {
-        this.toggleZoom({ x, y });
-      }
+    this.resizeObserver.observe(this.$container);
 
-      return;
-    }
+    const pointerTracker = new PointerTracker(this.$container, {
+      start: (pointer, event) => {
+        if (!this.option("touch")) {
+          return false;
+        }
 
-    if (!this.clickTimer) {
-      this.lastClickEvent = event;
-
-      this.clickTimer = setTimeout(() => {
-        this.clickTimer = null;
-
-        if (this.trigger("click", event) === false) {
+        if (this.velocity.scale < 0) {
           return;
         }
 
-        if (this.option("click") === "toggleZoom") {
-          this.toggleZoom({ x, y });
+        if (!pointerTracker.currentPointers.length) {
+          const ignoreClickedElement =
+            ["BUTTON", "TEXTAREA", "OPTION", "INPUT", "SELECT", "VIDEO"].indexOf(event.target.nodeName) !== -1;
+
+          if (ignoreClickedElement) {
+            return false;
+          }
+
+          // Allow text selection
+          if (this.option("textSelection") && getTextNodeFromPoint(event.target, event.clientX, event.clientY)) {
+            return false;
+          }
+          // Allow scrolling
+          if (isScrollable(event.target)) {
+            return false;
+          }
         }
-      }, this.option("clickDelay"));
+
+        if (this.trigger("touchStart", event) === false) {
+          return false;
+        }
+
+        this.state = "pointerdown";
+
+        this.resetDragPosition();
+
+        this.dragPosition.midPoint = null;
+        this.dragPosition.time = Date.now();
+
+        return true;
+      },
+      move: (previousPointers, currentPointers, event) => {
+        if (this.state !== "pointerdown") {
+          return;
+        }
+
+        if (this.trigger("touchMove", event) == false) {
+          event.preventDefault();
+          return;
+        }
+
+        // Disable touch action if current zoom level is below base level
+        if (
+          currentPointers.length < 2 &&
+          this.transform.scale === this.option("baseScale") &&
+          this.option("panOnlyZoomed") == true
+        ) {
+          return;
+        }
+
+        if (currentPointers.length > 1 && (!this.option("zoom") || this.option("pinchToZoom") === false)) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        const prevMidpoint = getMidpoint(previousPointers[0], previousPointers[1]);
+        const newMidpoint = getMidpoint(currentPointers[0], currentPointers[1]);
+
+        const panX = newMidpoint.clientX - prevMidpoint.clientX;
+        const panY = newMidpoint.clientY - prevMidpoint.clientY;
+
+        const prevDistance = getDistance(previousPointers[0], previousPointers[1]);
+        const newDistance = getDistance(currentPointers[0], currentPointers[1]);
+
+        const scaleDiff = prevDistance ? newDistance / prevDistance : 1;
+
+        this.dragOffset.x += panX;
+        this.dragOffset.y += panY;
+
+        this.dragOffset.scale *= scaleDiff;
+
+        this.dragOffset.time = Date.now() - this.dragPosition.time;
+
+        const axisToLock = this.dragStart.scale === 1 && this.option("lockAxis");
+
+        if (axisToLock && !this.lockAxis) {
+          if (Math.abs(this.dragOffset.x) < 6 && Math.abs(this.dragOffset.y) < 6) {
+            return;
+          }
+
+          if (axisToLock === "xy") {
+            const angle = Math.abs((Math.atan2(this.dragOffset.y, this.dragOffset.x) * 180) / Math.PI);
+
+            this.lockAxis = angle > 45 && angle < 135 ? "y" : "x";
+          } else {
+            this.lockAxis = axisToLock;
+          }
+        }
+
+        if (this.lockAxis) {
+          this.dragOffset[this.lockAxis === "x" ? "y" : "x"] = 0;
+        }
+
+        this.$viewport.classList.add(this.option("draggingClass"));
+
+        if (!(this.transform.scale === this.option("baseScale") && this.lockAxis === "y")) {
+          this.dragPosition.x = this.dragStart.x + this.dragOffset.x;
+        }
+
+        if (!(this.transform.scale === this.option("baseScale") && this.lockAxis === "x")) {
+          this.dragPosition.y = this.dragStart.y + this.dragOffset.y;
+        }
+
+        this.dragPosition.scale = this.dragStart.scale * this.dragOffset.scale;
+
+        if (currentPointers.length > 1) {
+          const startPoint = getMidpoint(pointerTracker.startPointers[0], pointerTracker.startPointers[1]);
+
+          const xPos = startPoint.clientX - this.dragStart.rect.x;
+          const yPos = startPoint.clientY - this.dragStart.rect.y;
+
+          const { deltaX, deltaY } = this.getZoomDelta(this.content.scale * this.dragOffset.scale, xPos, yPos);
+
+          this.dragPosition.x -= deltaX;
+          this.dragPosition.y -= deltaY;
+
+          this.dragPosition.midPoint = newMidpoint;
+        }
+
+        this.setDragResistance();
+
+        // Update final position
+        this.transform = {
+          x: this.dragPosition.x,
+          y: this.dragPosition.y,
+          scale: this.dragPosition.scale,
+        };
+
+        this.startAnimation();
+      },
+      end: (pointer, event) => {
+        if (this.state !== "pointerdown") {
+          return;
+        }
+
+        this._dragOffset = { ...this.dragOffset };
+
+        if (pointerTracker.currentPointers.length) {
+          this.resetDragPosition();
+
+          return;
+        }
+
+        this.state = "decel";
+        this.friction = this.option("decelFriction");
+
+        this.recalculateTransform();
+
+        this.$viewport.classList.remove(this.option("draggingClass"));
+
+        if (this.trigger("touchEnd", event) === false) {
+          return;
+        }
+
+        if (this.state !== "decel") {
+          return;
+        }
+
+        // * Check if scaled content past limits
+
+        // Below minimum
+        const minScale = this.option("minScale");
+
+        if (this.transform.scale < minScale) {
+          this.zoomTo(minScale, { friction: 0.64 });
+
+          return;
+        }
+
+        // Exceed maximum
+        const maxScale = this.option("maxScale");
+
+        if (this.transform.scale - maxScale > 0.01) {
+          const last = this.dragPosition.midPoint || pointer;
+          const rect = this.$content.getClientRects()[0];
+
+          this.zoomTo(maxScale, {
+            friction: 0.64,
+            x: last.clientX - rect.left,
+            y: last.clientY - rect.top,
+          });
+
+          return;
+        }
+      },
+    });
+
+    this.pointerTracker = pointerTracker;
+  }
+
+  /**
+   * Restore drag related variables to default values
+   */
+  resetDragPosition() {
+    this.lockAxis = null;
+    this.friction = this.option("friction");
+
+    this.velocity = {
+      x: 0,
+      y: 0,
+      scale: 0,
+    };
+
+    const { x, y, scale } = this.content;
+
+    this.dragStart = {
+      rect: this.$content.getBoundingClientRect(),
+      x,
+      y,
+      scale,
+    };
+
+    this.dragPosition = {
+      ...this.dragPosition,
+      x,
+      y,
+      scale,
+    };
+
+    this.dragOffset = {
+      x: 0,
+      y: 0,
+      scale: 1,
+      time: 0,
+    };
+  }
+
+  /**
+   * Trigger update events before/after resizing content and viewport
+   */
+  updateMetrics(silently) {
+    if (silently !== true) {
+      this.trigger("beforeUpdate");
+    }
+
+    const $container = this.$container;
+    const $content = this.$content;
+    const $viewport = this.$viewport;
+
+    const shouldResizeParent = this.option("resizeParent", $viewport !== $container);
+
+    let origWidth = getFullWidth(this.$content);
+    let origHeight = getFullHeight(this.$content);
+
+    Object.assign($content.style, {
+      width: "",
+      height: "",
+      maxWidth: "",
+      maxHeight: "",
+    });
+
+    if (shouldResizeParent) {
+      Object.assign($viewport.style, { width: "", height: "" });
+    }
+
+    const contentIsImage = this.$content instanceof HTMLImageElement;
+    const contentIsZoomable = this.option("zoom");
+
+    const ratio = this.option("ratio");
+
+    origWidth = round(origWidth * ratio);
+    origHeight = round(origHeight * ratio);
+
+    let width = origWidth;
+    let height = origHeight;
+
+    const contentRect = $content.getBoundingClientRect();
+    const viewportRect = $viewport.getBoundingClientRect();
+
+    const containerRect = $viewport == $container ? viewportRect : $container.getBoundingClientRect();
+
+    this.viewport = { ...this.viewport, width: viewportRect.width, height: viewportRect.height };
+
+    var styles = window.getComputedStyle($viewport);
+
+    this.viewport.width -= parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+    this.viewport.height -= parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+
+    if (contentIsZoomable) {
+      if (Math.abs(origWidth - contentRect.width) > 0.1 || Math.abs(origHeight - contentRect.height) > 0.1) {
+        const rez = calculateAspectRatioFit(
+          origWidth,
+          origHeight,
+          Math.min(origWidth, contentRect.width),
+          Math.min(origHeight, contentRect.height)
+        );
+
+        width = round(rez.width);
+        height = round(rez.height);
+      }
+
+      Object.assign($content.style, {
+        width: `${width}px`,
+        height: `${height}px`,
+        transform: "",
+      });
+    }
+
+    if (shouldResizeParent) {
+      Object.assign($viewport.style, { width: `${width}px`, height: `${height}px` });
+
+      this.viewport = { ...this.viewport, width, height };
+    }
+
+    if (contentIsImage && contentIsZoomable && typeof this.options.maxScale !== "function") {
+      const maxScale = this.option("maxScale");
+
+      this.options.maxScale = function () {
+        return this.content.origWidth > 0 && this.content.fitWidth > 0
+          ? this.content.origWidth / this.content.fitWidth
+          : maxScale;
+      };
+    }
+
+    this.content = {
+      ...this.content,
+      origWidth,
+      origHeight,
+      fitWidth: width,
+      fitHeight: height,
+      width,
+      height,
+      scale: 1,
+      isZoomable: contentIsZoomable,
+    };
+
+    this.container = { width: containerRect.width, height: containerRect.height };
+
+    if (silently !== true) {
+      this.trigger("afterUpdate");
+    }
+  }
+
+  /**
+   * Increase zoom level
+   * @param {Number} [step] Zoom ratio; `0.5` would increase scale from 1 to 1.5
+   */
+  zoomIn(step) {
+    this.zoomTo(this.content.scale + (step || this.option("step")));
+  }
+
+  /**
+   * Decrease zoom level
+   * @param {Number} [step] Zoom ratio; `0.5` would decrease scale from 1.5 to 1
+   */
+  zoomOut(step) {
+    this.zoomTo(this.content.scale - (step || this.option("step")));
+  }
+
+  /**
+   * Toggles zoom level between max and base levels
+   * @param {Object} [options] Additional options
+   */
+  toggleZoom(props = {}) {
+    const maxScale = this.option("maxScale");
+    const baseScale = this.option("baseScale");
+
+    const scale = this.content.scale > baseScale + (maxScale - baseScale) * 0.5 ? baseScale : maxScale;
+
+    this.zoomTo(scale, props);
+  }
+
+  /**
+   * Animate to given zoom level
+   * @param {Number} scale New zoom level
+   * @param {Object} [options] Additional options
+   */
+  zoomTo(scale = this.option("baseScale"), { x = null, y = null } = {}) {
+    scale = Math.max(Math.min(scale, this.option("maxScale")), this.option("minScale"));
+
+    // Adjust zoom position
+    const currentScale = round(this.content.scale / (this.content.width / this.content.fitWidth), 10000000);
+
+    if (x === null) {
+      x = this.content.width * currentScale * 0.5;
+    }
+
+    if (y === null) {
+      y = this.content.height * currentScale * 0.5;
+    }
+
+    const { deltaX, deltaY } = this.getZoomDelta(scale, x, y);
+
+    x = this.content.x - deltaX;
+    y = this.content.y - deltaY;
+
+    this.panTo({ x, y, scale, friction: this.option("zoomFriction") });
+  }
+
+  /**
+   * Calculate difference for top/left values if content would scale at given coordinates
+   * @param {Number} scale
+   * @param {Number} x
+   * @param {Number} y
+   * @returns {Object}
+   */
+  getZoomDelta(scale, x = 0, y = 0) {
+    const currentWidth = this.content.fitWidth * this.content.scale;
+    const currentHeight = this.content.fitHeight * this.content.scale;
+
+    const percentXInCurrentBox = x > 0 && currentWidth ? x / currentWidth : 0;
+    const percentYInCurrentBox = y > 0 && currentHeight ? y / currentHeight : 0;
+
+    const nextWidth = this.content.fitWidth * scale;
+    const nextHeight = this.content.fitHeight * scale;
+
+    const deltaX = (nextWidth - currentWidth) * percentXInCurrentBox;
+    const deltaY = (nextHeight - currentHeight) * percentYInCurrentBox;
+
+    return { deltaX, deltaY };
+  }
+
+  /**
+   * Animate to given positon and/or zoom level
+   * @param {Object} [options] Additional options
+   */
+  panTo({
+    x = this.content.x,
+    y = this.content.y,
+    scale,
+    friction = this.option("friction"),
+    ignoreBounds = false,
+  } = {}) {
+    scale = scale || this.content.scale || 1;
+
+    if (!ignoreBounds) {
+      const { boundX, boundY } = this.getBounds(scale);
+
+      if (boundX) {
+        x = Math.max(Math.min(x, boundX.to), boundX.from);
+      }
+
+      if (boundY) {
+        y = Math.max(Math.min(y, boundY.to), boundY.from);
+      }
+    }
+
+    this.friction = friction;
+
+    this.transform = {
+      x,
+      y,
+      scale,
+    };
+
+    if (friction) {
+      this.state = "panning";
+
+      this.velocity = {
+        x: (1 / this.friction - 1) * (x - this.content.x),
+        y: (1 / this.friction - 1) * (y - this.content.y),
+        scale: (1 / this.friction - 1) * (scale - this.content.scale),
+      };
+
+      this.startAnimation();
+    } else {
+      this.endAnimation();
+    }
+  }
+
+  /**
+   * Start animation loop
+   */
+  startAnimation() {
+    if (!this.rAF) {
+      this.trigger("startAnimation");
+    } else {
+      cancelAnimationFrame(this.rAF);
+    }
+
+    this.rAF = requestAnimationFrame(() => this.animate());
+  }
+
+  /**
+   * Process animation frame
+   */
+  animate() {
+    this.setEdgeForce();
+    this.setDragForce();
+
+    this.velocity.x *= this.friction;
+    this.velocity.y *= this.friction;
+
+    this.velocity.scale *= this.friction;
+
+    this.content.x += this.velocity.x;
+    this.content.y += this.velocity.y;
+
+    this.content.scale += this.velocity.scale;
+
+    if (this.isAnimating()) {
+      this.setTransform();
+    } else if (this.state !== "pointerdown") {
+      this.endAnimation();
+
+      this.trigger("endAnimation");
 
       return;
     }
 
-    if (this.getDistance([event, this.lastClickEvent]) >= 6) {
+    this.rAF = requestAnimationFrame(() => this.animate());
+  }
+
+  /**
+   * Calculate boundaries
+   */
+  getBounds(scale) {
+    let boundX = this.boundX;
+    let boundY = this.boundY;
+
+    if (boundX !== undefined && boundY !== undefined) {
+      return { boundX, boundY };
+    }
+
+    boundX = { from: 0, to: 0 };
+    boundY = { from: 0, to: 0 };
+
+    scale = scale || this.transform.scale;
+
+    const fitWidth = this.content.fitWidth;
+    const fitHeight = this.content.fitHeight;
+
+    const width = fitWidth * scale;
+    const height = fitHeight * scale;
+
+    const viewportWidth = this.viewport.width;
+    const viewportHeight = this.viewport.height;
+
+    if (fitWidth <= viewportWidth) {
+      const deltaX1 = (viewportWidth - width) * 0.5;
+      const deltaX2 = (width - fitWidth) * 0.5;
+
+      boundX.from = round(deltaX1 - deltaX2);
+      boundX.to = round(deltaX1 + deltaX2);
+    } else {
+      boundX.from = round(viewportWidth - width);
+    }
+
+    if (fitHeight <= viewportHeight) {
+      const deltaY1 = (viewportHeight - height) * 0.5;
+      const deltaY2 = (height - fitHeight) * 0.5;
+
+      boundY.from = round(deltaY1 - deltaY2);
+      boundY.to = round(deltaY1 + deltaY2);
+    } else {
+      boundY.from = round(viewportHeight - width);
+    }
+
+    return { boundX, boundY };
+  }
+
+  /**
+   * Change animation velocity if boundary is reached
+   */
+  setEdgeForce() {
+    if (this.state !== "decel") {
       return;
     }
 
-    clearTimeout(this.clickTimer);
-    this.clickTimer = null;
+    const bounceForce = this.option("bounceForce");
 
-    if (this.trigger("doubleClick", event) === false) {
+    const { boundX, boundY } = this.getBounds(Math.max(this.transform.scale, this.content.scale));
+
+    let pastLeft, pastRight, pastTop, pastBottom;
+
+    if (boundX) {
+      pastLeft = this.content.x < boundX.from;
+      pastRight = this.content.x > boundX.to;
+    }
+
+    if (boundY) {
+      pastTop = this.content.y < boundY.from;
+      pastBottom = this.content.y > boundY.to;
+    }
+
+    if (pastLeft || pastRight) {
+      const bound = pastLeft ? boundX.from : boundX.to;
+      const distance = bound - this.content.x;
+
+      let force = distance * bounceForce;
+
+      const restX = this.content.x + (this.velocity.x + force) / this.friction;
+
+      if (restX >= boundX.from && restX <= boundX.to) {
+        force += this.velocity.x;
+      }
+
+      this.velocity.x = force;
+
+      this.recalculateTransform();
+    }
+
+    if (pastTop || pastBottom) {
+      const bound = pastTop ? boundY.from : boundY.to;
+      const distance = bound - this.content.y;
+
+      let force = distance * bounceForce;
+
+      const restY = this.content.y + (force + this.velocity.y) / this.friction;
+
+      if (restY >= boundY.from && restY <= boundY.to) {
+        force += this.velocity.y;
+      }
+
+      this.velocity.y = force;
+
+      this.recalculateTransform();
+    }
+  }
+
+  /**
+   * Change dragging position if boundary is reached
+   */
+  setDragResistance() {
+    if (this.state !== "pointerdown") {
       return;
     }
 
-    if (this.option("doubleClick") === "toggleZoom") {
-      this.toggleZoom({ x, y });
+    const { boundX, boundY } = this.getBounds(this.dragPosition.scale);
+
+    let pastLeft, pastRight, pastTop, pastBottom;
+
+    if (boundX) {
+      pastLeft = this.dragPosition.x < boundX.from;
+      pastRight = this.dragPosition.x > boundX.to;
+    }
+
+    if (boundY) {
+      pastTop = this.dragPosition.y < boundY.from;
+      pastBottom = this.dragPosition.y > boundY.to;
+    }
+
+    if ((pastLeft || pastRight) && !(pastLeft && pastRight)) {
+      const bound = pastLeft ? boundX.from : boundX.to;
+      const distance = bound - this.dragPosition.x;
+
+      this.dragPosition.x = bound - distance * 0.3;
+    }
+
+    if ((pastTop || pastBottom) && !(pastTop && pastBottom)) {
+      const bound = pastTop ? boundY.from : boundY.to;
+      const distance = bound - this.dragPosition.y;
+
+      this.dragPosition.y = bound - distance * 0.3;
+    }
+  }
+
+  /**
+   * Set velocity to move content to drag position
+   */
+  setDragForce() {
+    if (this.state === "pointerdown") {
+      this.velocity.x = this.dragPosition.x - this.content.x;
+      this.velocity.y = this.dragPosition.y - this.content.y;
+      this.velocity.scale = this.dragPosition.scale - this.content.scale;
+    }
+  }
+
+  /**
+   * Update end values based on current velocity and friction;
+   */
+  recalculateTransform() {
+    this.transform.x = this.content.x + this.velocity.x / (1 / this.friction - 1);
+    this.transform.y = this.content.y + this.velocity.y / (1 / this.friction - 1);
+    this.transform.scale = this.content.scale + this.velocity.scale / (1 / this.friction - 1);
+  }
+
+  /**
+   * Check if content is currently animating
+   * @returns {Boolean}
+   */
+  isAnimating() {
+    return !!(
+      this.friction &&
+      (Math.abs(this.velocity.x) > 0.05 || Math.abs(this.velocity.y) > 0.05 || Math.abs(this.velocity.scale) > 0.05)
+    );
+  }
+
+  /**
+   * Set content `style.transform` value based on current animation frame
+   */
+  setTransform(final) {
+    let x, y, scale;
+
+    if (final) {
+      x = round(this.transform.x);
+      y = round(this.transform.y);
+
+      scale = this.transform.scale;
+
+      this.content = { ...this.content, x, y, scale };
+    } else {
+      x = round(this.content.x);
+      y = round(this.content.y);
+
+      scale = this.content.scale / (this.content.width / this.content.fitWidth);
+
+      this.content = { ...this.content, x, y };
+    }
+
+    this.trigger("beforeTransform");
+
+    x = round(this.content.x);
+    y = round(this.content.y);
+
+    if (final && this.option("zoom")) {
+      let width;
+      let height;
+
+      width = round(this.content.fitWidth * scale);
+      height = round(this.content.fitHeight * scale);
+
+      this.content.width = width;
+      this.content.height = height;
+
+      this.transform = { ...this.transform, width, height, scale };
+
+      Object.assign(this.$content.style, {
+        width: `${width}px`,
+        height: `${height}px`,
+        maxWidth: "none",
+        maxHeight: "none",
+        transform: `translate3d(${x}px, ${y}px, 0) scale(1)`,
+      });
+    } else {
+      this.$content.style.transform = `translate3d(${x}px, ${y}px, 0) scale(${scale})`;
+    }
+
+    this.trigger("afterTransform");
+  }
+
+  /**
+   * Stop animation loop
+   */
+  endAnimation() {
+    cancelAnimationFrame(this.rAF);
+    this.rAF = null;
+
+    this.velocity = {
+      x: 0,
+      y: 0,
+      scale: 0,
+    };
+
+    this.setTransform(true);
+
+    this.state = "ready";
+
+    this.handleCursor();
+  }
+
+  /**
+   * Update the class name depending on whether the content is scaled
+   */
+  handleCursor() {
+    const draggableClass = this.option("draggableClass");
+
+    if (!draggableClass || !this.option("touch")) {
+      return;
+    }
+
+    if (
+      this.content.width <= this.content.fitWidth &&
+      this.transform.scale <= this.option("baseScale") &&
+      this.option("panOnlyZoomed") == true
+    ) {
+      this.$viewport.classList.remove(draggableClass);
+    } else {
+      this.$viewport.classList.add(draggableClass);
+    }
+  }
+
+  /**
+   * Remove observation and detach event listeners
+   */
+  detachEvents() {
+    this.$content.removeEventListener("load", this.onLoad);
+
+    this.$container.removeEventListener("wheel", this.onWheel, { passive: false });
+    this.$container.removeEventListener("click", this.onClick, { passive: false });
+
+    if (this.pointerTracker) {
+      this.pointerTracker.stop();
+      this.pointerTracker = null;
+    }
+
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+      this.resizeObserver = null;
     }
   }
 
@@ -1459,34 +1197,17 @@ export class Panzoom extends Base {
 
     this.state = "destroy";
 
-    this.$viewport.classList.remove("not-selectable");
+    clearTimeout(this.updateTimer);
+    this.updateTimer = null;
 
-    if (this.$content instanceof HTMLImageElement && !this.$content.complete) {
-      this.$content.onload = null;
-      this.$content.onerror = null;
-    }
-
-    if (this.pendingAnimateUpdate) {
-      cancelAnimationFrame(this.pendingAnimateUpdate);
-      this.pendingAnimateUpdate = null;
-    }
-
-    if (this.clickTimer) {
-      clearTimeout(this.clickTimer);
-      this.clickTimer = null;
-    }
+    cancelAnimationFrame(this.rAF);
+    this.rAF = null;
 
     this.detachEvents();
 
-    this.pointers = [];
+    this.detachPlugins();
 
-    this.resetValues();
-
-    this.$viewport = null;
-    this.$content = null;
-
-    this.options = {};
-    this.events = {};
+    this.resetDragPosition();
   }
 }
 

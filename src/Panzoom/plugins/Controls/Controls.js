@@ -53,7 +53,7 @@ class Controls {
    * Create container with default buttons
    */
   createContainer() {
-    if (this.$container) {
+    if (this.$container || !this.panzoom.option("zoom")) {
       return;
     }
 
@@ -61,7 +61,7 @@ class Controls {
 
     $container.classList.add("panzoom__controls");
 
-    this.$container = this.panzoom.$viewport.appendChild($container);
+    this.$container = this.panzoom.$container.appendChild($container);
 
     for (const button of this.panzoom.option("Controls.buttons", [])) {
       this.addButton(button, true);

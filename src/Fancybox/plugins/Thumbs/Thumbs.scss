@@ -3,14 +3,14 @@
   position: relative;
   padding: $fancybox-thumbs-padding;
 
-  .fancybox__container.is-animated[aria-hidden="true"] & {
-    transition: unset;
-    opacity: 0;
-  }
+  opacity: var(--fancybox-opacity, 1);
 
   .fancybox__container.is-animated[aria-hidden="false"] & {
-    transition: opacity var(--fancybox-ts, 0.25s) ease-in;
-    opacity: var(--fancybox-opacity, 1);
+    animation: 0.15s ease-in backwards fancybox-fadeIn;
+  }
+
+  .fancybox__container.is-animated.is-closing & {
+    opacity: 0;
   }
 
   & .carousel__slide {
@@ -31,14 +31,24 @@
     cursor: pointer;
 
     @if ($fancybox-thumbs-selected-border != false) {
-      &.is-nav-selected::after {
+      & .fancybox__thumb::after {
         content: "";
         position: absolute;
         top: 0;
-        left: 3px;
-        right: 3px;
-        bottom: 3px;
-        border-bottom: 3px solid currentColor;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        border: 5px solid $fancybox-accent-color;
+        opacity: 0;
+        transition: opacity 0.15s ease;
+
+        @if ($fancybox-thumbs-border-radius != false) {
+          border-radius: $fancybox-thumbs-border-radius;
+        }
+      }
+
+      &.is-nav-selected .fancybox__thumb::after {
+        opacity: 0.92;
       }
     }
 

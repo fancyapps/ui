@@ -3,11 +3,6 @@ import { extend } from "../../../shared/utils/extend.js";
 import { Panzoom } from "../../../Panzoom/Panzoom.js";
 
 const defaults = {
-  // Options for Panzoom instance
-  Panzoom: {
-    maxScale: 1,
-  },
-
   // Class name for slide element indicating that content can be zoomed in
   canZoomInClass: "can-zoom_in",
 
@@ -21,10 +16,13 @@ const defaults = {
   zoomOpacity: "auto", // "auto" | true | false,
 
   // Zoom animation friction
-  zoomFriction: 0.8,
+  zoomFriction: 0.82,
 
   // Disable zoom animation if thumbnail is visible only partly
   ignoreCoveredThumbnail: false,
+
+  // Enable guestures
+  touch: true,
 
   // Action to be performed when user clicks on the image
   click: "toggleZoom", // "toggleZoom" | "next" | "close" | null
@@ -37,35 +35,14 @@ const defaults = {
 
   // How image should be resized to fit its container
   fit: "contain", // "contain" | "contain-w" | "cover"
-};
 
-/**
- * Helper method to get actual image dimensions respecting original aspect ratio,
- * this helps to normalise differences across browsers
- * @param {Object} img
- */
-const getImgSizeInfo = function (img) {
-  const width = img.naturalWidth,
-    height = img.naturalHeight,
-    cWidth = img.width,
-    cHeight = img.height,
-    oRatio = width / height,
-    cRatio = cWidth / cHeight,
-    rez = {
-      width: cWidth,
-      height: cHeight,
-    };
+  // Should create wrapping element around the image
+  wrap: false,
 
-  if (oRatio > cRatio) {
-    rez.height = cWidth / oRatio;
-  } else {
-    rez.width = cHeight * oRatio;
-  }
-
-  rez.left = (cWidth - rez.width) * 0.5;
-  rez.right = width + rez.left;
-
-  return rez;
+  // Custom Panzoom options
+  Panzoom: {
+    ratio: 1,
+  },
 };
 
 export class Image {
@@ -76,12 +53,12 @@ export class Image {
       // Fancybox
       "onReady",
       "onClosing",
+      "onDone",
 
       // Fancybox.Carousel
       "onPageChange",
       "onCreateSlide",
       "onRemoveSlide",
-      "onRefresh",
 
       // Image load/error
       "onImageStatusChange",
@@ -92,22 +69,55 @@ export class Image {
     this.events = {
       ready: this.onReady,
       closing: this.onClosing,
+      done: this.onDone,
 
       "Carousel.change": this.onPageChange,
       "Carousel.createSlide": this.onCreateSlide,
-      "Carousel.deleteSlide": this.onRemoveSlide,
-      "Carousel.Panzoom.updateMetrics": this.onRefresh,
+      "Carousel.removeSlide": this.onRemoveSlide,
     };
   }
 
   /**
-   * Process `ready` event to start zoom-in animation if needed
+   * Handle `ready` event to start loading content
    */
   onReady() {
-    const slide = this.fancybox.getSlide();
+    this.fancybox.Carousel.slides.forEach((slide) => {
+      if (slide.$el) {
+        this.setContent(slide);
+      }
+    });
+  }
 
-    if (slide.state === "ready") {
-      this.revealContent(slide);
+  /**
+   * Handle `done` event to update cursor
+   * @param {Object} fancybox
+   * @param {Object} slide
+   */
+  onDone(fancybox, slide) {
+    this.handleCursor(slide);
+  }
+
+  /**
+   * Handle `closing` event to clean up all slides and to start zoom-out animation
+   * @param {Object} fancybox
+   */
+  onClosing(fancybox) {
+    clearTimeout(this.clickTimer);
+
+    // Remove events
+    fancybox.Carousel.slides.forEach((slide) => {
+      if (slide.$image) {
+        slide.state = "destroy";
+      }
+
+      if (slide.Panzoom) {
+        slide.Panzoom.detachEvents();
+      }
+    });
+
+    // If possible, start the zoom animation, it will interrupt the default closing process
+    if (this.fancybox.state === "closing" && this.canZoom(fancybox.getSlide())) {
+      this.zoomOut();
     }
   }
 
@@ -118,8 +128,46 @@ export class Image {
    * @param {Object} slide
    */
   onCreateSlide(fancybox, carousel, slide) {
+    if (this.fancybox.state !== "ready") {
+      return;
+    }
+
+    this.setContent(slide);
+  }
+
+  /**
+   * Handle `Carousel.removeSlide` event to do clean up the slide
+   * @param {Object} fancybox
+   * @param {Object} carousel
+   * @param {Object} slide
+   */
+  onRemoveSlide(fancybox, carousel, slide) {
+    if (slide.$image) {
+      slide.$el.classList.remove(fancybox.option("Image.canZoomInClass"));
+
+      slide.$image.remove();
+      slide.$image = null;
+    }
+
+    if (slide.Panzoom) {
+      slide.Panzoom.destroy();
+      slide.Panzoom = null;
+    }
+
+    delete slide.$el.dataset.imageFit;
+  }
+
+  /**
+   * Build DOM elements and add event listeners
+   * @param {Object} slide
+   */
+  setContent(slide) {
     // Check if this slide should contain an image
     if (slide.isDom || slide.html || (slide.type && slide.type !== "image")) {
+      return;
+    }
+
+    if (slide.$image) {
       return;
     }
 
@@ -134,8 +182,15 @@ export class Image {
     // Image element
     const $image = document.createElement("img");
 
-    $image.onload = () => this.onImageStatusChange(slide);
-    $image.onerror = () => this.onImageStatusChange(slide);
+    $image.addEventListener("load", (event) => {
+      event.stopImmediatePropagation();
+
+      this.onImageStatusChange(slide);
+    });
+
+    $image.addEventListener("error", () => {
+      this.onImageStatusChange(slide);
+    });
 
     $image.src = slide.src;
     $image.alt = "";
@@ -153,27 +208,64 @@ export class Image {
 
     slide.$image = $image;
 
-    $content.appendChild($image);
+    const shouldWrap = this.fancybox.option("Image.wrap");
+
+    if (shouldWrap) {
+      const $wrap = document.createElement("div");
+      $wrap.classList.add(typeof shouldWrap === "string" ? shouldWrap : "fancybox__image-wrap");
+
+      $wrap.appendChild($image);
+
+      $content.appendChild($wrap);
+
+      slide.$wrap = $wrap;
+    } else {
+      $content.appendChild($image);
+    }
 
     // Set data attribute if other that default
     // for example, set `[data-image-fit="contain-w"]`
     slide.$el.dataset.imageFit = this.fancybox.option("Image.fit");
-
-    slide.$el.style.display = "none";
-    slide.$el.offsetHeight; // no need to store this anywhere, the reference is enough
-    slide.$el.style.display = "";
 
     // Append content
     this.fancybox.setContent(slide, $content);
 
     // Display loading icon
     if ($image.complete || $image.error) {
-      $image.onload = $image.onerror = null;
-
       this.onImageStatusChange(slide);
-    } else if (!$image.complete) {
+    } else {
       this.fancybox.showLoading(slide);
     }
+  }
+
+  /**
+   * Handle image state change, display error or start revealing image
+   * @param {Object} slide
+   */
+  onImageStatusChange(slide) {
+    const $image = slide.$image;
+
+    if (!$image || slide.state !== "loading") {
+      return;
+    }
+
+    if (!($image.complete && $image.naturalWidth && $image.naturalHeight)) {
+      this.fancybox.setError(slide, "{{IMAGE_ERROR}}");
+
+      return;
+    }
+
+    this.fancybox.hideLoading(slide);
+
+    if (this.fancybox.option("Image.fit") === "contain") {
+      this.initSlidePanzoom(slide);
+    }
+
+    // Add `wheel` and `click` event handler
+    slide.$el.addEventListener("wheel", (event) => this.onWheel(slide, event), { passive: false });
+    slide.$content.addEventListener("click", (event) => this.onClick(slide, event), { passive: false });
+
+    this.revealContent(slide);
   }
 
   /**
@@ -188,112 +280,45 @@ export class Image {
     //* Initialize Panzoom
     slide.Panzoom = new Panzoom(
       slide.$el,
-      extend(true, this.fancybox.option("Image.Panzoom"), {
+      extend(true, this.fancybox.option("Image.Panzoom", {}), {
+        viewport: slide.$wrap,
         content: slide.$image,
+
+        // Allow to select caption text
+        textSelection: true,
+
+        // Toggle gestures
+        touch: this.fancybox.option("Image.touch"),
 
         // This will prevent click conflict with fancybox main carousel
         panOnlyZoomed: true,
 
-        // Disable default click/wheel events; custom callbacks will replace them
-        click: null,
-        doubleClick: null,
-        wheel: null,
-
-        on: {
-          afterAnimate: (panzoom) => {
-            if (slide.state === "zoomIn") {
-              panzoom.attachEvents();
-
-              this.fancybox.done(slide);
-            }
-
-            this.handleCursor(slide);
-          },
-          updateMetrics: () => {
-            this.handleCursor(slide);
-          },
-          touchMove: () => {
-            // Prevent any dragging if fancybox main carousel is dragged up/down
-            // (e.g. if close guesture is detected)
-            if (this.fancybox.Carousel.Panzoom.lockAxis) {
-              return false;
-            }
-          },
-        },
+        // Disable default click / wheel events as custom event listeners will replace them,
+        // because click and wheel events should work without Panzoom
+        click: false,
+        wheel: false,
       })
     );
 
-    // Add `wheel` event handler
-    if (this.fancybox.option("Image.wheel")) {
-      slide.Panzoom.on("wheel", (panzoom, event) => this.onWheel(panzoom, event));
-    }
+    slide.Panzoom.on("startAnimation", () => {
+      this.fancybox.trigger("Image.startAnimation", slide);
+    });
 
-    // Add `click` event handler
-    if (this.fancybox.option("Image.click")) {
-      slide.Panzoom.on("click", (panzoom, event) => this.onClick(panzoom, event));
-    }
+    slide.Panzoom.on("endAnimation", () => {
+      if (slide.state === "zoomIn") {
+        this.fancybox.done(slide);
+      }
 
-    // Handle double click event to zoom in/out
-    if (this.fancybox.option("Image.doubleClick") === "toggleZoom") {
-      slide.Panzoom.on("doubleClick", (panzoom, event) => {
-        if (!event.target.closest(".fancybox__content")) {
-          return;
-        }
+      this.handleCursor(slide);
 
-        event.preventDefault();
-        event.stopPropagation();
+      this.fancybox.trigger("Image.endAnimation", slide);
+    });
 
-        const x = event.clientX - panzoom.$content.getClientRects()[0].left;
-        const y = event.clientY - panzoom.$content.getClientRects()[0].top;
+    slide.Panzoom.on("afterUpdate", () => {
+      this.handleCursor(slide);
 
-        panzoom.toggleZoom({ x, y });
-      });
-    }
-  }
-
-  /**
-   * Handle image state change
-   * @param {Object} slide
-   */
-  onImageStatusChange(slide) {
-    this.fancybox.hideLoading(slide);
-
-    const $image = slide.$image;
-
-    if (!($image.complete && $image.width && $image.height)) {
-      this.fancybox.setError(slide, "{{IMAGE_ERROR}}");
-
-      return;
-    }
-
-    slide.state = "ready";
-
-    this.updateDimensions(slide);
-
-    this.initSlidePanzoom(slide);
-
-    this.revealContent(slide);
-  }
-
-  /**
-   * Update image wrapper width to match image width,
-   * this will allow to display elements like close button over the image
-   * if image is resized smaller
-   * @param {Object} slide
-   */
-  updateDimensions(slide) {
-    if (slide.$el.dataset.imageFit !== "cover") {
-      const $image = slide.$image;
-      const $content = slide.$content;
-
-      $content.style.maxWidth = "";
-
-      const borderWidth = $image.offsetWidth - $image.clientWidth;
-
-      $content.style.maxWidth = `${getImgSizeInfo($image).width + borderWidth}px`;
-    }
-
-    this.handleCursor(slide);
+      this.fancybox.trigger("Image.afterUpdate", slide);
+    });
   }
 
   /**
@@ -301,8 +326,6 @@ export class Image {
    * @param {Object} slide
    */
   revealContent(slide) {
-    this.updateDimensions(slide);
-
     // Animate only on first run
     if (
       this.fancybox.Carousel.prevPage === null &&
@@ -316,45 +339,6 @@ export class Image {
   }
 
   /**
-   * Determine if it is possible to do zoom-in animation
-   */
-  canZoom(slide) {
-    const fancybox = this.fancybox,
-      $container = fancybox.$container;
-
-    let rez = false;
-
-    if (!fancybox.option("Image.zoom")) {
-      return rez;
-    }
-
-    const $thumb = slide.$thumb;
-
-    if (!$thumb || slide.state === "loading") {
-      return rez;
-    }
-
-    // * Check if thumbnail image is really visible
-    $container.style.pointerEvents = "none";
-
-    const rect = $thumb.getBoundingClientRect();
-
-    // Check if thumbnail image is actually visible on the screen
-    if (this.fancybox.option("Image.ignoreCoveredThumbnail")) {
-      const visibleTopLeft = document.elementFromPoint(rect.left + 1, rect.top + 1) === $thumb;
-      const visibleBottomRight = document.elementFromPoint(rect.right - 1, rect.bottom - 1) === $thumb;
-
-      rez = visibleTopLeft && visibleBottomRight;
-    } else {
-      rez = document.elementFromPoint(rect.left + rect.width * 0.5, rect.top + rect.height * 0.5) === $thumb;
-    }
-
-    $container.style.pointerEvents = "";
-
-    return rez;
-  }
-
-  /**
    * Get zoom info for selected slide
    * @param {Object} slide
    */
@@ -363,12 +347,13 @@ export class Image {
       thumbRect = $thumb.getBoundingClientRect(),
       thumbWidth = thumbRect.width,
       thumbHeight = thumbRect.height,
+      //
       contentRect = slide.$content.getBoundingClientRect(),
-      contentDim = getImgSizeInfo(slide.$image),
-      contentWidth = contentDim.width,
-      contentHeight = contentDim.height,
-      shiftedTop = contentRect.top + contentHeight * 0.5 - (thumbRect.top + thumbHeight * 0.5),
-      shiftedLeft = contentRect.left + contentWidth * 0.5 - (thumbRect.left + thumbWidth * 0.5);
+      contentWidth = contentRect.width,
+      contentHeight = contentRect.height,
+      //
+      shiftedTop = contentRect.top - thumbRect.top,
+      shiftedLeft = contentRect.left - thumbRect.left;
 
     // Check if need to update opacity
     let opacity = this.fancybox.option("Image.zoomOpacity");
@@ -384,28 +369,61 @@ export class Image {
       opacity: opacity,
     };
   }
+
+  /**
+   * Determine if it is possible to do zoom-in animation
+   */
+  canZoom(slide) {
+    const fancybox = this.fancybox,
+      $container = fancybox.$container;
+
+    if (window.visualViewport && window.visualViewport.scale !== 1) {
+      return false;
+    }
+
+    if (!fancybox.option("Image.zoom") || fancybox.option("Image.fit") !== "contain") {
+      return false;
+    }
+
+    const $thumb = slide.$thumb;
+
+    if (!$thumb || slide.state === "loading") {
+      return false;
+    }
+
+    // * Check if thumbnail image is really visible
+    $container.classList.add("fancybox__no-click");
+
+    const rect = $thumb.getBoundingClientRect();
+
+    let rez;
+
+    // Check if thumbnail image is actually visible on the screen
+    if (this.fancybox.option("Image.ignoreCoveredThumbnail")) {
+      const visibleTopLeft = document.elementFromPoint(rect.left + 1, rect.top + 1) === $thumb;
+      const visibleBottomRight = document.elementFromPoint(rect.right - 1, rect.bottom - 1) === $thumb;
+
+      rez = visibleTopLeft && visibleBottomRight;
+    } else {
+      rez = document.elementFromPoint(rect.left + rect.width * 0.5, rect.top + rect.height * 0.5) === $thumb;
+    }
+
+    $container.classList.remove("fancybox__no-click");
+
+    return rez;
+  }
+
   /**
    * Perform zoom-in animation
    */
   zoomIn() {
-    const fancybox = this.fancybox;
-
-    // Skip if initialization of main carousel is not yet complete
-    // as it will give incorrect element position calculations
-    // (and animation will later start in `onReady` event handler)
-    if (fancybox.Carousel.state === "init") {
-      return;
-    }
-
-    const slide = fancybox.getSlide(),
+    const fancybox = this.fancybox,
+      slide = fancybox.getSlide(),
       Panzoom = slide.Panzoom;
 
     const { top, left, scale, opacity } = this.getZoomInfo(slide);
 
     slide.state = "zoomIn";
-
-    // Disable event listeners while animation runs
-    Panzoom.detachEvents();
 
     fancybox.trigger("reveal", slide);
 
@@ -423,7 +441,7 @@ export class Image {
     if (opacity === true) {
       Panzoom.on("afterTransform", (panzoom) => {
         if (slide.state === "zoomIn" || slide.state === "zoomOut") {
-          panzoom.$content.style.opacity = Math.min(1, panzoom.current.scale);
+          panzoom.$content.style.opacity = Math.min(1, 1 - (1 - panzoom.content.scale) / (1 - scale));
         }
       });
     }
@@ -456,17 +474,22 @@ export class Image {
       slide.$caption.style.visibility = "hidden";
     }
 
-    let friction = this.fancybox.option("Image.zoomFriction") * 0.75;
+    let friction = this.fancybox.option("Image.zoomFriction");
 
-    const animatePosition = () => {
-      const { top, left, scale } = this.getZoomInfo(slide);
+    const animatePosition = (event) => {
+      const { top, left, scale, opacity } = this.getZoomInfo(slide);
+
+      // Increase speed on the first run if opacity is not animated
+      if (!event && !opacity) {
+        friction *= 0.82;
+      }
 
       Panzoom.panTo({
         x: left * -1,
         y: top * -1,
-        scale: scale,
+        scale,
+        friction,
         ignoreBounds: true,
-        friction: friction,
       });
 
       // Gradually increase speed
@@ -477,7 +500,7 @@ export class Image {
     // therefore animation end position has to be recalculated after each page scroll
     window.addEventListener("scroll", animatePosition);
 
-    Panzoom.on("afterAnimate", () => {
+    Panzoom.on("endAnimation", () => {
       window.removeEventListener("scroll", animatePosition);
       fancybox.destroy();
     });
@@ -490,13 +513,17 @@ export class Image {
    * @param {Object} slide
    */
   handleCursor(slide) {
+    if (slide.type !== "image") {
+      return;
+    }
+
     const panzoom = slide.Panzoom;
     const clickAction = this.fancybox.option("Image.click");
     const classList = slide.$el.classList;
 
     if (panzoom && clickAction === "toggleZoom") {
       const canZoom =
-        panzoom && panzoom.current.scale === 1 && panzoom.option("maxScale") - panzoom.current.scale > 0.01;
+        panzoom && panzoom.content.scale === 1 && panzoom.option("maxScale") - panzoom.content.scale > 0.01;
 
       classList[canZoom ? "add" : "remove"](this.fancybox.option("Image.canZoomInClass"));
     } else if (clickAction === "close") {
@@ -505,14 +532,22 @@ export class Image {
   }
 
   /**
-   * Handle `Panzoom.wheel` event
-   * @param {Object} panzoom
+   * Handle `wheel` event
+   * @param {Object} slide
    * @param {Object} event
    */
-  onWheel(panzoom, event) {
+  onWheel(slide, event) {
+    if (this.fancybox.state !== "ready") {
+      return;
+    }
+
+    if (this.fancybox.trigger("Image.wheel", event) === false) {
+      return;
+    }
+
     switch (this.fancybox.option("Image.wheel")) {
       case "zoom":
-        panzoom.zoomWithWheel(event);
+        slide.Panzoom && slide.Panzoom.zoomWithWheel(event);
 
         break;
 
@@ -526,105 +561,81 @@ export class Image {
 
         break;
     }
-
-    event.preventDefault();
   }
 
   /**
-   * Handle `Panzoom.click` event
-   * @param {Object} panzoom
+   * Handle `click` and `dblclick` events
+   * @param {Object} slide
    * @param {Object} event
    */
-  onClick(panzoom, event) {
+  onClick(slide, event) {
+    // Check if can click
+    if (this.fancybox.state !== "ready") {
+      return;
+    }
+
+    const panzoom = slide.Panzoom;
+
     if (
-      this.fancybox.Carousel.Panzoom.drag.distance >= 6 ||
-      this.fancybox.Carousel.Panzoom.lockAxis ||
-      !(event.target.tagName == "IMG" || event.target.classList.contains("fancybox__content"))
+      panzoom &&
+      (panzoom.dragPosition.midPoint ||
+        panzoom.dragOffset.x !== 0 ||
+        panzoom.dragOffset.y !== 0 ||
+        panzoom.dragOffset.scale !== 1)
     ) {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
-
-    switch (this.fancybox.option("Image.click")) {
-      case "toggleZoom":
-        const x = event.clientX - panzoom.$content.getClientRects()[0].left;
-        const y = event.clientY - panzoom.$content.getClientRects()[0].top;
-
-        panzoom.toggleZoom({ x, y });
-
-        break;
-      case "close":
-        this.fancybox.close();
-        break;
-
-      case "next":
-        this.fancybox.next();
-        break;
-
-      case "prev":
-        this.fancybox.prev();
-        break;
-    }
-  }
-
-  /**
-   * Handle `Carousel.refresh` event to call content resizer
-   * @param {Object} fancybox
-   * @param {Object} carousel
-   */
-  onRefresh(fancybox, carousel) {
-    carousel.slides.forEach((slide) => {
-      if (slide.Panzoom) {
-        this.updateDimensions(slide);
-      }
-    });
-  }
-
-  /**
-   * Handle `Carousel.deleteSlide` event to do clean up the slide
-   * @param {Object} fancybox
-   * @param {Object} carousel
-   * @param {Object} slide
-   */
-  onRemoveSlide(fancybox, carousel, slide) {
-    if (slide.$image) {
-      slide.$el.classList.remove(fancybox.option("Image.canZoomInClass"));
-
-      slide.$image.onload = slide.$image.onerror = null;
-
-      slide.$image.remove();
-      slide.$image = null;
+    if (this.fancybox.Carousel.Panzoom.lockAxis) {
+      return false;
     }
 
-    if (slide.Panzoom) {
-      slide.Panzoom.destroy();
-      slide.Panzoom = null;
+    const process = (action) => {
+      if (this.fancybox.trigger("Image.click", event) === false) {
+        return;
+      }
+
+      switch (action) {
+        case "toggleZoom":
+          event.stopPropagation();
+
+          slide.Panzoom && slide.Panzoom.zoomWithClick(event);
+
+          break;
+
+        case "close":
+          this.fancybox.close();
+
+          break;
+
+        case "next":
+          event.stopPropagation();
+
+          this.fancybox.next();
+
+          break;
+      }
+    };
+
+    // Clear pending single click
+    if (this.clickTimer) {
+      clearTimeout(this.clickTimer);
+      this.clickTimer = null;
     }
 
-    delete slide.$el.dataset.imageFit;
-  }
+    const clickAction = this.fancybox.option("Image.click");
+    const dblclickAction = this.fancybox.option("Image.doubleClick");
 
-  /**
-   * Handle `closing` event event to clean up all slides and to start zoom-out animation
-   * @param {Object} fancybox
-   */
-  onClosing(fancybox) {
-    // Remove events
-    fancybox.Carousel.slides.forEach((slide) => {
-      if (slide.$image) {
-        slide.$image.onload = slide.$image.onerror = null;
+    if (dblclickAction) {
+      if (event.detail === 1) {
+        this.clickTimer = setTimeout(() => {
+          process(clickAction);
+        }, 300);
+      } else if (event.detail === 2) {
+        process(dblclickAction);
       }
-
-      if (slide.Panzoom) {
-        slide.Panzoom.detachEvents();
-      }
-    });
-
-    // If possible, start the zoom animation, it will interrupt the default closing process
-    if (this.fancybox.state === "closing" && this.canZoom(fancybox.getSlide())) {
-      this.zoomOut();
+    } else {
+      process(clickAction);
     }
   }
 
@@ -642,20 +653,14 @@ export class Image {
         return;
       }
 
-      if (slide.index === currSlide.index) {
-        if (carousel.Panzoom.velocity.x === 0) {
-          this.revealContent(slide);
-        }
-
-        return;
+      if (slide.index !== currSlide.index) {
+        slide.Panzoom.panTo({
+          x: 0,
+          y: 0,
+          scale: 1,
+          friction: 0.8,
+        });
       }
-
-      slide.Panzoom.panTo({
-        x: 0,
-        y: 0,
-        scale: 1,
-        friction: 0.8,
-      });
     });
   }
 

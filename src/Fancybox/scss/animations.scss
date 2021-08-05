@@ -1,33 +1,39 @@
-/* Opening  */
+.fancybox__backdrop,
+.fancybox__caption,
+.fancybox__nav,
+.carousel__dots,
+.carousel__button.is-close {
+  opacity: var(--fancybox-opacity, 1);
+}
+
+/* Opening */
 .fancybox__container.is-animated[aria-hidden="false"] {
   & .fancybox__backdrop,
   & .fancybox__caption,
   & .fancybox__nav,
   & .carousel__dots,
   & .carousel__button.is-close {
-    transition: opacity var(--fancybox-ts, 0.25s) ease;
-    opacity: var(--fancybox-opacity, 1);
+    animation: 0.15s ease backwards fancybox-fadeIn;
   }
 }
 
 /* Closing */
-.fancybox__container.is-animated[aria-hidden="true"] {
+.fancybox__container.is-animated.is-closing {
   & .fancybox__backdrop,
   & .fancybox__caption,
   & .fancybox__nav,
   & .carousel__dots,
   & .carousel__button.is-close {
-    transition: opacity 0.2s ease;
-    opacity: 0;
+    animation: 0.15s ease both fancybox-fadeOut;
   }
 }
 
 .fancybox-fadeIn {
-  animation: 0.2s ease both fancybox-fadeIn;
+  animation: 0.15s ease both fancybox-fadeIn;
 }
 
 .fancybox-fadeOut {
-  animation: 0.2s ease both fancybox-fadeOut;
+  animation: 0.1s ease both fancybox-fadeOut;
 }
 
 .fancybox-zoomInUp {
@@ -35,16 +41,16 @@
 }
 
 .fancybox-zoomOutDown {
-  animation: 0.2s ease both fancybox-zoomOutDown;
+  animation: 0.15s ease both fancybox-zoomOutDown;
 }
 
 /* Both `throwOut` classes are for closing animation after dragging up/down */
 .fancybox-throwOutUp {
-  animation: 0.2s ease both fancybox-throwOutUp;
+  animation: 0.15s ease both fancybox-throwOutUp;
 }
 
 .fancybox-throwOutDown {
-  animation: 0.2s ease both fancybox-throwOutDown;
+  animation: 0.15s ease both fancybox-throwOutDown;
 }
 
 @keyframes fancybox-fadeIn {
@@ -83,10 +89,6 @@
 }
 
 @keyframes fancybox-throwOutUp {
-  20% {
-    opacity: 0.5;
-  }
-
   to {
     transform: translate3d(0, -30%, 0);
     opacity: 0;
@@ -94,10 +96,6 @@
 }
 
 @keyframes fancybox-throwOutDown {
-  20% {
-    opacity: 0.5;
-  }
-
   to {
     transform: translate3d(0, 30%, 0);
     opacity: 0;

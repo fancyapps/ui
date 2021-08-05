@@ -2,10 +2,15 @@ import { extend } from "../../../shared/utils/extend.js";
 import { Carousel } from "../../../Carousel/Carousel.js";
 
 const defaults = {
+  // The minimum number of images in the gallery to display thumbnails
+  minSlideCount: 2,
+
+  // Minimum screen height to display thumbnails
+  minScreenHeight: 500,
+
   // Automatically show thumbnails when opened
   autoStart: true,
-  // The minimum number of images in the gallery to display thumbnails
-  minSlideCount: 3,
+
   // Keyboard shortcut to toggle thumbnail container
   key: "t",
 };
@@ -14,7 +19,7 @@ export class Thumbs {
   constructor(fancybox) {
     this.fancybox = fancybox;
 
-    this.$wrap = null;
+    this.$container = null;
     this.state = "init";
 
     for (const methodName of ["onReady", "onClosing", "onKeydown"]) {
@@ -32,7 +37,18 @@ export class Thumbs {
    * Process `ready` event to build the layout
    */
   onReady() {
-    if (this.fancybox.option("Thumbs.autoStart") === true) {
+    // Get slides, skip if the total number is less than the minimum
+    const slides = this.getSlides();
+
+    if (slides.length < this.fancybox.option("Thumbs.minSlideCount")) {
+      this.state = "disabled";
+      return;
+    }
+
+    if (
+      this.fancybox.option("Thumbs.autoStart") === true &&
+      this.fancybox.Carousel.Panzoom.content.height >= this.fancybox.option("Thumbs.minScreenHeight")
+    ) {
       this.initLayout();
     }
   }
@@ -61,27 +77,20 @@ export class Thumbs {
    * Build layout and init thumbnail Carousel
    */
   initLayout() {
-    if (this.state !== "init") {
+    if (this.$container) {
       return;
     }
 
-    // Get slides, skip if the total number is less than the minimum
-    const slides = this.getSlides();
-
-    if (slides.length < this.fancybox.option("Thumbs.minSlideCount")) {
-      return false;
-    }
-
     // Create wrapping element and append to layout
-    const $wrap = document.createElement("div");
+    const $container = document.createElement("div");
 
-    $wrap.classList.add(`fancybox__thumbs`);
+    $container.classList.add("fancybox__thumbs");
 
-    this.fancybox.$container.appendChild($wrap);
+    this.fancybox.$container.appendChild($container);
 
     // Initialise thumbnail carousel with all slides
     this.Carousel = new Carousel(
-      $wrap,
+      $container,
       extend(
         true,
         {
@@ -100,9 +109,9 @@ export class Thumbs {
         this.fancybox.option("Thumbs.Carousel"),
         {
           Sync: {
-            with: this.fancybox.Carousel,
+            target: this.fancybox.Carousel,
           },
-          slides: slides,
+          slides: this.getSlides(),
         }
       )
     );
@@ -114,8 +123,9 @@ export class Thumbs {
       this.fancybox[event.deltaY < 0 ? "prev" : "next"]();
     });
 
-    this.$wrap = $wrap;
-    this.state = "ready";
+    this.$container = $container;
+
+    this.state = "visible";
   }
 
   /**
@@ -124,7 +134,7 @@ export class Thumbs {
   getSlides() {
     const slides = [];
 
-    this.fancybox.items.forEach((slide) => {
+    for (const slide of this.fancybox.items) {
       const thumb = slide.thumb;
 
       if (thumb) {
@@ -133,7 +143,7 @@ export class Thumbs {
           customClass: `has-thumb has-${slide.type || "image"}`,
         });
       }
-    });
+    }
 
     return slides;
   }
@@ -143,10 +153,10 @@ export class Thumbs {
    * Tip: you can use `Fancybox.getInstance().plugins.Thumbs.toggle()` from anywhere in your code
    */
   toggle() {
-    if (this.state === "ready") {
+    if (this.state === "visible") {
       this.Carousel.Panzoom.detachEvents();
 
-      this.$wrap.style.display = "none";
+      this.$container.style.display = "none";
 
       this.state = "hidden";
 
@@ -154,11 +164,11 @@ export class Thumbs {
     }
 
     if (this.state === "hidden") {
-      this.$wrap.style.display = "";
+      this.$container.style.display = "";
 
       this.Carousel.Panzoom.attachEvents();
 
-      this.state = "ready";
+      this.state = "visible";
 
       return;
     }
@@ -175,9 +185,9 @@ export class Thumbs {
       this.Carousel = null;
     }
 
-    if (this.$wrap) {
-      this.$wrap.remove();
-      this.$wrap = null;
+    if (this.$container) {
+      this.$container.remove();
+      this.$container = null;
     }
 
     this.state = "init";

@@ -157,6 +157,8 @@ body.compensate-for-scrollbar {
   cursor: auto;
   flex-shrink: 0;
 
+  overflow-wrap: anywhere;
+
   .is-loading & {
     visibility: hidden;
   }
@@ -210,4 +212,9 @@ body.compensate-for-scrollbar {
   color: var(--fancybox-color, #fff);
 
   @include fancybox-breakpoint(button-close-inside);
+}
+
+.fancybox__no-click,
+.fancybox__no-click button {
+  pointer-events: none;
 }

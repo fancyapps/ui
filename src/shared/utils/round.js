@@ -4,7 +4,7 @@
  * @param {Integer} precision
  * @returns {Float}
  */
-export const round = (value, precision = 1000) => {
+export const round = (value, precision = 10000) => {
   value = parseFloat(value) || 0;
 
   return Math.round((value + Number.EPSILON) * precision) / precision;

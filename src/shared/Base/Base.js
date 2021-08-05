@@ -209,7 +209,7 @@ export class Base {
 
     for (const [key, Plugin] of Object.entries(plugins || {})) {
       // Check if this plugin is not disabled by option
-      if (this.options[key] !== false) {
+      if (this.options[key] !== false && !this.plugins[key]) {
         // Populate options with defaults from the plugin
         this.options[key] = extend({}, Plugin.defaults || {}, this.options[key]);
 

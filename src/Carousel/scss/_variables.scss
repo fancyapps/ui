@@ -29,8 +29,8 @@ $carousel-button-next-pos: 10px !default;
 
 $carousel-button-disabled-opacity: 0.3 !default;
 
-$carousel-button-svg-width: var(--carousel-button-svg-width, 24px) !default;
-$carousel-button-svg-height: var(--carousel-button-svg-height, 24px) !default;
+$carousel-button-svg-width: var(--carousel-button-svg-width, 50%) !default;
+$carousel-button-svg-height: var(--carousel-button-svg-height, 50%) !default;
 $carousel-button-svg-stroke-width: var(--carousel-button-svg-stroke-width, 1.5) !default;
 $carousel-button-svg-filter: var(--carousel-button-svg-filter, none) !default;
 $carousel-button-svg-fill: none !default;

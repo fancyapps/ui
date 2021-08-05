@@ -1,14 +1,13 @@
-import { isPlainObject } from "../../../shared/utils/isPlainObject.js";
-
 const defaults = {
   friction: 0.92,
 };
 
 export class Sync {
   constructor(carousel) {
-    this.nav = carousel;
+    this.carousel = carousel;
 
     this.selectedIndex = null;
+    this.friction = 0;
 
     this.onNavReady = this.onNavReady.bind(this);
     this.onNavClick = this.onNavClick.bind(this);
@@ -18,17 +17,70 @@ export class Sync {
   }
 
   /**
+   * Make this one as main carousel and selected carousel as navigation
+   * @param {Object} nav Carousel
+   */
+  addAsTargetFor(nav) {
+    this.target = this.carousel;
+    this.nav = nav;
+
+    this.attachEvents();
+  }
+
+  /**
+   * Make this one as navigation carousel for selected carousel
+   * @param {Object} target
+   */
+  addAsNavFor(target) {
+    this.target = target;
+    this.nav = this.carousel;
+
+    this.attachEvents();
+  }
+
+  /**
+   * Attach event listeners on both carousels
+   */
+  attachEvents() {
+    this.nav.options.initialSlide = this.target.options.initialPage;
+
+    this.nav.on("ready", this.onNavReady);
+    this.nav.on("Panzoom.click", this.onNavClick);
+    this.nav.on("createSlide", this.onNavCreateSlide);
+
+    this.target.on("Panzoom.afterUpdate", this.onTargetChange);
+    this.target.on("change", this.onTargetChange);
+  }
+
+  /**
    * Process main carousel `ready` event; bind events and set initial page
    */
   onNavReady() {
     this.onTargetChange(true);
+  }
 
-    this.nav.on("createSlide", this.onNavCreateSlide);
-    this.nav.on("Panzoom.updateMetrics", this.onTargetChange);
+  /**
+   * Process main carousel `click` event
+   * @param {Object} panzoom
+   * @param {Object} event
+   */
+  onNavClick(carousel, panzoom, event) {
+    const clickedNavSlide = event.target.closest(".carousel__slide");
 
-    this.nav.Panzoom.on("click", this.onNavClick);
+    if (!clickedNavSlide) {
+      return;
+    }
 
-    this.sync.on("change", this.onTargetChange);
+    event.stopPropagation();
+
+    const selectedNavIndex = parseInt(clickedNavSlide.dataset.index, 10);
+    const selectedSyncPage = this.target.findPageForSlide(selectedNavIndex);
+
+    if (this.target.page !== selectedSyncPage) {
+      this.target.slideTo(selectedSyncPage, { friction: this.friction });
+    }
+
+    this.markSelectedSlide(selectedNavIndex);
   }
 
   /**
@@ -43,27 +95,16 @@ export class Sync {
   }
 
   /**
-   * Process main carousel `click` event
-   * @param {Object} panzoom
-   * @param {Object} event
+   * Process target carousel `change` event
+   * @param {Object} target
    */
-  onNavClick(panzoom, event) {
-    const clickedNavSlide = event.target.closest(".carousel__slide");
+  onTargetChange() {
+    const targetIndex = this.target.pages[this.target.page].indexes[0];
+    const selectedNavPage = this.nav.findPageForSlide(targetIndex);
 
-    if (!clickedNavSlide) {
-      return;
-    }
+    this.nav.slideTo(selectedNavPage);
 
-    event.preventDefault();
-
-    const selectedNavIndex = parseInt(clickedNavSlide.dataset.index, 10);
-    const selectedSyncPage = this.sync.getPageforSlide(selectedNavIndex);
-
-    if (this.sync.page !== selectedSyncPage) {
-      this.sync.slideTo(selectedSyncPage, { friction: this.nav.option("Sync.friction") });
-    }
-
-    this.markSelectedSlide(selectedNavIndex);
+    this.markSelectedSlide(targetIndex);
   }
 
   /**
@@ -80,50 +121,33 @@ export class Sync {
     if (slide && slide.$el) slide.$el.classList.add("is-nav-selected");
   }
 
-  /**
-   * Process target carousel `change` event
-   * @param {Object} target
-   */
-  onTargetChange(fast) {
-    const targetIndex = this.sync.pages[this.sync.page].indexes[0];
-    const selectedNavPage = this.nav.getPageforSlide(targetIndex);
+  attach(carousel) {
+    const sync = carousel.options.Sync;
 
-    if (selectedNavPage === null) return;
-
-    this.nav.slideTo(selectedNavPage, fast === true ? { friction: 0 } : {});
-
-    this.markSelectedSlide(targetIndex);
-  }
-
-  attach() {
-    const sync = this.nav.options.Sync;
-
-    if (!sync) {
+    if (!sync.target && !sync.nav) {
       return;
     }
 
-    if (isPlainObject(sync) && typeof sync.with === "object") {
-      this.sync = sync.with;
+    if (sync.target) {
+      this.addAsNavFor(sync.target);
+    } else if (sync.nav) {
+      this.addAsTargetFor(sync.nav);
     }
 
-    if (this.sync) {
-      this.nav.on("ready", this.onNavReady);
-    }
+    this.friction = sync.friction;
   }
 
   detach() {
-    if (this.sync) {
+    if (this.nav) {
       this.nav.off("ready", this.onNavReady);
-      this.nav.off("createSlide", this.onNavCreate);
-      this.nav.on("Panzoom.updateMetrics", this.onTargetChange);
-
-      this.sync.off("change", this.onTargetChange);
+      this.nav.off("Panzoom.click", this.onNavClick);
+      this.nav.off("createSlide", this.onNavCreateSlide);
     }
 
-    this.nav.Panzoom.off("click", this.onNavClick);
-
-    this.sync = null;
-    this.selectedIndex = null;
+    if (this.target) {
+      this.target.off("Panzoom.afterUpdate", this.onTargetChange);
+      this.target.off("change", this.onTargetChange);
+    }
   }
 }
 

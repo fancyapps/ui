@@ -45,10 +45,11 @@ export class Html {
     this.fancybox = fancybox;
 
     for (const methodName of [
-      "onPrepare",
+      "onInit",
+      "onReady",
 
       "onCreateSlide",
-      "onDeleteSlide",
+      "onRemoveSlide",
 
       "onSelectSlide",
       "onUnselectSlide",
@@ -62,10 +63,11 @@ export class Html {
     }
 
     this.events = {
-      init: this.onPrepare,
+      init: this.onInit,
+      ready: this.onReady,
 
       "Carousel.createSlide": this.onCreateSlide,
-      "Carousel.deleteSlide": this.onDeleteSlide,
+      "Carousel.removeSlide": this.onRemoveSlide,
 
       "Carousel.selectSlide": this.onSelectSlide,
       "Carousel.unselectSlide": this.onUnselectSlide,
@@ -77,10 +79,10 @@ export class Html {
   /**
    * Check if each gallery item has type when fancybox starts
    */
-  onPrepare() {
-    this.fancybox.items.forEach((slide) => {
+  onInit() {
+    for (const slide of this.fancybox.items) {
       this.processType(slide);
-    });
+    }
   }
 
   /**
@@ -99,6 +101,7 @@ export class Html {
     }
 
     const src = slide.src || "";
+
     let type = slide.type || this.fancybox.options.type,
       rez = null;
 
@@ -172,6 +175,35 @@ export class Html {
         slide.ratio = slide.ratio || slide.video.ratio;
       }
     }
+  }
+
+  /**
+   * Start loading content when Fancybox is ready
+   */
+  onReady() {
+    this.fancybox.Carousel.slides.forEach((slide) => {
+      if (slide.$el) {
+        this.setContent(slide);
+
+        if (slide.index === this.fancybox.getSlide().index) {
+          this.playVideo(slide);
+        }
+      }
+    });
+  }
+
+  /**
+   * Process `Carousel.createSlide` event to create image content
+   * @param {Object} fancybox
+   * @param {Object} carousel
+   * @param {Object} slide
+   */
+  onCreateSlide(fancybox, carousel, slide) {
+    if (this.fancybox.state !== "ready") {
+      return;
+    }
+
+    this.setContent(slide);
   }
 
   /**
@@ -415,7 +447,7 @@ export class Html {
    * @param {Object} carousel
    * @param {Object} slide
    */
-  onCreateSlide(fancybox, carousel, slide) {
+  setContent(slide) {
     if (!slide || slide.isDom) {
       return;
     }
@@ -467,8 +499,24 @@ export class Html {
    * @param {Object} slide
    */
   onSelectSlide(fancybox, carousel, slide) {
+    if (fancybox.state === "ready") {
+      this.playVideo(slide);
+    }
+  }
+
+  /**
+   * Attempts to begin playback of the media
+   * @param {Object} slide
+   */
+  playVideo(slide) {
     if (slide.type === "html5video") {
-      slide.$el.querySelector("video").play();
+      const videoElem = slide.$el.querySelector("video");
+
+      if (videoElem) {
+        try {
+          videoElem.play();
+        } catch (err) {}
+      }
     }
 
     if (slide.type !== "video" || !(slide.$iframe && slide.$iframe.contentWindow)) {
@@ -558,12 +606,12 @@ export class Html {
   }
 
   /**
-   * Process `Carousel.onDeleteSlide` event to do clean up
+   * Process `Carousel.onRemoveSlide` event to do clean up
    * @param {Object} fancybox
    * @param {Object} carousel
    * @param {Object} slide
    */
-  onDeleteSlide(fancybox, carousel, slide) {
+  onRemoveSlide(fancybox, carousel, slide) {
     // Abort ajax request if exists
     if (slide.xhr) {
       slide.xhr.abort();

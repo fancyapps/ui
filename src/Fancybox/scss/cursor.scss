@@ -9,15 +9,15 @@
     cursor: grabbing;
   }
 
-  & .carousel__slide:not(.has-image) .fancybox__content {
+  & .fancybox__slide:not(.has-image) .fancybox__content {
     cursor: auto;
   }
 
-  & .carousel__slide.can-zoom_in .fancybox__content {
+  & .fancybox__slide.can-zoom_in .fancybox__content {
     cursor: zoom-in;
   }
 
-  & .carousel__slide.can-zoom_out .fancybox__content {
+  & .fancybox__slide.can-zoom_out .fancybox__content {
     cursor: zoom-out;
   }
 }

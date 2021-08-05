@@ -46,8 +46,8 @@ export class Dots {
 
     this.$list = $list;
 
-    this.carousel.$element.appendChild($list);
-    this.carousel.$element.classList.add("has-dots");
+    this.carousel.$container.appendChild($list);
+    this.carousel.$container.classList.add("has-dots");
 
     return $list;
   }
@@ -60,6 +60,8 @@ export class Dots {
       this.$list.parentNode.removeChild(this.$list);
       this.$list = null;
     }
+
+    this.carousel.$container.classList.remove("has-dots");
   }
 
   /**

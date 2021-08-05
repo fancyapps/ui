@@ -70,8 +70,8 @@ if (window.innerWidth > 1024) {
   padding_x = 100 * 2;
   padding_y = 64 * 2;
 } else {
-  padding_x = 64 * 2;
-  padding_y = 64 * 2;
+  padding_x = 8 * 2;
+  padding_y = 48 + 8;
 }
 
 const getResizedImageWidth = (container_width, container_height) => {
@@ -400,8 +400,8 @@ describe("Fancybox", function () {
       triggerA.click();
 
       const slides = [
-        { $trigger: triggerA, $thumb: null, thumb: null, src: "#html-modal-a", type: "inline" },
-        { $trigger: triggerB, $thumb: null, thumb: null, src: "#html-modal-b", type: "inline" },
+        { $trigger: triggerA, $thumb: null, thumb: null, src: "#html-modal-a", type: "inline", caption: "" },
+        { $trigger: triggerB, $thumb: null, thumb: null, src: "#html-modal-b", type: "inline", caption: "" },
       ];
 
       const instance = Fancybox.getInstance();
@@ -436,8 +436,16 @@ describe("Fancybox", function () {
     triggerB.setAttribute("data-show-class", "false");
 
     const items = [
-      { $trigger: triggerA, $thumb: null, thumb: null, src: "#html-modal-a", type: "inline" },
-      { showClass: false, $trigger: triggerB, $thumb: null, thumb: null, src: "#html-modal-b", type: "clone" },
+      { $trigger: triggerA, $thumb: null, thumb: null, src: "#html-modal-a", type: "inline", caption: "" },
+      {
+        showClass: false,
+        $trigger: triggerB,
+        $thumb: null,
+        thumb: null,
+        src: "#html-modal-b",
+        type: "clone",
+        caption: "",
+      },
     ];
 
     triggerA.click();
@@ -497,6 +505,9 @@ describe("Fancybox", function () {
         "Carousel.change": (fancybox, carousel, page) => {
           eventList.push(`change #${page}`);
         },
+        "Carousel.settle": () => {
+          eventList.push(`settle`);
+        },
         "Carousel.selectSlide": (fancybox, carousel, slide) => {
           eventList.push(`selectSlide #${slide.index}`);
         },
@@ -508,20 +519,16 @@ describe("Fancybox", function () {
 
     sandbox.querySelector("a").click();
 
-    await delay(300);
-
     const instance = Fancybox.getInstance();
 
     instance.next();
 
-    await delay(300);
+    await delay(1500);
 
     instance.close();
 
-    await delay(300);
-
     expect(eventList.join("|")).to.equal(
-      "init|reveal #0|done #0|selectSlide #0|ready|change #1|reveal #1|done #1|unselectSlide #0|selectSlide #1|closing|destroy"
+      "init|selectSlide #0|ready|reveal #0|done #0|change #1|reveal #1|done #1|unselectSlide #0|selectSlide #1|settle|closing|destroy"
     );
 
     sandbox.parentNode.removeChild(sandbox);
@@ -540,6 +547,7 @@ describe("Fancybox", function () {
         src: "./assets/img1_b.jpg",
         type: "image",
         thumb: url + "assets/img1_s.jpg",
+        caption: "",
       },
       {
         $trigger: triggers[1],
@@ -547,6 +555,7 @@ describe("Fancybox", function () {
         src: "./assets/img2_b.jpg",
         type: "image",
         thumb: url + "assets/img2_s.jpg",
+        caption: "",
       },
       {
         $trigger: triggers[2],
@@ -554,6 +563,7 @@ describe("Fancybox", function () {
         src: "./assets/img3_b.jpg",
         type: "image",
         thumb: url + "assets/img3_s.jpg",
+        caption: "",
       },
     ];
 
@@ -587,7 +597,7 @@ describe("Fancybox", function () {
 
     trigger.click();
 
-    await delay(500);
+    await delay(350);
 
     const instance = Fancybox.getInstance();
 
@@ -602,7 +612,7 @@ describe("Fancybox", function () {
       `width:${container_width + padding_x}px;height:${container_height + padding_y}px;padding:0;`
     );
 
-    await delay(100);
+    await delay(350);
 
     const [resizedWidth1, resizedHeight1] = getResizedImageWidth(container_width, container_height);
 
@@ -618,7 +628,7 @@ describe("Fancybox", function () {
       `width:${container_width + padding_x}px;height:${container_height + padding_y}px;padding:0;`
     );
 
-    await delay(100);
+    await delay(350);
 
     const [resizedWidth2, resizedHeight2] = getResizedImageWidth(container_width, container_height);
 
@@ -641,15 +651,17 @@ describe("Fancybox", function () {
       {
         showClass: false,
         hideClass: false,
+        animated: false,
+        ScrollLock: false,
       }
     );
 
     expect(instance.getSlide().type).to.be.equal("iframe");
     expect(instance.getSlide().$iframe).to.be.an.instanceof(HTMLIFrameElement);
 
-    instance.$container.setAttribute("style", "width:800px;height:600px;padding:0;");
+    instance.$container.setAttribute("style", "width:800px;height:600px;padding:0;color:red;");
 
-    await delay(800);
+    await delay();
 
     const slide_padding = 36 * 2;
 
@@ -670,12 +682,14 @@ describe("Fancybox", function () {
       {
         showClass: false,
         hideClass: false,
+        animated: false,
+        ScrollLock: false,
       }
     );
 
     instance.$container.setAttribute("style", "width:800px;height:600px;padding:0;");
 
-    await delay(800);
+    await delay(500);
 
     const slide_padding = 36 * 2;
 
@@ -684,7 +698,7 @@ describe("Fancybox", function () {
 
     instance.getSlide().$iframe.src = instance.getSlide().$iframe.src + "?grow";
 
-    await delay(800);
+    await delay(500);
 
     expect(instance.getSlide().$iframe.clientWidth).to.be.closeTo(800 - padding_x - slide_padding, 1);
     expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(700, 1);
@@ -693,17 +707,25 @@ describe("Fancybox", function () {
   });
 
   it("can disable iframe autosize", async function () {
-    const instance = new Fancybox([
+    const instance = new Fancybox(
+      [
+        {
+          type: "iframe",
+          src: "./assets/iframe.html",
+          autoSize: false,
+        },
+      ],
       {
-        type: "iframe",
-        src: "./assets/iframe.html",
-        autoSize: false,
-      },
-    ]);
+        showClass: false,
+        hideClass: false,
+        animated: false,
+        ScrollLock: false,
+      }
+    );
 
     instance.$container.setAttribute("style", "width:800px;height:600px;padding:0;");
 
-    await delay(100);
+    await delay(500);
 
     const slide_padding = 36 * 2;
 

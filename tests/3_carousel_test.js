@@ -18,7 +18,7 @@ const defaultMarkup = `
 
 function createSandbox(content) {
   const sandbox = document.createElement("div");
-  sandbox.style.cssText = "position:fixed;top:0;left:0;width:200px;overflow:visible;";
+  sandbox.style.cssText = "position:fixed;top:0;left:0;width:200px;overflow:visible;visibility:hidden;";
 
   sandbox.innerHTML = content;
   document.body.appendChild(sandbox);
@@ -59,7 +59,7 @@ describe("Carousel", function () {
   }
 
   function destroyInstance(instance) {
-    const sandbox = instance.$element.parentNode;
+    const sandbox = instance.$container.parentNode;
     instance.destroy();
     sandbox.parentNode.removeChild(sandbox);
   }
@@ -69,7 +69,7 @@ describe("Carousel", function () {
 
     expect(instance).to.be.an.instanceof(Carousel);
 
-    expect(instance.$element).to.be.an.instanceof(Element);
+    expect(instance.$container).to.be.an.instanceof(HTMLElement);
 
     destroyInstance(instance);
   });
@@ -77,8 +77,8 @@ describe("Carousel", function () {
   it("should calculate viewport and track dimensions", function () {
     const instance = createInstance();
 
-    expect(instance.wrapDimWidth).to.be.equal(200);
-    expect(instance.elemDimWidth).to.be.equal(840);
+    expect(instance.Panzoom.viewport.width).to.be.equal(200);
+    expect(instance.Panzoom.content.width).to.be.equal(840);
 
     destroyInstance(instance);
   });
@@ -165,7 +165,7 @@ describe("Carousel", function () {
     const left = instance.pages[5].left;
 
     expect(left).to.equal(560);
-    expect(instance.Panzoom.current.x).to.equal(left * -1);
+    expect(instance.Panzoom.content.x).to.equal(left * -1);
 
     destroyInstance(instance);
   });
@@ -191,7 +191,7 @@ describe("Carousel", function () {
 
     await delay(1500);
 
-    expect(instance.Panzoom.current.x).to.equal(-200);
+    expect(instance.Panzoom.content.x).to.equal(-200);
 
     destroyInstance(instance);
   });
@@ -209,7 +209,7 @@ describe("Carousel", function () {
 
     await delay(1500);
 
-    expect(instance.Panzoom.current.x).to.equal(-80);
+    expect(instance.Panzoom.content.x).to.equal(-80);
 
     destroyInstance(instance);
   });
@@ -225,7 +225,7 @@ describe("Carousel", function () {
 
     await delay(1500);
 
-    expect(instance.Panzoom.current.x).to.equal(160);
+    expect(instance.Panzoom.content.x).to.equal(160);
 
     expect(instance.slides[5].$el.style.left).to.equal("-840px");
     expect(instance.slides[6].$el.style.left).to.equal("-840px");
@@ -238,7 +238,7 @@ describe("Carousel", function () {
       initialPage: 6,
     });
 
-    expect(instance.Panzoom.current.x).to.equal(160);
+    expect(instance.Panzoom.content.x).to.equal(160);
 
     expect(instance.slides[5].$el.style.left).to.equal("-840px");
     expect(instance.slides[6].$el.style.left).to.equal("-840px");
@@ -249,7 +249,7 @@ describe("Carousel", function () {
 
     await delay(1500);
 
-    expect(instance.Panzoom.current.x).to.equal(-560);
+    expect(instance.Panzoom.content.x).to.equal(-560);
 
     expect(instance.slides[5].$el.style.left).to.equal("");
     expect(instance.slides[6].$el.style.left).to.equal("");
@@ -268,7 +268,7 @@ describe("Carousel", function () {
 
     await delay(1500);
 
-    expect(instance.Panzoom.current.x).to.equal(-560);
+    expect(instance.Panzoom.content.x).to.be.closeTo(-560, 0.5);
 
     destroyInstance(instance);
   });
@@ -286,7 +286,7 @@ describe("Carousel", function () {
 
     await delay(200);
 
-    expect(instance.Panzoom.current.x).to.equal(-560);
+    expect(instance.Panzoom.content.x).to.equal(-560);
 
     destroyInstance(instance);
   });
@@ -296,7 +296,9 @@ describe("Carousel", function () {
 
     expect(instance.page).to.equal(0);
 
-    instance.Panzoom.panTo({ x: -360 });
+    instance.Panzoom.panTo({ x: -360, friction: 0.2 });
+
+    await delay(250);
 
     instance.slideToClosest({
       friction: 0.3,
@@ -306,7 +308,7 @@ describe("Carousel", function () {
 
     await delay(200);
 
-    expect(instance.Panzoom.current.x).to.equal(-320);
+    expect(instance.Panzoom.content.x).to.equal(-320);
 
     destroyInstance(instance);
   });
@@ -314,15 +316,17 @@ describe("Carousel", function () {
   it("will automatically update metrics after resizing wrapping element", async function () {
     const instance = createInstance();
 
-    expect(instance.elemDimWidth).to.equal(840);
+    await delay(50);
+
+    expect(instance.Panzoom.content.width).to.equal(840);
     expect(instance.slides[6].width).to.equal(120);
     expect(instance.slides[6].left).to.equal(720);
 
-    instance.$element.parentNode.style.width = "600px";
+    instance.$container.parentNode.style.width = "600px";
 
-    await delay(300);
+    await delay(350);
 
-    expect(instance.elemDimWidth).to.equal(2520);
+    expect(instance.Panzoom.content.width).to.equal(2520);
     expect(instance.slides[6].width).to.equal(360);
     expect(instance.slides[6].left).to.equal(2160);
 
@@ -341,9 +345,11 @@ describe("Carousel", function () {
 
     expect(sandbox.querySelector(".carousel__nav")).to.be.null;
 
+    await delay(50);
+
     mainElement.parentNode.style.width = "400px";
 
-    await delay(300);
+    await delay(350);
 
     expect(sandbox.querySelector(".carousel__nav")).to.be.instanceOf(HTMLElement);
 
@@ -361,6 +367,8 @@ describe("Carousel", function () {
     });
 
     expect(sandbox.querySelector(".carousel__dots")).to.be.null;
+
+    await delay(50);
 
     mainElement.parentNode.style.width = "400px";
 
@@ -391,7 +399,7 @@ describe("Carousel", function () {
       infinite: true,
     });
 
-    expect(instance.Panzoom.current.x).to.equal(40);
+    expect(instance.Panzoom.content.x).to.equal(40);
 
     instance.slidePrev();
 
@@ -399,7 +407,7 @@ describe("Carousel", function () {
 
     expect(instance.page).to.equal(6);
 
-    expect(instance.Panzoom.current.x).to.equal(160);
+    expect(instance.Panzoom.content.x).to.equal(160);
 
     destroyInstance(instance);
   });
@@ -411,7 +419,7 @@ describe("Carousel", function () {
       fill: true,
     });
 
-    expect(instance.Panzoom.current.x).to.equal(0);
+    expect(instance.Panzoom.content.x).to.equal(0);
 
     instance.slidePrev();
 
@@ -419,7 +427,7 @@ describe("Carousel", function () {
 
     expect(instance.page).to.equal(0);
 
-    expect(instance.Panzoom.current.x).to.equal(0);
+    expect(instance.Panzoom.content.x).to.equal(0);
 
     destroyInstance(instance);
   });
@@ -431,7 +439,7 @@ describe("Carousel", function () {
       fill: false,
     });
 
-    expect(instance.Panzoom.current.x).to.equal(40);
+    expect(instance.Panzoom.content.x).to.equal(40);
 
     instance.slidePrev();
 
@@ -439,7 +447,7 @@ describe("Carousel", function () {
 
     expect(instance.page).to.equal(0);
 
-    expect(instance.Panzoom.current.x).to.equal(40);
+    expect(instance.Panzoom.content.x).to.equal(40);
 
     destroyInstance(instance);
   });
@@ -450,7 +458,7 @@ describe("Carousel", function () {
       infinite: true,
     });
 
-    expect(instance.Panzoom.current.x).to.equal(0);
+    expect(instance.Panzoom.content.x).to.equal(0);
 
     instance.slidePrev();
 
@@ -458,7 +466,7 @@ describe("Carousel", function () {
 
     expect(instance.page).to.equal(6);
 
-    expect(instance.Panzoom.current.x).to.equal(120);
+    expect(instance.Panzoom.content.x).to.equal(120);
 
     destroyInstance(instance);
   });
@@ -469,7 +477,7 @@ describe("Carousel", function () {
       infinite: false,
     });
 
-    expect(instance.Panzoom.current.x).to.equal(0);
+    expect(instance.Panzoom.content.x).to.equal(0);
 
     instance.slidePrev();
 
@@ -477,7 +485,7 @@ describe("Carousel", function () {
 
     expect(instance.page).to.equal(0);
 
-    expect(instance.Panzoom.current.x).to.equal(0);
+    expect(instance.Panzoom.content.x).to.equal(0);
 
     destroyInstance(instance);
   });
@@ -489,7 +497,7 @@ describe("Carousel", function () {
     });
 
     expect(instance.pages.length).to.equal(3);
-    expect(instance.elemDimWidth).to.equal(360);
+    expect(instance.Panzoom.content.width).to.equal(360);
 
     expect(instance.slides[0].width).to.equal(120);
     expect(instance.slides[0].left).to.equal(0);
@@ -514,7 +522,7 @@ describe("Carousel", function () {
     const nav = new Carousel(navElement, {
       slides: [{ html: "nav #0" }, { html: "nav #2" }, { html: "nav #3" }],
       Sync: {
-        with: main,
+        target: main,
       },
     });
 
@@ -543,20 +551,18 @@ describe("Carousel", function () {
     const nav = new Carousel(navElement, {
       slides: [{ html: "nav #0" }, { html: "nav #1" }, { html: "nav #2" }],
       Sync: {
-        with: main,
+        target: main,
       },
     });
 
     expect(main.page).to.equal(0);
     expect(nav.page).to.equal(0);
 
-    nav.Panzoom.panTo({ x: -128 });
+    nav.Panzoom.panTo({ x: -128, friction: 0.1 });
 
-    await delay(1500);
+    await delay(150);
 
-    triggerEvent(nav.Panzoom.$viewport, "click", {
-      target: nav.slides[1].$el,
-    });
+    triggerEvent(nav.slides[1].$el, "click", {});
 
     expect(main.page).to.equal(1);
     expect(nav.page).to.equal(1);
@@ -574,13 +580,13 @@ describe("Carousel", function () {
     const x = instance.Panzoom.$content.getClientRects()[0].left;
     const y = instance.Panzoom.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.Panzoom.$viewport, "pointerdown", {
+    triggerEvent(instance.Panzoom.$container, "pointerdown", {
       pointerId: 1,
       clientX: x + 150,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.Panzoom.$viewport, "pointermove", {
+    triggerEvent(instance.Panzoom.$container, "pointermove", {
       pointerId: 1,
       clientX: x + 50,
       clientY: y + 50,
@@ -588,7 +594,7 @@ describe("Carousel", function () {
 
     await delay(300);
 
-    triggerEvent(instance.Panzoom.$viewport, "pointerup", {
+    triggerEvent(instance.Panzoom.$container, "pointerup", {
       pointerId: 1,
     });
 
@@ -597,29 +603,28 @@ describe("Carousel", function () {
     destroyInstance(instance);
   });
 
-  it("fires `settle` after drag animation ends", async function () {
+  it("determines the end of the animation", async function () {
     let called = 0;
 
     const instance = createInstance({
       dragFree: true,
       Navigation: false,
-      on: {
-        settle: () => {
-          called++;
-        },
-      },
+    });
+
+    instance.on("Panzoom.endAnimation", () => {
+      called++;
     });
 
     const x = instance.Panzoom.$content.getClientRects()[0].left;
     const y = instance.Panzoom.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.Panzoom.$viewport, "pointerdown", {
+    triggerEvent(instance.Panzoom.$container, "pointerdown", {
       pointerId: 1,
       clientX: x + 150,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.Panzoom.$viewport, "pointermove", {
+    triggerEvent(instance.Panzoom.$container, "pointermove", {
       pointerId: 1,
       clientX: x + 50,
       clientY: y + 50,
@@ -627,7 +632,7 @@ describe("Carousel", function () {
 
     await delay(300);
 
-    triggerEvent(instance.Panzoom.$viewport, "pointerup", {
+    triggerEvent(instance.Panzoom.$container, "pointerup", {
       pointerId: 1,
     });
 

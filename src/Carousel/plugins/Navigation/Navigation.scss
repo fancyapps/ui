@@ -38,6 +38,8 @@
   }
 
   @if ($carousel-button-disabled-opacity != false) {
+    transition: opacity 0.15s ease;
+
     &[disabled] {
       cursor: default;
       opacity: $carousel-button-disabled-opacity;

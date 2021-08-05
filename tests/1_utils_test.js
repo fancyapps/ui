@@ -290,8 +290,8 @@ describe("Utils", function () {
   });
 
   describe("round", function () {
-    it("rounds with default precision 1000", async function () {
-      expect(round(12.3456789)).to.be.equal(12.346);
+    it("rounds with default precision 10000", async function () {
+      expect(round(12.3456789)).to.be.equal(12.3457);
     });
 
     it("rounds with custom precision", async function () {

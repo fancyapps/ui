@@ -1,26 +1,20 @@
 .panzoom {
-  overflow: hidden;
   position: relative;
-
-  display: flex;
-  flex-direction: column;
-
-  justify-content: center;
-  align-items: center;
-
-  /* Disable default manipulations by a touchscreen user. For example, zooming features built into the browser */
-  touch-action: none;
+  overflow: hidden;
 }
 
 .panzoom__content {
   max-width: 100%;
   max-height: 100%;
 
-  object-fit: scale-down;
+  object-fit: contain;
 
-  // Remove blurriness
-  filter: none;
-  -webkit-filter: blur(0px);
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-origin: 0 0;
+
+  /* Disable default manipulations by a touchscreen user. For example, zooming features built into the browser */
+  touch-action: none;
+  user-select: none;
 }
 
 .is-draggable {

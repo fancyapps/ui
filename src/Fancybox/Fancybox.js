@@ -8,6 +8,8 @@ import { Carousel } from "../Carousel/Carousel.js";
 
 import { Plugins } from "./plugins/index.js";
 
+import en from "./l10n/en.js";
+
 const defaults = {
   // Index of active slide on the start
   startIndex: 0,
@@ -46,7 +48,7 @@ const defaults = {
   placeFocusBack: true,
 
   // Action to take when the user clicks on the backdrop
-  click: "close", // "close" | "next"
+  click: "close", // "close" | "next" | null
 
   // Position of the close button - over the content or at top right corner of viewport
   closeButton: "inside", // "inside" | "outside"
@@ -88,22 +90,10 @@ const defaults = {
   */
 
   // Localization of strings
-  l10n: {
-    CLOSE: "Close",
-    NEXT: "Next",
-    PREV: "Previous",
-    MODAL: "You can close this modal content with the ESC key",
-    ERROR: "Something Went Wrong, Please Try Again Later",
-    IMAGE_ERROR: "Image Not Found",
-    ELEMENT_NOT_FOUND: "HTML Element Not Found",
-    AJAX_NOT_FOUND: "Error Loading AJAX : Not Found",
-    AJAX_FORBIDDEN: "Error Loading AJAX : Forbidden",
-    IFRAME_ERROR: "Error Loading Page",
-  },
+  l10n: en,
 };
 
 let called = 0;
-let preventScrollSupported = null;
 
 class Fancybox extends Base {
   /**
@@ -112,42 +102,11 @@ class Fancybox extends Base {
    * @param {Object} [options] - Options for Fancybox
    */
   constructor(items, options = {}) {
-    const handleOptions = function (items, options) {
-      const firstOpts = extend(true, {}, items[options.startIndex] || {});
-
-      items.forEach((item) => {
-        const $trigger = item.$trigger;
-
-        if ($trigger) {
-          const dataset = $trigger.dataset || {};
-
-          item.src = dataset.src || $trigger.getAttribute("href") || item.src;
-          item.type = dataset.type || item.type;
-        }
-      });
-
-      return extend(true, {}, Fancybox.defaults, options, firstOpts);
-    };
-
-    // Detect if .focus() method  supports `preventScroll` option,
-    // see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
-    preventScrollSupported = (function () {
-      let rez = false;
-
-      document.createElement("div").focus({
-        get preventScroll() {
-          rez = true;
-          return false;
-        },
-      });
-
-      return rez;
-    })();
-
-    super(handleOptions(items, options));
+    super(extend(true, {}, defaults, options));
 
     this.state = "init";
-    this.items = items;
+
+    this.setItems(items);
 
     this.bindHandlers();
 
@@ -161,7 +120,7 @@ class Fancybox extends Base {
 
     this.initLayout();
 
-    this.initCarousel(this.getSlides());
+    this.initCarousel();
 
     this.attachEvents();
 
@@ -171,6 +130,8 @@ class Fancybox extends Base {
 
     // Reveal container
     this.$container.setAttribute("aria-hidden", "false");
+
+    this.focus();
   }
 
   /**
@@ -183,7 +144,6 @@ class Fancybox extends Base {
       "onClick",
 
       "onCreateSlide",
-      "onSettle",
 
       "onTouchMove",
       "onTouchEnd",
@@ -294,39 +254,50 @@ class Fancybox extends Base {
     // Add class name for <html> element
     document.documentElement.classList.add("with-fancybox");
 
-    this.trigger(`initLayout`);
+    this.trigger("initLayout");
 
     return this;
   }
 
   /**
-   * Gets and prepares slides (gets thumbnails) for the corousel
+   * Prepares slides for the corousel
    * @returns {Array} Slides
    */
-  getSlides() {
-    const slides = [...this.items];
+  setItems(items) {
+    const slides = [];
 
-    slides.forEach((slide) => {
-      // Support items without `src`, e.g., when `data-fancybox` attribute added directly to `<img>` element
-      if (!slide.src && slide.$trigger && slide.$trigger instanceof HTMLImageElement) {
-        slide.src = slide.$trigger.currentSrc || slide.$trigger.src;
+    for (const slide of items) {
+      const $trigger = slide.$trigger;
+
+      if ($trigger) {
+        const dataset = $trigger.dataset || {};
+
+        slide.src = dataset.src || $trigger.getAttribute("href") || slide.src;
+        slide.type = dataset.type || slide.type;
+
+        // Support items without `src`, e.g., when `data-fancybox` attribute added directly to `<img>` element
+        if (!slide.src && $trigger instanceof HTMLImageElement) {
+          slide.src = $trigger.currentSrc || slide.$trigger.src;
+        }
       }
 
       // Check for thumbnail element
       let $thumb = slide.$thumb;
 
-      const origTarget = slide.$trigger && slide.$trigger.origTarget;
+      if (!$thumb) {
+        let origTarget = slide.$trigger && slide.$trigger.origTarget;
 
-      if (origTarget) {
-        if (origTarget instanceof HTMLImageElement) {
-          $thumb = origTarget;
-        } else {
-          $thumb = origTarget.querySelector("img");
+        if (origTarget) {
+          if (origTarget instanceof HTMLImageElement) {
+            $thumb = origTarget;
+          } else {
+            $thumb = origTarget.querySelector("img");
+          }
         }
-      }
 
-      if (!$thumb && slide.$trigger) {
-        $thumb = slide.$trigger instanceof HTMLImageElement ? slide.$trigger : slide.$trigger.querySelector("img");
+        if (!$thumb && slide.$trigger) {
+          $thumb = slide.$trigger instanceof HTMLImageElement ? slide.$trigger : slide.$trigger.querySelector("img");
+        }
       }
 
       slide.$thumb = $thumb || null;
@@ -339,22 +310,27 @@ class Fancybox extends Base {
       }
 
       // Assume we have image, then use it as thumbnail
-      if (!thumb && (!slide.type || slide.type === "image")) {
+      if (!thumb && slide.type === "image") {
         thumb = slide.src;
       }
 
       slide.thumb = thumb || null;
-    });
 
-    return slides;
+      // Add empty caption to make things simpler
+      slide.caption = slide.caption || "";
+
+      slides.push(slide);
+    }
+
+    this.items = slides;
   }
 
   /**
    * Initialize main Carousel that will be used to display the content
    * @param {Array} slides
    */
-  initCarousel(slides) {
-    new Carousel(
+  initCarousel() {
+    this.Carousel = new Carousel(
       this.$carousel,
       extend(
         true,
@@ -368,9 +344,10 @@ class Fancybox extends Base {
 
           textSelection: true,
           preload: this.option("preload"),
+
           friction: 0.88,
 
-          slides: slides,
+          slides: this.items,
           initialPage: this.options.startIndex,
           slidesPerPage: 1,
 
@@ -391,27 +368,30 @@ class Fancybox extends Base {
           },
 
           Panzoom: {
+            textSelection: true,
+
             panOnlyZoomed: () => {
-              return this.Carousel.pages.length < 2 && !this.options.dragToClose;
+              return (
+                this.Carousel && this.Carousel.pages && this.Carousel.pages.length < 2 && !this.options.dragToClose
+              );
             },
             lockAxis: () => {
-              let rez = this.Carousel.pages.length > 1 ? "x" : "";
+              if (this.Carousel) {
+                let rez = "x";
 
-              if (this.options.dragToClose) {
-                rez += "y";
+                if (this.options.dragToClose) {
+                  rez += "y";
+                }
+
+                return rez;
               }
-
-              return rez;
             },
           },
 
           on: {
             "*": (name, ...details) => this.trigger(`Carousel.${name}`, ...details),
-
             init: (carousel) => (this.Carousel = carousel),
-
             createSlide: this.onCreateSlide,
-            settle: this.onSettle,
           },
         },
 
@@ -419,7 +399,7 @@ class Fancybox extends Base {
       )
     );
 
-    if (this.options.dragToClose) {
+    if (this.option("dragToClose")) {
       this.Carousel.Panzoom.on({
         // Stop further touch event handling if content is scaled
         touchMove: this.onTouchMove,
@@ -432,7 +412,7 @@ class Fancybox extends Base {
       });
     }
 
-    this.trigger(`initCarousel`);
+    this.trigger("initCarousel");
 
     return this;
   }
@@ -441,9 +421,13 @@ class Fancybox extends Base {
    * Process `createSlide` event to create caption element inside new slide
    */
   onCreateSlide(carousel, slide) {
-    const caption = slide.caption;
+    let caption = slide.caption || "";
 
-    if (caption) {
+    if (typeof this.options.caption === "function") {
+      caption = this.options.caption.call(this, this, this.Carousel, slide);
+    }
+
+    if (typeof caption === "string" && caption.length) {
       const $caption = document.createElement("div");
       const id = `fancybox__caption_${this.id}_${slide.index}`;
 
@@ -456,13 +440,6 @@ class Fancybox extends Base {
       slide.$el.classList.add("has-caption");
       slide.$el.setAttribute("aria-labelledby", id);
     }
-  }
-
-  /**
-   * Process `settle event to handle focus after animation has ended
-   */
-  onSettle() {
-    this.focus();
   }
 
   /**
@@ -484,13 +461,13 @@ class Fancybox extends Base {
       return;
     }
 
-    const click = this.option("click");
-
-    if (typeof click === "function") {
-      return click.call(this);
+    if (this.trigger("click", event) === false) {
+      return;
     }
 
-    switch (click) {
+    const action = this.option("click");
+
+    switch (action) {
       case "close":
         this.close();
         break;
@@ -506,7 +483,7 @@ class Fancybox extends Base {
   onTouchMove() {
     const panzoom = this.getSlide().Panzoom;
 
-    return panzoom && panzoom.current.scale !== 1 ? false : true;
+    return panzoom && panzoom.content.scale !== 1 ? false : true;
   }
 
   /**
@@ -514,14 +491,16 @@ class Fancybox extends Base {
    * @param {Object} panzoom - Panzoom instance
    */
   onTouchEnd(panzoom) {
-    const distanceY = panzoom.drag.distanceY;
+    const distanceY = panzoom.dragOffset.y;
 
-    if (Math.abs(distanceY) >= 150 || (Math.abs(distanceY) >= 35 && panzoom.drag.elapsedTime < 350)) {
+    if (Math.abs(distanceY) >= 150 || (Math.abs(distanceY) >= 35 && panzoom.dragOffset.time < 350)) {
       if (this.option("hideClass")) {
-        this.getSlide().hideClass = `fancybox-throwOut${panzoom.current.y < 0 ? "Up" : "Down"}`;
+        this.getSlide().hideClass = `fancybox-throwOut${panzoom.content.y < 0 ? "Up" : "Down"}`;
       }
 
       this.close();
+    } else if (panzoom.lockAxis === "y") {
+      panzoom.panTo({ y: 0 });
     }
   }
 
@@ -533,8 +512,8 @@ class Fancybox extends Base {
     const $backdrop = this.$backdrop;
 
     if ($backdrop) {
-      const yPos = Math.abs(panzoom.current.y);
-      const opacity = yPos < 1 ? "" : Math.max(0, Math.min(1, 1 - (yPos / panzoom.$content.clientHeight) * 1.5));
+      const yPos = Math.abs(panzoom.content.y);
+      const opacity = yPos < 1 ? "" : Math.max(0.33, Math.min(1, 1 - (yPos / panzoom.content.fitHeight) * 1.5));
 
       this.$container.style.setProperty("--fancybox-ts", opacity ? "0s" : "");
       this.$container.style.setProperty("--fancybox-opacity", opacity);
@@ -588,12 +567,8 @@ class Fancybox extends Base {
       }
     }
 
-    if (this.trigger("keydown", key) === false) {
+    if (this.trigger("keydown", key, event) === false) {
       return;
-    }
-
-    if (key !== "Enter") {
-      event.preventDefault();
     }
 
     const action = keyboard[key];
@@ -626,11 +601,28 @@ class Fancybox extends Base {
    * @param {Event} [event] - Focus event
    */
   focus(event) {
+    if (this.preventScrollSupported === undefined) {
+      // Detect if .focus() method  supports `preventScroll` option,
+      // see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
+      this.preventScrollSupported = (function () {
+        let rez = false;
+
+        document.createElement("div").focus({
+          get preventScroll() {
+            rez = true;
+            return false;
+          },
+        });
+
+        return rez;
+      })();
+    }
+
     const setFocusOn = (node) => {
       if (node.setActive) {
         // IE/Edge
         node.setActive();
-      } else if (preventScrollSupported) {
+      } else if (this.preventScrollSupported) {
         // Modern browsers
         node.focus({ preventScroll: true });
       } else {
@@ -638,6 +630,10 @@ class Fancybox extends Base {
         node.focus();
       }
     };
+
+    if (["init", "closing", "customClosing", "destroy"].indexOf(this.state) > -1) {
+      return;
+    }
 
     if (event) {
       event.preventDefault();
@@ -661,11 +657,16 @@ class Fancybox extends Base {
 
     const $currentSlide = this.getSlide().$el;
 
+    if (!$currentSlide) {
+      return;
+    }
+
     // Setting `tabIndex` here helps to avoid Safari issues with random focusing and scrolling
     $currentSlide.tabIndex = 0;
 
     const allFocusableElems = [].slice.call(this.$container.querySelectorAll(FOCUSABLE_ELEMENTS));
-    const enabledElems = [];
+
+    let enabledElems = [];
 
     for (let node of allFocusableElems) {
       // Slide element will be the last one, the highest priority has elements having `autofocus` attribute
@@ -691,6 +692,14 @@ class Fancybox extends Base {
     if (this.Carousel.pages.length > 1) {
       enabledElems.push($currentSlide);
     }
+
+    // Sort by tabindex
+    enabledElems.sort(function (a, b) {
+      if (a.tabIndex > b.tabIndex) return -1;
+      if (a.tabIndex < b.tabIndex) return 1;
+
+      return 0;
+    });
 
     const focusedElementIndex = enabledElems.indexOf(document.activeElement);
 
@@ -768,7 +777,7 @@ class Fancybox extends Base {
    */
   clearContent(slide) {
     // * Clear previously added content and class name
-    this.Carousel.trigger("deleteSlide", slide);
+    this.Carousel.trigger("removeSlide", slide);
 
     if (slide.$content) {
       slide.$content.remove();
@@ -826,7 +835,7 @@ class Fancybox extends Base {
 
     slide.$content = $content;
 
-    $el.insertBefore($content, $el.querySelector(".fancybox__caption"));
+    $el.prepend($content);
 
     this.manageCloseButton(slide);
 
@@ -844,7 +853,7 @@ class Fancybox extends Base {
   manageCloseButton(slide) {
     const position = slide.closeButton === undefined ? this.option("closeButton") : slide.closeButton;
 
-    if (!position || (this.$closeButton && position !== "inside")) {
+    if (!position || (position === "top" && this.$closeButton)) {
       return;
     }
 
@@ -882,8 +891,8 @@ class Fancybox extends Base {
 
     if (
       !(
-        slide.state === "error" ||
-        slide.state === "ready" ||
+        slide.error ||
+        slide.state === "loading" ||
         this.Carousel.prevPage !== null ||
         slide.index !== this.options.startIndex
       )
@@ -925,13 +934,13 @@ class Fancybox extends Base {
 
     const handleAnimationEnd = function (event) {
       if (event.currentTarget === this) {
-        $element.classList.remove(className);
-
         $element.removeEventListener("animationend", handleAnimationEnd);
 
         if (callback) {
           callback();
         }
+
+        $element.classList.remove(className);
       }
     };
 
@@ -944,10 +953,6 @@ class Fancybox extends Base {
    * @param {Object} slide - Carousel slide
    */
   done(slide) {
-    if (!(this.state === "init" || this.state === "ready")) {
-      return;
-    }
-
     slide.state = "done";
 
     this.trigger("done", slide);
@@ -966,14 +971,14 @@ class Fancybox extends Base {
    * @param {String} message - Error message, can contain HTML code and template variables
    */
   setError(slide, message) {
-    slide.state = "error";
+    slide.error = message;
 
     this.hideLoading(slide);
     this.clearContent(slide);
 
     // Create new content
-    const div = document.createElement(`div`);
-    div.classList.add(`fancybox-error`);
+    const div = document.createElement("div");
+    div.classList.add("fancybox-error");
     div.innerHTML = this.localize(message || "<p>{{ERROR}}</p>");
 
     this.setContent(slide, div, { suffix: "error" });
@@ -985,8 +990,6 @@ class Fancybox extends Base {
    */
   showLoading(slide) {
     slide.state = "loading";
-
-    this.trigger("load", slide);
 
     slide.$el.classList.add("is-loading");
 
@@ -1005,7 +1008,7 @@ class Fancybox extends Base {
       if (!this.Carousel.Panzoom.velocity) this.close();
     });
 
-    slide.$el.insertBefore($spinner, slide.$el.firstChild);
+    slide.$el.prepend($spinner);
   }
 
   /**
@@ -1022,6 +1025,8 @@ class Fancybox extends Base {
     }
 
     if (slide.state === "loading") {
+      this.trigger("load", slide);
+
       slide.state = "ready";
     }
   }
@@ -1089,6 +1094,7 @@ class Fancybox extends Base {
       return;
     }
 
+    // Trigger default CSS closing animation for backdrop and interface elements
     this.$container.setAttribute("aria-hidden", "true");
 
     this.$container.classList.add("is-closing");
@@ -1106,9 +1112,14 @@ class Fancybox extends Base {
     if (this.state === "closing") {
       const hideClass = currentSlide.hideClass === undefined ? this.option("hideClass") : currentSlide.hideClass;
 
-      this.animateCSS(currentSlide.$content, hideClass, () => {
-        this.destroy();
-      });
+      this.animateCSS(
+        currentSlide.$content,
+        hideClass,
+        () => {
+          this.destroy();
+        },
+        true
+      );
     }
   }
 
@@ -1123,7 +1134,7 @@ class Fancybox extends Base {
     const $trigger = this.option("placeFocusBack") ? this.getSlide().$trigger : null;
 
     // Destroy Carousel and then detach plugins;
-    // * Note: this order allows plugins to receive `deleteSlide` event
+    // * Note: this order allows plugins to receive `removeSlide` event
     this.Carousel.destroy();
 
     this.detachPlugins();
@@ -1141,7 +1152,7 @@ class Fancybox extends Base {
       // `preventScroll` option is not yet supported by Safari
       // https://bugs.webkit.org/show_bug.cgi?id=178583
 
-      if (preventScrollSupported) {
+      if (this.preventScrollSupported) {
         $trigger.focus({ preventScroll: true });
       } else {
         const scrollTop = document.body.scrollTop; // Save position
@@ -1182,22 +1193,23 @@ class Fancybox extends Base {
    */
   static fromEvent(event, options = {}) {
     //  Allow other scripts to prevent starting fancybox on click
-    if (event.defaultPrevented) return;
+    if (event.defaultPrevented) {
+      return;
+    }
 
     // Don't run if right-click
-    if (event.button && event.button !== 0) return;
+    if (event.button && event.button !== 0) {
+      return;
+    }
 
     // Ignore command/control + click
     if (event.ctrlKey || event.metaKey || event.shiftKey) {
       return;
     }
 
-    let rez = false;
-    let target;
-    let found;
-
+    // Support `trigger` element, e.g., start fancybox from different DOM element, for example,
+    // to have one preview image for hidden image gallery
     let eventTarget = event.target;
-
     let triggerGroupName;
 
     if (
@@ -1219,6 +1231,9 @@ class Fancybox extends Base {
     }
 
     // * Try to find matching openener
+    let matchingOpener;
+    let target;
+
     Array.from(Fancybox.openers.keys())
       .reverse()
       .some((opener) => {
@@ -1232,25 +1247,29 @@ class Fancybox extends Base {
 
         event.preventDefault();
 
-        found = opener;
+        matchingOpener = opener;
 
         return true;
       });
 
-    if (found) {
+    let rez = false;
+
+    if (matchingOpener) {
+      options.event = event;
       options.target = target;
+
       target.origTarget = event.target;
 
-      rez = Fancybox.fromOpener(found, options);
-    }
+      rez = Fancybox.fromOpener(matchingOpener, options);
 
-    // Check if the mouse is being used
-    // Waiting for better browser support for `:focus-visible` -
-    // https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo
-    const nextInstance = Fancybox.getInstance();
+      // Check if the mouse is being used
+      // Waiting for better browser support for `:focus-visible` -
+      // https://drafts.csswg.org/selectors-4/#the-focus-visible-pseudo
+      const nextInstance = Fancybox.getInstance();
 
-    if (nextInstance && nextInstance.state === "ready" && event.detail) {
-      document.body.classList.add("is-using-mouse");
+      if (nextInstance && nextInstance.state === "ready" && event.detail) {
+        document.body.classList.add("is-using-mouse");
+      }
     }
 
     return rez;
@@ -1266,7 +1285,7 @@ class Fancybox extends Base {
     // 1) converts data attributes to boolean or JSON
     // 2) removes values that could cause issues
     const mapCallback = function (el) {
-      const falseValues = ["false", "0", "no", "null"];
+      const falseValues = ["false", "0", "no", "null", "undefined"];
       const trueValues = ["true", "1", "yes"];
 
       const options = Object.assign({}, el.dataset);
@@ -1298,41 +1317,25 @@ class Fancybox extends Base {
     };
 
     let items = [],
-      index = options.startIndex || 0;
+      index = options.startIndex || 0,
+      target = options.target || null;
 
     // Get options
     options = extend({}, options, Fancybox.openers.get(opener));
 
-    // Check what data attribute is used to indicate group items
-    let groupAttr = options.groupAttr;
+    // Get matching nodes
+    const groupAttr = options.groupAttr === undefined ? "data-fancybox" : options.groupAttr;
+    const groupValue = groupAttr && target && target.getAttribute(`${groupAttr}`);
 
-    if (groupAttr === undefined) {
-      groupAttr = "data-fancybox";
-    }
+    const groupAll = options.groupAll === undefined ? false : options.groupAll;
 
-    let target = options.target;
+    if (groupAll || groupValue) {
+      items = [].slice.call(document.querySelectorAll(opener));
 
-    if (groupAttr) {
-      if (target && opener && opener === `[${groupAttr}]`) {
-        const groupValue = target.getAttribute(`${groupAttr}`);
-
-        if (groupValue && groupValue.length && groupValue !== "true") {
-          opener = `[${groupAttr}='${groupValue}']`;
-        } else {
-          // If this is empty value, then do not group items
-          opener = false;
-        }
+      if (!groupAll) {
+        items = items.filter((el) => el.getAttribute(`${groupAttr}`) === groupValue);
       }
     } else {
-      opener = false;
-    }
-
-    // Get matching nodes
-    if (opener) {
-      items = [].slice.call(document.querySelectorAll(opener));
-    }
-
-    if (!items.length && target) {
       items = [target];
     }
 
@@ -1466,10 +1469,6 @@ Fancybox.openers = new Map();
 
 // Add default plugins
 Fancybox.Plugins = Plugins;
-
-// Detect mobile device
-Fancybox.isMobile = () =>
-  navigator ? /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) : false;
 
 // Auto init with default options
 Fancybox.bind("[data-fancybox]");

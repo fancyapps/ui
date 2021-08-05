@@ -7,6 +7,6 @@
  */
 export const resolve = function (path, obj) {
   return path.split(".").reduce(function (prev, curr) {
-    return prev[curr];
+    return prev && prev[curr];
   }, obj);
 };

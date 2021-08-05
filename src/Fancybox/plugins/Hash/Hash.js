@@ -20,9 +20,14 @@ export class Hash {
   constructor(fancybox) {
     this.fancybox = fancybox;
 
+    for (const methodName of ["onChange", "onClosing"]) {
+      this[methodName] = this[methodName].bind(this);
+    }
+
     this.events = {
-      closing: this.onClosing.bind(this),
-      "Carousel.ready Carousel.change": this.onChange.bind(this),
+      initCarousel: this.onChange,
+      "Carousel.change": this.onChange,
+      closing: this.onClosing,
     };
 
     this.hasCreatedHistory = false;
@@ -35,7 +40,10 @@ export class Hash {
    * @param {Object} fancybox
    * @param {Object} carousel
    */
-  onChange(fancybox, carousel) {
+  onChange() {
+    const fancybox = this.fancybox;
+    const carousel = fancybox.Carousel;
+
     if (this.timer) {
       clearTimeout(this.timer);
     }
@@ -43,6 +51,7 @@ export class Hash {
     const firstRun = carousel.prevPage === null;
 
     const slide = fancybox.getSlide();
+
     const dataset = slide.$trigger && slide.$trigger.dataset;
 
     const currentHash = window.location.hash.substr(1);
@@ -227,9 +236,8 @@ export class Hash {
     }
 
     /**
-     * Wait for document to be been completely loaded and parsed to attempt to start Fancybox
+     * Attempt to start Fancybox
      */
-
     window.requestAnimationFrame(() => {
       Hash.onReady();
     });

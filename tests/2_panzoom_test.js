@@ -5,13 +5,15 @@ const expect = chai.expect;
 
 const markupWithImage = `
    <div class="panzoom" style="width:225px;height:150px;">
-    <img class="panzoom__content" src="./assets/300_200.png" />
+    <img class="panzoom__content" src="./assets/300_200.png" draggable="false" />
   </div>
 `;
 
 const markupWithDiv = `
    <div class="panzoom" style="width:225px;height:150px;">
-    <div class="panzoom__content" style="width:400px;height:100px;max-width:none;background:#eee;"></div>
+    <div class="panzoom__content">
+      <div style="width:400px;height:100px;max-width:none;background:#eee;"></div>
+    </div>
   </div>
 `;
 
@@ -53,18 +55,21 @@ describe("Panzoom", function () {
   function createInstanceWithDiv(opts = {}) {
     const viewport = createSandbox(markupWithDiv).querySelector(".panzoom");
 
+    opts = extend(true, { zoom: false }, opts);
+
     return new Panzoom(viewport, opts);
   }
 
-  function createInstanceWithImage(opts = {}, zoomedIn = false) {
+  async function createInstanceWithImage(opts = {}, zoomedIn = false) {
     const viewport = createSandbox(markupWithImage).querySelector(".panzoom");
 
     return new Promise((resolve) => {
       if (zoomedIn) {
         opts = extend(true, {}, opts, {
+          zoomFriction: 0.1,
           on: {
             load: (instance) => {
-              instance.once("afterAnimate", () => {
+              instance.once("endAnimation", () => {
                 resolve(instance);
               });
 
@@ -87,7 +92,7 @@ describe("Panzoom", function () {
   }
 
   function destroyInstance(instance) {
-    const sandbox = instance.$viewport.parentNode;
+    const sandbox = instance.$container.parentNode;
     instance.destroy();
     sandbox.parentNode.removeChild(sandbox);
   }
@@ -115,16 +120,21 @@ describe("Panzoom", function () {
   it("updates image dimensions and position after container resizes", async function () {
     const instance = await createInstanceWithImage();
 
-    instance.$viewport.style.width = "180px";
-    instance.$viewport.style.height = "180px";
+    await delay(50);
 
-    await delay(20);
+    instance.$container.style.width = "180px";
+    instance.$container.style.height = "180px";
 
-    expect(instance.$content.clientWidth).to.equal(180);
-    expect(instance.$content.clientHeight).to.equal(120);
+    await delay(300);
 
-    expect(instance.$content.offsetTop).to.equal(30);
-    expect(instance.$content.offsetLeft).to.equal(0);
+    const contentRect = instance.$content.getBoundingClientRect();
+    const parentRect = instance.$content.parentNode.getBoundingClientRect();
+
+    expect(contentRect.width).to.equal(180);
+    expect(contentRect.height).to.equal(120);
+
+    expect(contentRect.top - parentRect.top).to.equal(30);
+    expect(contentRect.left - parentRect.left).to.equal(0);
 
     destroyInstance(instance);
   });
@@ -136,27 +146,25 @@ describe("Panzoom", function () {
 
     // Scale to max zoom level
     result = await new Promise((resolve) => {
-      instance.once("afterAnimate", (that) => {
-        resolve(that.$content.style.transform);
+      instance.once("endAnimation", (that) => {
+        resolve(that);
       });
 
       instance.toggleZoom();
     });
 
-    expect(result).to.equal("translate(0px, 0px) scale(2.6667)");
-    expect(instance.current.scale).to.be.closeTo(2.6667, 0.1);
+    expect(result.transform.scale).to.be.closeTo(1.3333, 0.1);
 
     // Scale to fit
     result = await new Promise((resolve) => {
-      instance.once("afterAnimate", (that) => {
-        resolve(that.$content.style.transform);
+      instance.once("endAnimation", (that) => {
+        resolve(that);
       });
 
       instance.toggleZoom();
     });
 
-    expect(result).to.equal("");
-    expect(instance.current.scale).to.be.equal(1);
+    expect(result.transform.scale).to.equal(1);
 
     destroyInstance(instance);
   });
@@ -164,22 +172,26 @@ describe("Panzoom", function () {
   it("updates bounds after changing zoom level", async function () {
     const instance = await createInstanceWithImage();
 
-    expect(instance.boundX).to.deep.equal({ from: 0, to: 0 });
-    expect(instance.boundY).to.deep.equal({ from: 0, to: 0 });
+    let bounds = instance.getBounds();
+
+    expect(bounds.boundX).to.deep.equal({ from: 0, to: 0 });
+    expect(bounds.boundY).to.deep.equal({ from: 0, to: 0 });
 
     await new Promise((resolve) => {
-      instance.on("afterAnimate", () => {
+      instance.on("endAnimation", () => {
         resolve();
       });
 
       instance.zoomTo(2);
     });
 
-    // Horizontal bounds will be +/- (450 - 225) / 2 (where 450 is double wrap width)
-    expect(instance.boundX).to.deep.equal({ from: -112.5, to: 112.5 });
+    bounds = { ...bounds, ...instance.getBounds() };
 
-    // Vertical bounds will be +/- (300 - 150) / 2 (where 300 is double wrap height)
-    expect(instance.boundY).to.deep.equal({ from: -75, to: 75 });
+    // Left bound will be `300 - 225`
+    expect(bounds.boundX).to.deep.equal({ from: -75, to: 0 });
+
+    // Top bound will be `300 - 150`
+    expect(bounds.boundY).to.deep.equal({ from: -50, to: 0 });
 
     destroyInstance(instance);
   });
@@ -189,13 +201,13 @@ describe("Panzoom", function () {
 
     const clickAtXY = function (x, y) {
       return new Promise((resolve) => {
-        instance.on("afterAnimate", (that) => {
-          resolve(that.$content.style.transform);
+        instance.on("endAnimation", (that) => {
+          resolve(that);
         });
 
-        triggerEvent(instance.$viewport, "click", {
-          clientX: instance.$content.getClientRects()[0].left + x,
-          clientY: instance.$content.getClientRects()[0].top + y,
+        triggerEvent(instance.$content, "click", {
+          clientX: instance.$content.getBoundingClientRect().left + x,
+          clientY: instance.$content.getBoundingClientRect().top + y,
         });
       });
     };
@@ -203,7 +215,9 @@ describe("Panzoom", function () {
     // Click top left corner
     const result1 = await clickAtXY(0, 0);
 
-    expect(result1).to.equal("translate(187.5px, 125px) scale(2.6667)");
+    expect(result1.$content.style.transform).to.equal("translate3d(0px, 0px, 0px) scale(1)");
+    expect(result1.$content.style.width).to.equal("300px");
+    expect(result1.$content.style.height).to.equal("200px");
 
     // Reset zoom level
     await clickAtXY(0, 0);
@@ -211,7 +225,7 @@ describe("Panzoom", function () {
     // Click bottom right corner
     const result2 = await clickAtXY(225, 150);
 
-    expect(result2).to.equal("translate(-187.5px, -125px) scale(2.6667)");
+    expect(result2.$content.style.transform).to.equal("translate3d(-75px, -50px, 0px) scale(1)");
 
     destroyInstance(instance);
   });
@@ -222,26 +236,32 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$viewport, "pointerdown", {
+    triggerEvent(instance.$container, "pointerdown", {
       pointerId: 1,
-      clientX: x + 20,
-      clientY: y + 20,
+      clientX: x + 60,
+      clientY: y + 60,
     });
 
-    triggerEvent(instance.$viewport, "pointermove", {
+    expect(instance.$content.style.transform).to.equal("translate3d(-37.5px, -25px, 0px) scale(1)");
+
+    triggerEvent(instance.$container, "pointermove", {
       pointerId: 1,
       clientX: x + 40,
       clientY: y + 60,
     });
 
-    await delay();
+    await delay(250);
 
-    triggerEvent(instance.$viewport, "pointerup", {
+    // It should be moved
+    expect(instance.dragOffset.x).to.equal(-20);
+    expect(instance.dragOffset.y).to.equal(0);
+
+    expect(instance.content.x).to.be.closeTo(-57.5, 0.5);
+    expect(instance.content.y).to.equal(-25);
+
+    triggerEvent(instance.$container, "pointerup", {
       pointerId: 1,
     });
-
-    // It should be moved 20px horizontally and 40px vertically
-    expect(instance.$content.style.transform).to.equal("translate(20px, 40px) scale(2.6667)");
 
     destroyInstance(instance);
   });
@@ -249,42 +269,51 @@ describe("Panzoom", function () {
   it("has drag resistance", async function () {
     const instance = await createInstanceWithImage({}, true);
 
-    expect(instance.boundX).to.deep.equal({ from: -187.5, to: 187.5 });
-    expect(instance.boundY).to.deep.equal({ from: -125, to: 125 });
+    const bounds = instance.getBounds();
+
+    expect(bounds.boundX).to.deep.equal({ from: -75, to: 0 });
+    expect(bounds.boundY).to.deep.equal({ from: -50, to: 0 });
 
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$viewport, "pointerdown", {
+    triggerEvent(instance.$container, "pointerdown", {
       pointerId: 1,
       clientX: x,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.$viewport, "pointermove", {
+    await delay();
+
+    triggerEvent(instance.$container, "pointermove", {
       pointerId: 1,
       clientX: x + 300,
       clientY: y + 50,
     });
 
-    // // Wait for dragging animation to end
+    // Wait for dragging animation to end
     await delay();
 
     // Test drag resistance outside boundaries
     // =======
 
-    expect(instance.drag.endPosition.x).to.be.equal(instance.boundX.to + (300 - instance.boundX.to) * 0.3);
+    expect(instance.dragPosition.x).to.be.equal((instance.dragStart.x + 300) * 0.3);
 
     // Test if content is pulled back inside boundaries
     // ======
-    instance.once("afterAnimate", (that) => {
-      expect(instance.current.x).to.be.closeTo(187.5, 0.5);
+
+    const result = await new Promise((resolve) => {
+      instance.on("endAnimation", (that) => {
+        resolve(that);
+      });
+
+      // This will Start pull-back animation
+      triggerEvent(instance.$container, "pointerup", {
+        pointerId: 1,
+      });
     });
 
-    // This will Start pull-back animation
-    triggerEvent(instance.$viewport, "pointerup", {
-      pointerId: 1,
-    });
+    expect(result.content.x).to.be.closeTo(0, 0.5);
 
     destroyInstance(instance);
   });
@@ -297,13 +326,15 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$viewport, "pointerdown", {
+    triggerEvent(instance.$container, "pointerdown", {
       pointerId: 1,
       clientX: x + 50,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.$viewport, "pointermove", {
+    await delay();
+
+    triggerEvent(instance.$container, "pointermove", {
       pointerId: 1,
       clientX: x + 30,
       clientY: y + 30,
@@ -312,45 +343,43 @@ describe("Panzoom", function () {
     // Wait for animation
     await delay();
 
-    triggerEvent(instance.$viewport, "pointerup", {
+    expect(instance.content.x).to.be.closeTo(-20, 0.5);
+    expect(instance.content.y).to.be.equal(25);
+
+    triggerEvent(instance.$container, "pointerup", {
       pointerId: 1,
     });
-
-    expect(instance.current.x).to.be.closeTo(-20, 0.5);
-    expect(instance.current.y).to.be.equal(0);
 
     destroyInstance(instance);
   });
 
   it('should lock on correct axis if `lockAxis:"xy"', async function () {
-    const instance = createInstanceWithDiv({
-      lockAxis: "xy",
-    });
+    const instance = await createInstanceWithDiv({ lockAxis: "xy" }, true);
 
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$viewport, "pointerdown", {
+    triggerEvent(instance.$container, "pointerdown", {
       pointerId: 1,
       clientX: x + 50,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.$viewport, "pointermove", {
+    triggerEvent(instance.$container, "pointermove", {
       pointerId: 1,
-      clientX: x + 52,
-      clientY: y + 60,
+      clientX: x + 45,
+      clientY: y + 40,
     });
 
     // Wait for animation
     await delay();
 
-    triggerEvent(instance.$viewport, "pointerup", {
+    expect(instance.content.y).to.be.closeTo(22, 0.5);
+    expect(instance.content.x).to.equal(0);
+
+    triggerEvent(instance.$container, "pointerup", {
       pointerId: 1,
     });
-
-    expect(instance.current.x).to.be.equal(0);
-    expect(instance.current.y).to.be.closeTo(3, 0.5);
 
     destroyInstance(instance);
   });
@@ -358,12 +387,13 @@ describe("Panzoom", function () {
   it("can zoom on wheel", async function () {
     const instance = await createInstanceWithImage();
 
+    expect(instance.content.width).to.equal(225);
+    expect(instance.content.height).to.equal(150);
+
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    expect(instance.contentDim).to.deep.equal({ width: 225, height: 150 });
-
-    const event = triggerEvent(instance.$viewport, "wheel", {
+    const event = triggerEvent(instance.$content, "wheel", {
       deltaY: -1,
       clientX: x + 100,
       clientY: y + 100,
@@ -373,8 +403,8 @@ describe("Panzoom", function () {
     await delay();
 
     // Check if content is zoomed
-    expect(instance.$content.style.transform).to.equal("translate(3.75px, -7.5px) scale(1.3)");
-    expect(instance.current.scale).to.equal(1.3);
+    expect(instance.$content.style.transform).to.equal("translate3d(-33.3333px, -33.3333px, 0px) scale(1)");
+    expect(instance.content.scale).to.be.closeTo(1.333, 0.01);
 
     // Check if an event was prevented with e.preventDefault()
     expect(event.defaultPrevented).to.be.true;
@@ -390,37 +420,50 @@ describe("Panzoom", function () {
 
     let event;
 
-    // It should take 4 wheel events to reach max zoom level
-    for (let i = 0; i <= 4; i++) {
-      event = triggerEvent(instance.$viewport, "wheel", {
+    // It should take 5 wheel events to reach max zoom level
+    for (let i = 0; i <= 5; i++) {
+      event = triggerEvent(instance.$content, "wheel", {
         deltaY: -1,
         clientX: x + 80,
         clientY: y + 80,
       });
 
-      await delay(200);
+      if (i === 0) {
+        await delay(500);
+      }
 
       expect(event.defaultPrevented).to.be.true;
     }
 
     // Check if max level is reached
-    expect(instance.current.scale).to.be.closeTo(instance.option("maxScale"), 0.1);
+    expect(instance.content.scale).to.be.closeTo(instance.option("maxScale"), 0.01);
+
+    // Simulate one event
+    event = triggerEvent(instance.$content, "wheel", {
+      deltaY: 1,
+      clientX: x + 80,
+      clientY: y + 80,
+    });
+
+    await delay(500);
+
+    // It should now be past limit
+    expect(event.defaultPrevented).to.be.true;
 
     // Simulate wheel events to reach wheel count limit
-    for (let i = 0; i < 3; i++) {
-      event = triggerEvent(instance.$viewport, "wheel", {
-        deltaY: -1,
+    for (let i = 0; i < 5; i++) {
+      event = triggerEvent(instance.$content, "wheel", {
+        deltaY: 1,
         clientX: x + 80,
         clientY: y + 80,
       });
 
       expect(event.defaultPrevented).to.be.true;
-      expect(instance.velocity.scale).to.equal(0);
     }
 
     // Simulate one more event
-    event = triggerEvent(instance.$viewport, "wheel", {
-      deltaY: -1,
+    event = triggerEvent(instance.$container, "wheel", {
+      deltaY: 1,
       clientX: x + 80,
       clientY: y + 80,
     });
@@ -439,132 +482,16 @@ describe("Panzoom", function () {
         resolve(true);
       });
 
-      triggerEvent(instance.$viewport, "click");
+      let x = instance.$content.getClientRects()[0].left;
+      let y = instance.$content.getClientRects()[0].top;
+
+      triggerEvent(instance.$content, "click", {
+        clientX: x + 1,
+        clientY: y + 1,
+      });
     });
 
     expect(result).to.be.true;
-
-    destroyInstance(instance);
-  });
-
-  it("has double-click event", async function () {
-    let result = "";
-
-    const instance = await createInstanceWithImage({
-      on: {
-        click: () => {
-          result = "single";
-        },
-        doubleClick: () => {
-          result = "double";
-        },
-      },
-    });
-
-    let x = instance.$content.getClientRects()[0].left;
-    let y = instance.$content.getClientRects()[0].top;
-
-    // First click
-    triggerEvent(instance.$viewport, "click", {
-      clientX: x + 11,
-      clientY: y + 11,
-    });
-
-    expect(result).to.equal("");
-
-    // Second click within allowed distance and time
-    await delay(10);
-
-    triggerEvent(instance.$viewport, "click", {
-      clientX: x + 15,
-      clientY: y + 15,
-    });
-
-    expect(result).to.equal("double");
-
-    destroyInstance(instance);
-  });
-
-  it("should prevent click event after dragging", async function () {
-    let result = "idle";
-
-    const instance = await createInstanceWithImage({
-      on: {
-        click: () => {
-          result += "click#a";
-        },
-      },
-    });
-
-    instance.$viewport.addEventListener("click", () => {
-      result += "click#b";
-    });
-
-    let x = instance.$content.getClientRects()[0].left;
-    let y = instance.$content.getClientRects()[0].top;
-
-    triggerEvent(instance.$viewport, "pointerdown", {
-      pointerId: 1,
-      clientX: x + 10,
-      clientY: y + 10,
-    });
-
-    triggerEvent(instance.$viewport, "pointermove", {
-      pointerId: 1,
-      clientX: x + 20,
-      clientY: y + 20,
-    });
-
-    triggerEvent(instance.$viewport, "pointerup", {
-      pointerId: 1,
-    });
-
-    // Trigger click event
-    triggerEvent(instance.$viewport, "click");
-
-    expect(result).to.equal("idle");
-
-    destroyInstance(instance);
-  });
-
-  it("should not prevent click event after a tiny flick", async function () {
-    let result = "idle";
-
-    const instance = await createInstanceWithImage({
-      on: {
-        click: () => {
-          result += "click#a";
-        },
-      },
-    });
-
-    instance.$viewport.addEventListener("click", () => {
-      result += "click#b";
-    });
-
-    const x = instance.$content.getClientRects()[0].left;
-    const y = instance.$content.getClientRects()[0].top;
-
-    triggerEvent(instance.$viewport, "pointerdown", {
-      pointerId: 1,
-      clientX: x + 10,
-      clientY: y + 10,
-    });
-
-    triggerEvent(instance.$viewport, "pointermove", {
-      pointerId: 1,
-      clientX: x + 12,
-      clientY: y + 12,
-    });
-
-    triggerEvent(instance.$viewport, "pointerup", {
-      pointerId: 1,
-    });
-
-    // Trigger click event
-    triggerEvent(instance.$viewport, "click");
-
-    expect(result).to.equal("idleclick#aclick#b");
 
     destroyInstance(instance);
   });
@@ -575,33 +502,34 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$viewport, "pointerdown", {
+    triggerEvent(instance.$content, "pointerdown", {
+      pointerId: 1,
+      clientX: x + 40,
+      clientY: y + 40,
+    });
+
+    triggerEvent(instance.$content, "pointermove", {
       pointerId: 1,
       clientX: x + 20,
       clientY: y + 20,
     });
 
-    triggerEvent(instance.$viewport, "pointermove", {
-      pointerId: 1,
-      clientX: x + 40,
-      clientY: y + 20,
-    });
-
     // Animation would start
-    await delay(150);
+    await delay(300);
 
-    expect(instance.current.x).to.be.closeTo(6, 1);
-    expect(instance.current.y).to.be.equal(0);
+    expect(instance.content.x).to.be.closeTo(-6, 1);
+    expect(instance.content.y).to.be.closeTo(-6, 1);
 
-    triggerEvent(instance.$viewport, "pointerup", {
+    triggerEvent(instance.$container, "pointerup", {
       pointerId: 1,
     });
 
     // Wait for pull-back animation
-    await delay();
+    await delay(300);
 
     // Test if content is pulled back
-    expect(instance.current.x).to.equal(0);
+    expect(instance.content.x).to.be.closeTo(0, 1);
+    expect(instance.content.y).to.be.closeTo(0, 1);
 
     destroyInstance(instance);
   });
@@ -618,69 +546,27 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$viewport, "pointerdown", {
-      pointerId: 1,
-      clientX: x + 10,
-      clientY: y + 10,
-    });
-
-    triggerEvent(instance.$viewport, "pointermove", {
+    triggerEvent(instance.$content, "pointerdown", {
       pointerId: 1,
       clientX: x + 50,
       clientY: y + 50,
     });
 
-    // Animation would start
-    await delay(50);
-
-    expect(instance.current.x).to.be.equal(0);
-    expect(instance.current.y).to.be.equal(0);
-
-    triggerEvent(instance.$viewport, "pointerup", {
-      pointerId: 1,
-    });
-
-    destroyInstance(instance);
-  });
-
-  it("should prevent click event after dragging", async function () {
-    let result = "idle";
-
-    const instance = await createInstanceWithImage({
-      on: {
-        click: () => {
-          result += "click#a";
-        },
-      },
-    });
-
-    instance.$viewport.addEventListener("click", () => {
-      result += "click#b";
-    });
-
-    const x = instance.$content.getClientRects()[0].left;
-    const y = instance.$content.getClientRects()[0].top;
-
-    triggerEvent(instance.$viewport, "pointerdown", {
+    triggerEvent(instance.$content, "pointermove", {
       pointerId: 1,
       clientX: x + 10,
       clientY: y + 10,
     });
 
-    triggerEvent(instance.$viewport, "pointermove", {
+    // Animation would start
+    await delay(50);
+
+    expect(instance.content.x).to.be.equal(0);
+    expect(instance.content.y).to.be.equal(0);
+
+    triggerEvent(instance.$content, "pointerup", {
       pointerId: 1,
-      clientX: x + 20,
-      clientY: y + 20,
     });
-
-    triggerEvent(instance.$viewport, "pointerup", {
-      pointerId: 1,
-    });
-
-    // Trigger click event
-    triggerEvent(instance.$viewport, "click");
-
-    expect(result).to.equal("idle");
 
     destroyInstance(instance);
   });
@@ -692,10 +578,10 @@ describe("Panzoom", function () {
 
     await delay();
 
-    expect(instance.current.x).to.be.equal(0);
-    expect(instance.current.y).to.be.equal(0);
+    expect(instance.content.x).to.be.equal(0);
+    expect(instance.content.y).to.be.equal(0);
 
-    triggerEvent(instance.$viewport, "pointerup", {
+    triggerEvent(instance.$content, "pointerup", {
       pointerId: 1,
     });
 
@@ -709,10 +595,10 @@ describe("Panzoom", function () {
 
     await delay();
 
-    expect(instance.current.x).to.be.equal(10);
-    expect(instance.current.y).to.be.equal(10);
+    expect(instance.content.x).to.be.equal(10);
+    expect(instance.content.y).to.be.equal(10);
 
-    triggerEvent(instance.$viewport, "pointerup", {
+    triggerEvent(instance.$content, "pointerup", {
       pointerId: 1,
     });
 

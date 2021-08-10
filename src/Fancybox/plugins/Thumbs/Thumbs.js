@@ -139,7 +139,7 @@ export class Thumbs {
 
       if (thumb) {
         slides.push({
-          html: `<div class="fancybox__thumb" style="background-image:url(${thumb})"></div>`,
+          html: `<div class="fancybox__thumb" style="background-image:url('${thumb}')"></div>`,
           customClass: `has-thumb has-${slide.type || "image"}`,
         });
       }

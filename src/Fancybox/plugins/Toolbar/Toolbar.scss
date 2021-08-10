@@ -19,7 +19,7 @@
   @include fancybox-breakpoint(toolbar);
 
   opacity: var(--fancybox-opacity, 1);
-  text-shadow: var(--fancybox-toolbar-text-shadow, 1px 1px 1px rgb(0 0 0 / 40%));
+  text-shadow: var(--fancybox-toolbar-text-shadow, 1px 1px 1px rgba(0, 0, 0, 0.4));
 
   .fancybox__container.is-animated[aria-hidden="false"] & {
     animation: 0.15s ease-in backwards fancybox-fadeIn;

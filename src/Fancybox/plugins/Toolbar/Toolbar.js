@@ -216,6 +216,10 @@ export class Toolbar {
     }
   }
 
+  onFsChange() {
+    window.scrollTo(Fullscreen.pageXOffset, Fullscreen.pageYOffset);
+  }
+
   onSettle() {
     if (this.Slideshow && this.Slideshow.isActive()) {
       if (
@@ -273,6 +277,8 @@ export class Toolbar {
     if (this.Slideshow) {
       this.Slideshow.deactivate();
     }
+
+    document.removeEventListener("fullscreenchange", this.onFsChange);
   }
 
   /**
@@ -357,8 +363,12 @@ export class Toolbar {
         continue;
       }
 
-      if (id === "fullscreen" && (!document.fullscreenEnabled || window.fullScreen)) {
-        continue;
+      if (id === "fullscreen") {
+        if (!document.fullscreenEnabled || window.fullScreen) {
+          continue;
+        }
+
+        document.addEventListener("fullscreenchange", this.onFsChange);
       }
 
       if (id === "thumbs" && (!thumbs || thumbs.state === "disabled")) {

@@ -1,15 +1,17 @@
 .fancybox__carousel {
-  & .is-draggable {
+  &.is-draggable .fancybox__slide,
+  &.is-draggable .fancybox__slide .fancybox__content {
     cursor: move;
     cursor: grab;
   }
 
-  & .is-dragging {
+  &.is-dragging .fancybox__slide,
+  &.is-dragging .fancybox__slide .fancybox__content {
     cursor: move;
     cursor: grabbing;
   }
 
-  & .fancybox__slide:not(.has-image) .fancybox__content {
+  & .fancybox__slide .fancybox__content {
     cursor: auto;
   }
 
@@ -19,5 +21,15 @@
 
   & .fancybox__slide.can-zoom_out .fancybox__content {
     cursor: zoom-out;
+  }
+
+  & .fancybox__slide.is-draggable .fancybox__content {
+    cursor: move;
+    cursor: grab;
+  }
+
+  & .fancybox__slide.is-dragging .fancybox__content {
+    cursor: move;
+    cursor: grabbing;
   }
 }

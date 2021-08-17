@@ -9,7 +9,7 @@ export const Plugins = {
   ScrollLock,
   Thumbs,
   Html,
+  Toolbar,
   Image,
   Hash,
-  Toolbar,
 };

@@ -138,7 +138,7 @@ export class Toolbar {
 
     for (const methodName of [
       "onInit",
-      "onReady",
+      "onPrepare",
       "onDone",
       "onKeydown",
       "onClosing",
@@ -151,7 +151,7 @@ export class Toolbar {
 
     this.events = {
       init: this.onInit,
-      ready: this.onReady,
+      prepare: this.onPrepare,
       done: this.onDone,
       keydown: this.onKeydown,
       closing: this.onClosing,
@@ -200,7 +200,8 @@ export class Toolbar {
     }
   }
 
-  onReady() {
+  onPrepare() {
+    // Skip if disabled
     if (this.state !== "init") {
       return;
     }
@@ -211,8 +212,16 @@ export class Toolbar {
 
     this.Slideshow = new Slideshow(this.fancybox);
 
-    if (this.fancybox.option("slideshow.autoStart") && !this.fancybox.Carousel.prevPage) {
-      this.Slideshow.activate();
+    if (!this.fancybox.Carousel.prevPage) {
+      if (this.fancybox.option("slideshow.autoStart")) {
+        this.Slideshow.activate();
+      }
+
+      if (this.fancybox.option("fullscreen.autoStart") && !Fullscreen.element()) {
+        try {
+          Fullscreen.activate(this.fancybox.$container);
+        } catch (error) {}
+      }
     }
   }
 
@@ -359,7 +368,7 @@ export class Toolbar {
         item = all_items[id];
       }
 
-      if (["counter", "next", "prev", "slideshow"].includes(id) && this.fancybox.Carousel.slides.length < 2) {
+      if (["counter", "next", "prev", "slideshow"].includes(id) && this.fancybox.items.length < 2) {
         continue;
       }
 
@@ -407,7 +416,7 @@ export class Toolbar {
     }
 
     // Add toolbar container to DOM
-    this.fancybox.$container.insertBefore($container, this.fancybox.$backdrop.nextSibling);
+    this.fancybox.$carousel.parentNode.insertBefore($container, this.fancybox.$carousel);
 
     this.$container = $container;
   }
@@ -417,6 +426,8 @@ export class Toolbar {
    */
   update() {
     const slide = this.fancybox.getSlide();
+    const idx = slide.index;
+    const cnt = this.fancybox.items.length;
 
     // Download links
     // ====
@@ -457,14 +468,11 @@ export class Toolbar {
     }
 
     for (const $el of this.fancybox.$container.querySelectorAll("[data-fancybox-count]")) {
-      $el.innerHTML = this.fancybox.Carousel.slides.length;
+      $el.innerHTML = cnt;
     }
 
     // Disable prev/next links if gallery is not infinite and reached start/end
     if (!this.fancybox.option("infinite")) {
-      const cnt = this.fancybox.Carousel.slides.length;
-      const idx = slide.index;
-
       for (const $el of this.fancybox.$container.querySelectorAll("[data-fancybox-prev]")) {
         if (idx === 0) {
           $el.setAttribute("disabled", "");
@@ -487,12 +495,6 @@ export class Toolbar {
     if (this.Slideshow && this.Slideshow.isActive()) {
       this.Slideshow.clearTimer();
     }
-
-    if (this.$progress) {
-      this.$progress.remove();
-    }
-
-    this.$progress = null;
 
     if (this.$container) {
       this.$container.remove();

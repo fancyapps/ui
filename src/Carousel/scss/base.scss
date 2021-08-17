@@ -14,6 +14,16 @@
   & *:after {
     box-sizing: inherit;
   }
+
+  &.is-draggable {
+    cursor: move;
+    cursor: grab;
+  }
+
+  &.is-dragging {
+    cursor: move;
+    cursor: grabbing;
+  }
 }
 
 .carousel__viewport {

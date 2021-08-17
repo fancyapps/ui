@@ -104,14 +104,15 @@ class Fancybox extends Base {
   constructor(items, options = {}) {
     super(extend(true, {}, defaults, options));
 
+    this.bindHandlers();
+
     this.state = "init";
 
     this.setItems(items);
 
-    this.bindHandlers();
-
     this.attachPlugins(Fancybox.Plugins);
 
+    // "init" event marks the start of initialization and is available to plugins
     this.trigger("init");
 
     if (this.option("hideScrollbar") === true) {
@@ -124,13 +125,18 @@ class Fancybox extends Base {
 
     this.attachEvents();
 
+    // "prepare" event will trigger the creation of additional layout elements, such as thumbnails and toolbar
+    this.trigger("prepare");
+
     this.state = "ready";
 
+    // "ready" event will trigger the content to load
     this.trigger("ready");
 
     // Reveal container
     this.$container.setAttribute("aria-hidden", "false");
 
+    // Focus on the first focus element in this instance
     this.focus();
   }
 
@@ -601,10 +607,10 @@ class Fancybox extends Base {
    * @param {Event} [event] - Focus event
    */
   focus(event) {
-    if (this.preventScrollSupported === undefined) {
+    if (Fancybox.preventScrollSupported === undefined) {
       // Detect if .focus() method  supports `preventScroll` option,
       // see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
-      this.preventScrollSupported = (function () {
+      Fancybox.preventScrollSupported = (function () {
         let rez = false;
 
         document.createElement("div").focus({
@@ -622,7 +628,7 @@ class Fancybox extends Base {
       if (node.setActive) {
         // IE/Edge
         node.setActive();
-      } else if (this.preventScrollSupported) {
+      } else if (Fancybox.preventScrollSupported) {
         // Modern browsers
         node.focus({ preventScroll: true });
       } else {
@@ -745,7 +751,7 @@ class Fancybox extends Base {
       return;
     }
 
-    if (scrollbarWidth) {
+    if (scrollbarWidth > 0) {
       $style = document.createElement("style");
 
       $style.id = id;
@@ -1104,7 +1110,7 @@ class Fancybox extends Base {
 
     this.Carousel.slides.forEach((slide) => {
       if (slide.$content && slide.index !== currentSlide.index) {
-        slide.$content.remove();
+        this.Carousel.trigger("removeSlide", slide);
       }
     });
 
@@ -1152,7 +1158,7 @@ class Fancybox extends Base {
       // `preventScroll` option is not yet supported by Safari
       // https://bugs.webkit.org/show_bug.cgi?id=178583
 
-      if (this.preventScrollSupported) {
+      if (Fancybox.preventScrollSupported) {
         $trigger.focus({ preventScroll: true });
       } else {
         const scrollTop = document.body.scrollTop; // Save position

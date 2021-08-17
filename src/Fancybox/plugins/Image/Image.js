@@ -154,7 +154,9 @@ export class Image {
       slide.Panzoom = null;
     }
 
-    delete slide.$el.dataset.imageFit;
+    if (slide.$el && slide.$el.dataset) {
+      delete slide.$el.dataset.imageFit;
+    }
   }
 
   /**
@@ -283,6 +285,8 @@ export class Image {
       extend(true, this.fancybox.option("Image.Panzoom", {}), {
         viewport: slide.$wrap,
         content: slide.$image,
+
+        wrapInner: false,
 
         // Allow to select caption text
         textSelection: true,

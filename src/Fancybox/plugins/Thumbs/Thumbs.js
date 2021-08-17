@@ -22,21 +22,21 @@ export class Thumbs {
     this.$container = null;
     this.state = "init";
 
-    for (const methodName of ["onReady", "onClosing", "onKeydown"]) {
+    for (const methodName of ["onPrepare", "onClosing", "onKeydown"]) {
       this[methodName] = this[methodName].bind(this);
     }
 
     this.events = {
-      ready: this.onReady,
+      prepare: this.onPrepare,
       closing: this.onClosing,
       keydown: this.onKeydown,
     };
   }
 
   /**
-   * Process `ready` event to build the layout
+   * Process `prepare` event to build the layout
    */
-  onReady() {
+  onPrepare() {
     // Get slides, skip if the total number is less than the minimum
     const slides = this.getSlides();
 
@@ -49,7 +49,7 @@ export class Thumbs {
       this.fancybox.option("Thumbs.autoStart") === true &&
       this.fancybox.Carousel.Panzoom.content.height >= this.fancybox.option("Thumbs.minScreenHeight")
     ) {
-      this.initLayout();
+      this.build();
     }
   }
 
@@ -76,7 +76,7 @@ export class Thumbs {
   /**
    * Build layout and init thumbnail Carousel
    */
-  initLayout() {
+  build() {
     if (this.$container) {
       return;
     }
@@ -86,7 +86,7 @@ export class Thumbs {
 
     $container.classList.add("fancybox__thumbs");
 
-    this.fancybox.$container.appendChild($container);
+    this.fancybox.$carousel.parentNode.insertBefore($container, this.fancybox.$carousel.nextSibling);
 
     // Initialise thumbnail carousel with all slides
     this.Carousel = new Carousel(
@@ -173,7 +173,7 @@ export class Thumbs {
       return;
     }
 
-    this.initLayout();
+    this.build();
   }
 
   /**

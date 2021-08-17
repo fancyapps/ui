@@ -48,7 +48,7 @@ export class ScrollLock {
   updateViewport() {
     const fancybox = this.fancybox,
       viewport = this.viewport,
-      scale = viewport.scale,
+      scale = viewport.scale || 1,
       $container = fancybox.$container;
 
     if (!$container) {
@@ -59,7 +59,7 @@ export class ScrollLock {
       height = "",
       transform = "";
 
-    if (Math.abs(scale - 1) > 0.1) {
+    if (scale - 1 > 0.1) {
       width = `${viewport.width * scale}px`;
       height = `${viewport.height * scale}px`;
       transform = `translate3d(${viewport.offsetLeft}px, ${viewport.offsetTop}px, 0) scale(${1 / scale})`;

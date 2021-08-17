@@ -526,7 +526,7 @@ export class Html {
     // This function will be repeatedly called to check
     // if video iframe has been loaded to send message to start the video
     const poller = () => {
-      if (slide.state !== "done" || !slide.$iframe.contentWindow) {
+      if (slide.state !== "done" || !slide.$iframe || !slide.$iframe.contentWindow) {
         return;
       }
 

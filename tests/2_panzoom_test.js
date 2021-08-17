@@ -128,13 +128,13 @@ describe("Panzoom", function () {
     await delay(300);
 
     const contentRect = instance.$content.getBoundingClientRect();
-    const parentRect = instance.$content.parentNode.getBoundingClientRect();
+    const containerRect = instance.$container.getBoundingClientRect();
 
     expect(contentRect.width).to.equal(180);
     expect(contentRect.height).to.equal(120);
 
-    expect(contentRect.top - parentRect.top).to.equal(30);
-    expect(contentRect.left - parentRect.left).to.equal(0);
+    expect(contentRect.top - containerRect.top).to.equal(30);
+    expect(contentRect.left - containerRect.left).to.equal(0);
 
     destroyInstance(instance);
   });

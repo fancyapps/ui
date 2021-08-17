@@ -234,9 +234,9 @@ describe("Carousel", function () {
   });
 
   it("flips slides when sliding infinite carousel backward from the end", async function () {
-    const instance = createInstance({
-      initialPage: 6,
-    });
+    const instance = createInstance();
+
+    instance.slideTo(6, { friction: 0 });
 
     expect(instance.Panzoom.content.x).to.equal(160);
 

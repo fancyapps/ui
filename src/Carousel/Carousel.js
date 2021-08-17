@@ -102,9 +102,11 @@ export class Carousel extends Base {
 
     this.updateMetrics();
 
-    this.initPanzoom();
+    this.$track.style.transform = `translate3d(${this.pages[this.page].left * -1}px, 0px, 0) scale(1)`;
 
-    this.slideTo(this.page, { friction: 0 });
+    this.manageSlideVisiblity();
+
+    this.initPanzoom();
 
     this.state = "ready";
 
@@ -167,7 +169,12 @@ export class Carousel extends Base {
     }
   }
 
+  /**
+   * Do all calculations related to slide size and paging
+   */
   updateMetrics() {
+    // Calculate content width, viewport width
+    // ===
     let contentWidth = 0;
     let indexes = [];
     let lastSlideWidth;
@@ -186,22 +193,19 @@ export class Carousel extends Base {
       indexes.push(index);
     });
 
-    let viewportWidth = this.$track.getBoundingClientRect().width;
+    let viewportWidth = Math.max(this.$track.offsetWidth, round(this.$track.getBoundingClientRect().width));
+
     let viewportStyles = window.getComputedStyle(this.$track);
-
     viewportWidth = viewportWidth - (parseFloat(viewportStyles.paddingLeft) + parseFloat(viewportStyles.paddingRight));
-
-    if (window.visualViewport) {
-      viewportWidth *= window.visualViewport.scale;
-    }
 
     this.contentWidth = contentWidth;
     this.viewportWidth = viewportWidth;
 
+    // Split slides into pages
+    // ===
     const pages = [];
     const slidesPerPage = this.option("slidesPerPage");
 
-    // Split slides into pages
     if (Number.isInteger(slidesPerPage) && contentWidth > viewportWidth) {
       // Fixed number of slides in the page
       for (let i = 0; i < this.slides.length; i += slidesPerPage) {
@@ -240,6 +244,7 @@ export class Carousel extends Base {
     const shouldFill = this.option("fill");
 
     // Calculate width and start position for each page
+    // ===
     pages.forEach((page, index) => {
       page.index = index;
       page.width = page.slides.reduce((sum, slide) => sum + slide.width, 0);
@@ -257,6 +262,7 @@ export class Carousel extends Base {
     });
 
     // Merge pages
+    // ===
     const rez = [];
     let prevPage;
 
@@ -326,16 +332,11 @@ export class Carousel extends Base {
       this.$track.prepend(node);
     }
 
-    let width = round(node.getBoundingClientRect().width);
+    let width = Math.max(node.offsetWidth, round(node.getBoundingClientRect().width));
 
     // Add left/right margin
     const style = node.currentStyle || window.getComputedStyle(node);
     width = width + (parseFloat(style.marginLeft) || 0) + (parseFloat(style.marginRight) || 0);
-
-    // Proportionally scale if viewport is scaled (mobile devices)
-    if (window.visualViewport) {
-      width *= window.visualViewport.scale;
-    }
 
     if (node.dataset.isTestEl) {
       node.remove();
@@ -410,6 +411,7 @@ export class Carousel extends Base {
       {
         // Track element will be set as Panzoom $content
         content: this.$track,
+        wrapInner: false,
         resizeParent: false,
 
         // Disable any user interaction
@@ -418,9 +420,8 @@ export class Carousel extends Base {
 
         // Right now, only horizontal navigation is supported
         lockAxis: "x",
-        observe: "w",
 
-        //x: this.pages[this.page].left * -1,
+        x: this.pages[this.page].left * -1,
         centerOnStart: false,
 
         // Make `textSelection` option more easy to customize
@@ -440,21 +441,21 @@ export class Carousel extends Base {
     this.Panzoom.on({
       // Bubble events
       "*": (name, ...details) => this.trigger(`Panzoom.${name}`, ...details),
-
       // The rest of events to be processed
       afterUpdate: () => {
         this.updatePage();
       },
-
       beforeTransform: this.onBeforeTransform.bind(this),
       touchEnd: this.onTouchEnd.bind(this),
-
       endAnimation: () => {
         this.trigger("settle");
       },
     });
 
-    this.updatePanzoom();
+    // The contents of the slides may cause the page scroll bar to appear, so the carousel width may change
+    // and slides have to be repositioned
+    this.updateMetrics();
+    this.manageSlideVisiblity();
   }
 
   updatePanzoom() {
@@ -492,7 +493,7 @@ export class Carousel extends Base {
     const contentWidth = this.contentWidth;
     const viewportWidth = this.viewportWidth;
 
-    let currentX = this.Panzoom.content.x * -1;
+    let currentX = this.Panzoom ? this.Panzoom.content.x * -1 : this.pages[this.page].left;
 
     const preload = this.option("preload");
     const infinite = this.option("infiniteX", this.option("infinite"));
@@ -739,8 +740,8 @@ export class Carousel extends Base {
    * Seamlessly flip position of infinite carousel, if needed; this way x position stays low
    */
   manageInfiniteTrack() {
-    const contentWidth = this.Panzoom.content.width;
-    const viewportWidth = this.Panzoom.viewport.width;
+    const contentWidth = this.contentWidth;
+    const viewportWidth = this.viewportWidth;
 
     if (!this.option("infiniteX", this.option("infinite")) || this.pages.length < 2 || contentWidth < viewportWidth) {
       return;
@@ -777,7 +778,7 @@ export class Carousel extends Base {
    * Process `Panzoom.touchEnd` event; slide to next/prev page if needed
    * @param {object} panzoom
    */
-  onTouchEnd(panzoom) {
+  onTouchEnd(panzoom, event) {
     const dragFree = this.option("dragFree");
 
     // If this is a quick horizontal flick, slide to next/prev slide
@@ -821,14 +822,14 @@ export class Carousel extends Base {
     const center = this.option("center");
 
     if (center) {
-      xPos += this.Panzoom.viewport.width * 0.5;
+      xPos += this.viewportWidth * 0.5;
     }
 
-    const interval = Math.floor(xPos / this.Panzoom.content.width);
+    const interval = Math.floor(xPos / this.contentWidth);
 
-    xPos -= interval * this.Panzoom.content.width;
+    xPos -= interval * this.contentWidth;
 
-    let slide = this.slides.find((slide) => slide.left < xPos && slide.left + slide.width > xPos);
+    let slide = this.slides.find((slide) => slide.left <= xPos && slide.left + slide.width > xPos);
 
     if (slide) {
       let pageIndex = this.findPageForSlide(slide.index);
@@ -852,8 +853,8 @@ export class Carousel extends Base {
       prevPageIndex = this.pageIndex,
       pageCount = this.pages.length;
 
-    const contentWidth = this.Panzoom.content.width;
-    const viewportWidth = this.Panzoom.viewport.width;
+    const contentWidth = this.contentWidth;
+    const viewportWidth = this.viewportWidth;
 
     page = ((pageIndex % pageCount) + pageCount) % pageCount;
 

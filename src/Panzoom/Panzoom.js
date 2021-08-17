@@ -85,10 +85,6 @@ const defaults = {
   // this can also be a function which should return a number, for example:
   // ratio: function() { return 1 / (window.devicePixelRatio || 1) }
   ratio: 1,
-
-  // What dimension ResizeObserver should observe,
-  // possible values: "wh" | "w" | "h"
-  observe: "wh",
 };
 
 export class Panzoom extends Base {
@@ -124,11 +120,12 @@ export class Panzoom extends Base {
 
     this.trigger("ready");
 
-    if (this.option("centerOnStart") !== false) {
+    if (this.option("centerOnStart") === false) {
+      this.handleCursor();
+
+      this.state = "ready";
+    } else {
       this.panTo({
-        x: 0,
-        y: 0,
-        scale: this.option("baseScale"),
         friction: 0,
       });
     }
@@ -154,19 +151,26 @@ export class Panzoom extends Base {
 
     this.$content = $content;
 
-    const $viewport = this.option("viewport", $content.parentNode);
+    let $viewport = this.option("viewport") || $container.querySelector(".panzoom__viewport");
 
-    if (!$viewport) {
-      throw new Error("Panzoom: Viewport not found");
+    if (!$viewport && this.option("wrapInner") !== false) {
+      $viewport = document.createElement("div");
+      $viewport.classList.add("panzoom__viewport");
+
+      $viewport.append(...$container.childNodes);
+
+      $container.appendChild($viewport);
     }
 
-    this.$viewport = $viewport;
+    this.$viewport = $viewport || $content.parentNode;
   }
 
   /**
    * Restore instance variables to default values
    */
   resetValues() {
+    this.updateRate = this.option("updateRate", /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 250 : 24);
+
     this.container = {
       width: 0,
       height: 0,
@@ -187,11 +191,11 @@ export class Panzoom extends Base {
       height: 0,
 
       // Current position; these values reflect CSS `transform` value
-      x: 0,
-      y: 0,
+      x: this.option("x", 0),
+      y: this.option("y", 0),
 
       // Current scale; does not reflect CSS `transform` value
-      scale: 1,
+      scale: this.option("baseScale"),
     };
 
     // End values of current pan / zoom animation
@@ -338,50 +342,7 @@ export class Panzoom extends Base {
     this.$container.addEventListener("wheel", this.onWheel, { passive: false });
     this.$container.addEventListener("click", this.onClick, { passive: false });
 
-    const updateRate = this.option("updateRate", /iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? 250 : 24);
-
-    this.resizeObserver = new ResizeObserver(() => {
-      if (!this.updateTimer) {
-        this.updateTimer = setTimeout(() => {
-          const rect = this.$container.getBoundingClientRect();
-
-          if (!rect.width && !rect.height) {
-            this.updateTimer = null;
-            return;
-          }
-
-          // Check to see if there are any changes
-          const observe = this.option("observe");
-
-          let doUpdate = false;
-
-          if (observe.includes("w") && Math.abs(rect.width - this.container.width) > 1) {
-            doUpdate = true;
-          }
-
-          if (observe.includes("h") && Math.abs(rect.height - this.container.height) > 1) {
-            doUpdate = true;
-          }
-
-          if (doUpdate) {
-            this.endAnimation();
-
-            this.updateMetrics();
-
-            this.panTo({
-              x: this.content.x,
-              y: this.content.y,
-              scale: this.option("baseScale"),
-              friction: 0,
-            });
-          }
-
-          this.updateTimer = null;
-        }, updateRate);
-      }
-    });
-
-    this.resizeObserver.observe(this.$container);
+    this.initObserver();
 
     const pointerTracker = new PointerTracker(this.$container, {
       start: (pointer, event) => {
@@ -488,7 +449,7 @@ export class Panzoom extends Base {
           this.dragOffset[this.lockAxis === "x" ? "y" : "x"] = 0;
         }
 
-        this.$viewport.classList.add(this.option("draggingClass"));
+        this.$container.classList.add(this.option("draggingClass"));
 
         if (!(this.transform.scale === this.option("baseScale") && this.lockAxis === "y")) {
           this.dragPosition.x = this.dragStart.x + this.dragOffset.x;
@@ -543,7 +504,7 @@ export class Panzoom extends Base {
 
         this.recalculateTransform();
 
-        this.$viewport.classList.remove(this.option("draggingClass"));
+        this.$container.classList.remove(this.option("draggingClass"));
 
         if (this.trigger("touchEnd", event) === false) {
           return;
@@ -583,6 +544,47 @@ export class Panzoom extends Base {
     });
 
     this.pointerTracker = pointerTracker;
+  }
+
+  initObserver() {
+    if (this.resizeObserver) {
+      return;
+    }
+
+    this.resizeObserver = new ResizeObserver(() => {
+      if (this.updateTimer) {
+        return;
+      }
+
+      this.updateTimer = setTimeout(() => {
+        const rect = this.$container.getBoundingClientRect();
+
+        if (!(rect.width && rect.height)) {
+          this.updateTimer = null;
+          return;
+        }
+
+        // Check to see if there are any changes
+        if (Math.abs(rect.width - this.container.width) > 1 || Math.abs(rect.height - this.container.height) > 1) {
+          if (this.isAnimating()) {
+            this.endAnimation();
+          }
+
+          this.updateMetrics();
+
+          this.panTo({
+            x: this.content.x,
+            y: this.content.y,
+            scale: this.option("baseScale"),
+            friction: 0,
+          });
+        }
+
+        this.updateTimer = null;
+      }, this.updateRate);
+    });
+
+    this.resizeObserver.observe(this.$container);
   }
 
   /**
@@ -634,7 +636,9 @@ export class Panzoom extends Base {
     const $content = this.$content;
     const $viewport = this.$viewport;
 
-    const shouldResizeParent = this.option("resizeParent", $viewport !== $container);
+    const contentIsImage = this.$content instanceof HTMLImageElement;
+    const contentIsZoomable = this.option("zoom");
+    const shouldResizeParent = this.option("resizeParent", contentIsZoomable);
 
     let origWidth = getFullWidth(this.$content);
     let origHeight = getFullHeight(this.$content);
@@ -649,9 +653,6 @@ export class Panzoom extends Base {
     if (shouldResizeParent) {
       Object.assign($viewport.style, { width: "", height: "" });
     }
-
-    const contentIsImage = this.$content instanceof HTMLImageElement;
-    const contentIsZoomable = this.option("zoom");
 
     const ratio = this.option("ratio");
 
@@ -1157,13 +1158,13 @@ export class Panzoom extends Base {
     }
 
     if (
+      this.option("panOnlyZoomed") == true &&
       this.content.width <= this.content.fitWidth &&
-      this.transform.scale <= this.option("baseScale") &&
-      this.option("panOnlyZoomed") == true
+      this.transform.scale <= this.option("baseScale")
     ) {
-      this.$viewport.classList.remove(draggableClass);
+      this.$container.classList.remove(draggableClass);
     } else {
-      this.$viewport.classList.add(draggableClass);
+      this.$container.classList.add(draggableClass);
     }
   }
 

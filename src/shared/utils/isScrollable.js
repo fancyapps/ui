@@ -18,7 +18,7 @@ export const hasScrollbars = function (node) {
  * @returns {Boolean}
  */
 export const isScrollable = function (node) {
-  if (!node || node.classList.contains("carousel__track") || node === document.body) {
+  if (!node || node === document.body) {
     return false;
   }
 

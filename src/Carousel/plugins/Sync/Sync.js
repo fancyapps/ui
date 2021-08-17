@@ -45,11 +45,11 @@ export class Sync {
     this.nav.options.initialSlide = this.target.options.initialPage;
 
     this.nav.on("ready", this.onNavReady);
-    this.nav.on("Panzoom.click", this.onNavClick);
     this.nav.on("createSlide", this.onNavCreateSlide);
+    this.nav.on("Panzoom.click", this.onNavClick);
 
-    this.target.on("Panzoom.afterUpdate", this.onTargetChange);
     this.target.on("change", this.onTargetChange);
+    this.target.on("Panzoom.afterUpdate", this.onTargetChange);
   }
 
   /**

@@ -80,7 +80,7 @@
     "rollup-plugin-eslint": "^7.0.0",
     "rollup-plugin-filesize": "^9.1.1",
     "rollup-plugin-terser": "^7.0.2",
-    "sass": "1.37.5",
+    "sass": "1.38.0",
     "sharp": "^0.28.3"
   },
   "browserslist": [

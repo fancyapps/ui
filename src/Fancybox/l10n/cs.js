@@ -8,5 +8,10 @@ export default {
     ELEMENT_NOT_FOUND: "HTML element nenalezen",
     AJAX_NOT_FOUND: "Chyba AJAX načítaní: Not Found",
     AJAX_FORBIDDEN: "Chyba AJAX načítaní: Forbidden",
-    IFRAME_ERROR: "Stránku nelze načíst"
+    IFRAME_ERROR: "Stránku nelze načíst",
+    TOGGLE_ZOOM: "Ppřiblížit/Oddálit",
+    TOGGLE_THUMBS: "Zobrazit/Skrýt náhledy",
+    TOGGLE_SLIDESHOW: "Spoustit/Zastavit automatické přehrávání",
+    TOGGLE_FULLSCREEN: "Režim celé obrazovky",
+    DOWNLOAD: "Stáhnout",
 };

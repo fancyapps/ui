@@ -429,7 +429,7 @@ export class Carousel extends Base {
 
         // Disable dragging if content (e.g. all slides) fits inside viewport
         panOnlyZoomed: function () {
-          return this.content.width < this.viewport.width;
+          return this.content.width <= this.viewport.width;
         },
       },
       this.option("Panzoom")

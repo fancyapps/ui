@@ -398,8 +398,10 @@ export class Panzoom extends Base {
         // Disable touch action if current zoom level is below base level
         if (
           currentPointers.length < 2 &&
-          this.transform.scale === this.option("baseScale") &&
-          this.option("panOnlyZoomed") == true
+          this.option("panOnlyZoomed") == true &&
+          this.content.width <= this.viewport.width &&
+          this.content.height <= this.viewport.height &&
+          this.transform.scale <= this.option("baseScale")
         ) {
           return;
         }
@@ -473,9 +475,9 @@ export class Panzoom extends Base {
           this.dragPosition.y -= deltaY;
 
           this.dragPosition.midPoint = newMidpoint;
+        } else {
+          this.setDragResistance();
         }
-
-        this.setDragResistance();
 
         // Update final position
         this.transform = {
@@ -1159,7 +1161,8 @@ export class Panzoom extends Base {
 
     if (
       this.option("panOnlyZoomed") == true &&
-      this.content.width <= this.content.fitWidth &&
+      this.content.width <= this.viewport.width &&
+      this.content.height <= this.viewport.height &&
       this.transform.scale <= this.option("baseScale")
     ) {
       this.$container.classList.remove(draggableClass);

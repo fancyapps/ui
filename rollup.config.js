@@ -11,7 +11,7 @@ import filesize from "rollup-plugin-filesize";
 import pkg from "./package.json";
 
 const config = [];
-const files = ["Panzoom", "Panzoom.Controls", "Carousel", "Fancybox"];
+const files = ["Panzoom", "Panzoom.Controls", "Carousel", "Carousel.Autoplay", "Fancybox"];
 
 for (const file_name of files) {
   let input_file;

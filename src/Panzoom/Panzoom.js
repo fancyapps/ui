@@ -121,8 +121,6 @@ export class Panzoom extends Base {
     this.trigger("ready");
 
     if (this.option("centerOnStart") === false) {
-      this.handleCursor();
-
       this.state = "ready";
     } else {
       this.panTo({
@@ -669,12 +667,15 @@ export class Panzoom extends Base {
 
     const containerRect = $viewport == $container ? viewportRect : $container.getBoundingClientRect();
 
-    this.viewport = { ...this.viewport, width: viewportRect.width, height: viewportRect.height };
+    let viewportWidth = Math.max($viewport.offsetWidth, round(viewportRect.width));
+    let viewportHeight = Math.max($viewport.offsetHeight, round(viewportRect.height));
 
-    var styles = window.getComputedStyle($viewport);
+    let viewportStyles = window.getComputedStyle($viewport);
+    viewportWidth -= parseFloat(viewportStyles.paddingLeft) + parseFloat(viewportStyles.paddingRight);
+    viewportHeight -= parseFloat(viewportStyles.paddingTop) + parseFloat(viewportStyles.paddingBottom);
 
-    this.viewport.width -= parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
-    this.viewport.height -= parseFloat(styles.paddingTop) + parseFloat(styles.paddingBottom);
+    this.viewport.width = viewportWidth;
+    this.viewport.height = viewportHeight;
 
     if (contentIsZoomable) {
       if (Math.abs(origWidth - contentRect.width) > 0.1 || Math.abs(origHeight - contentRect.height) > 0.1) {

@@ -487,6 +487,8 @@ export class Carousel extends Base {
         to: 0,
       };
     }
+
+    this.Panzoom.handleCursor();
   }
 
   manageSlideVisiblity() {

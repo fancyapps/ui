@@ -1,3 +1,5 @@
+import { isPlainObject } from "../../../shared/utils/isPlainObject.js";
+
 const defaults = {
   l10n: {
     ZOOMIN: "Zoom in",
@@ -13,7 +15,7 @@ const defaults = {
   },
 };
 
-class Controls {
+export class Controls {
   constructor(panzoom) {
     this.panzoom = panzoom;
 
@@ -90,4 +92,6 @@ class Controls {
 // Expose defaults
 Controls.defaults = defaults;
 
-export { Controls };
+if (typeof Panzoom !== "undefined" && isPlainObject(Panzoom.Plugins)) {
+  Panzoom.Plugins.Controls = Controls;
+}

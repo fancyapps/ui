@@ -137,7 +137,9 @@ class Fancybox extends Base {
     this.$container.setAttribute("aria-hidden", "false");
 
     // Focus on the first focus element in this instance
-    this.focus();
+    if (this.option("trapFocus")) {
+      this.focus();
+    }
   }
 
   /**

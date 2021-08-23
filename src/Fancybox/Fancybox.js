@@ -1479,6 +1479,8 @@ Fancybox.openers = new Map();
 Fancybox.Plugins = Plugins;
 
 // Auto init with default options
-Fancybox.bind("[data-fancybox]");
+document.addEventListener("DOMContentLoaded", () => {
+  Fancybox.bind("[data-fancybox]");
+});
 
 export { Fancybox };

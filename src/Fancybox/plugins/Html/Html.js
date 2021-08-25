@@ -172,7 +172,7 @@ export class Html {
       if (slide.width && slide.height) {
         slide.ratio = parseFloat(slide.width) / parseFloat(slide.height);
       } else {
-        slide.ratio = slide.ratio || slide.video.ratio;
+        slide.ratio = slide.ratio || slide.video.ratio || defaults.video.ratio;
       }
     }
   }
@@ -509,12 +509,12 @@ export class Html {
    * @param {Object} slide
    */
   playVideo(slide) {
-    if (slide.type === "html5video") {
-      const videoElem = slide.$el.querySelector("video");
+    if (slide.type === "html5video" && slide.video.autoplay) {
+      const $video = slide.$el.querySelector("video");
 
-      if (videoElem) {
+      if ($video) {
         try {
-          videoElem.play();
+          $video.play();
         } catch (err) {}
       }
     }

@@ -5,6 +5,12 @@ import { Fullscreen } from "../../../shared/utils/Fullscreen.js";
 import { Slideshow } from "../../../shared/utils/Slideshow.js";
 
 const defaults = {
+  // What toolbar items to display
+  display: ["counter", "zoom", "slideshow", "fullscreen", "thumbs", "close"],
+
+  // Only create a toolbar item if there is at least one image in the group
+  autoEnable: true,
+
   // Toolbar items; can be links, buttons or `div` elements
   items: {
     counter: {
@@ -121,12 +127,6 @@ const defaults = {
       },
     },
   },
-
-  // What toolbar items to display
-  display: ["counter", "zoom", "slideshow", "fullscreen", "thumbs", "close"],
-
-  // Only create a toolbar item if there is at least one image in the group
-  autoEnable: true,
 };
 
 export class Toolbar {

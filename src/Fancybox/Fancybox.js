@@ -1385,7 +1385,7 @@ class Fancybox extends Base {
     }
 
     if (!Fancybox.openers.size) {
-      document.body.addEventListener("click", Fancybox.fromEvent, false);
+      document.addEventListener("click", Fancybox.fromEvent, false);
 
       // Pass self to plugins to avoid circular dependencies
       for (const [key, Plugin] of Object.entries(Fancybox.Plugins || {})) {

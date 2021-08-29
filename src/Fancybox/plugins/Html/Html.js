@@ -526,41 +526,39 @@ export class Html {
     // This function will be repeatedly called to check
     // if video iframe has been loaded to send message to start the video
     const poller = () => {
-      if (slide.state !== "done" || !slide.$iframe || !slide.$iframe.contentWindow) {
-        return;
-      }
+      if (slide.state === "done" && slide.$iframe && slide.$iframe.contentWindow) {
+        let command;
 
-      let command;
-
-      if (slide.$iframe.isReady) {
-        if (slide.video && slide.video.autoplay) {
-          if (slide.vendor == "youtube") {
-            command = {
-              event: "command",
-              func: "playVideo",
-            };
-          } else {
-            command = {
-              method: "play",
-              value: "true",
-            };
+        if (slide.$iframe.isReady) {
+          if (slide.video && slide.video.autoplay) {
+            if (slide.vendor == "youtube") {
+              command = {
+                event: "command",
+                func: "playVideo",
+              };
+            } else {
+              command = {
+                method: "play",
+                value: "true",
+              };
+            }
           }
+
+          if (command) {
+            slide.$iframe.contentWindow.postMessage(JSON.stringify(command), "*");
+          }
+
+          return;
         }
 
-        if (command) {
+        if (slide.vendor === "youtube") {
+          command = {
+            event: "listening",
+            id: slide.$iframe.getAttribute("id"),
+          };
+
           slide.$iframe.contentWindow.postMessage(JSON.stringify(command), "*");
         }
-
-        return;
-      }
-
-      if (slide.vendor === "youtube") {
-        command = {
-          event: "listening",
-          id: slide.$iframe.getAttribute("id"),
-        };
-
-        slide.$iframe.contentWindow.postMessage(JSON.stringify(command), "*");
       }
 
       slide.poller = setTimeout(poller, 250);

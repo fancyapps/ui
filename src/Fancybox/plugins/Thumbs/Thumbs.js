@@ -177,6 +177,22 @@ export class Thumbs {
   }
 
   /**
+   * Show thumbnail list
+   */
+  show() {
+    this.state = "hidden";
+    this.toggle();
+  }
+
+  /**
+   * Hide thumbnail list
+   */
+  hide() {
+    this.state = "visible";
+    this.toggle();
+  }
+
+  /**
    * Reset the state
    */
   cleanup() {

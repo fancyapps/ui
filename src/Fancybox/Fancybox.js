@@ -8,6 +8,7 @@ import { Carousel } from "../Carousel/Carousel.js";
 
 import { Plugins } from "./plugins/index.js";
 
+// Default language
 import en from "./l10n/en.js";
 
 const defaults = {
@@ -344,6 +345,8 @@ class Fancybox extends Base {
         true,
         {},
         {
+          prefix: "",
+
           classNames: {
             viewport: "fancybox__viewport",
             track: "fancybox__track",
@@ -383,6 +386,7 @@ class Fancybox extends Base {
                 this.Carousel && this.Carousel.pages && this.Carousel.pages.length < 2 && !this.options.dragToClose
               );
             },
+
             lockAxis: () => {
               if (this.Carousel) {
                 let rez = "x";
@@ -834,7 +838,7 @@ class Fancybox extends Base {
 
     // Make sure that content is not hidden and will be visible
     if ($content.style.display === "none" || window.getComputedStyle($content).getPropertyValue("display") === "none") {
-      $content.style.display = "flex";
+      $content.style.display = slide.display || this.option("defaultDisplay") || "flex";
     }
 
     if (slide.id) {
@@ -1380,20 +1384,19 @@ class Fancybox extends Base {
    * @param {Object} [options] - Custom options
    */
   static bind(selector, options = {}) {
+    function attachClickEvent() {
+      document.body.addEventListener("click", Fancybox.fromEvent, false);
+    }
+
     if (!canUseDOM) {
       return;
     }
 
     if (!Fancybox.openers.size) {
-      document.addEventListener("click", Fancybox.fromEvent, false);
-
-      // Pass self to plugins to avoid circular dependencies
-      for (const [key, Plugin] of Object.entries(Fancybox.Plugins || {})) {
-        Plugin.Fancybox = this;
-
-        if (typeof Plugin.create === "function") {
-          Plugin.create();
-        }
+      if (/complete|interactive|loaded/.test(document.readyState)) {
+        attachClickEvent();
+      } else {
+        document.addEventListener("DOMContentLoaded", attachClickEvent);
       }
     }
 
@@ -1480,5 +1483,12 @@ Fancybox.Plugins = Plugins;
 
 // Auto init with default options
 Fancybox.bind("[data-fancybox]");
+
+// Prepare plugins
+for (const [key, Plugin] of Object.entries(Fancybox.Plugins || {})) {
+  if (typeof Plugin.create === "function") {
+    Plugin.create(Fancybox);
+  }
+}
 
 export { Fancybox };

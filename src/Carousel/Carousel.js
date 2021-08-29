@@ -7,6 +7,9 @@ import { throttle } from "../shared/utils/throttle.js";
 
 import { Plugins } from "./plugins/index.js";
 
+// Default language
+import en from "./l10n/en.js";
+
 const defaults = {
   // Virtual slides. Each object should have at least `html` property that will be used to set content,
   // example: `slides: [{html: 'First slide'}, {html: 'Second slide'}]`
@@ -40,7 +43,10 @@ const defaults = {
   // Should Carousel settle at any position after a swipe.
   dragFree: false,
 
-  // Customizable class names for DOM elements
+  // Prefix for CSS classes, must be the same as the  SCSS `$carousel-prefix` variable
+  prefix: "",
+
+  // Class names for DOM elements (without prefix)
   classNames: {
     viewport: "carousel__viewport",
     track: "carousel__track",
@@ -50,12 +56,8 @@ const defaults = {
     slideSelected: "is-selected",
   },
 
-  // Translations
-  l10n: {
-    NEXT: "Next slide",
-    PREV: "Previous slide",
-    GOTO: "Go to slide %d",
-  },
+  // Localization of strings
+  l10n: en,
 };
 
 export class Carousel extends Base {
@@ -102,7 +104,9 @@ export class Carousel extends Base {
 
     this.updateMetrics();
 
-    this.$track.style.transform = `translate3d(${this.pages[this.page].left * -1}px, 0px, 0) scale(1)`;
+    if (this.$track && this.pages.length) {
+      this.$track.style.transform = `translate3d(${this.pages[this.page].left * -1}px, 0px, 0) scale(1)`;
+    }
 
     this.manageSlideVisiblity();
 
@@ -117,24 +121,25 @@ export class Carousel extends Base {
    * Initialize layout; create necessary elements
    */
   initLayout() {
+    const prefix = this.option("prefix");
     const classNames = this.option("classNames");
 
-    this.$viewport = this.option("viewport") || this.$container.querySelector("." + classNames.viewport);
+    this.$viewport = this.option("viewport") || this.$container.querySelector(`.${prefix}${classNames.viewport}`);
 
     if (!this.$viewport) {
       this.$viewport = document.createElement("div");
-      this.$viewport.classList.add(classNames.viewport);
+      this.$viewport.classList.add(prefix + classNames.viewport);
 
       this.$viewport.append(...this.$container.childNodes);
 
       this.$container.appendChild(this.$viewport);
     }
 
-    this.$track = this.option("track") || this.$container.querySelector("." + classNames.track);
+    this.$track = this.option("track") || this.$container.querySelector(`.${prefix}${classNames.track}`);
 
     if (!this.$track) {
       this.$track = document.createElement("div");
-      this.$track.classList.add(classNames.track);
+      this.$track.classList.add(prefix + classNames.track);
 
       this.$track.append(...this.$viewport.childNodes);
 
@@ -149,7 +154,7 @@ export class Carousel extends Base {
     this.slides = [];
 
     // Get existing slides from the DOM
-    const elems = this.$viewport.querySelectorAll("." + this.option("classNames.slide"));
+    const elems = this.$viewport.querySelectorAll(`.${this.option("prefix")}${this.option("classNames.slide")}`);
 
     elems.forEach((el) => {
       const slide = {
@@ -322,7 +327,7 @@ export class Carousel extends Base {
 
       node.dataset.isTestEl = 1;
       node.style.visibility = "hidden";
-      node.classList.add(this.option("classNames.slide"));
+      node.classList.add(this.option("prefix") + this.option("classNames.slide"));
 
       // Assume all slides have the same custom class, if any
       if (firstSlide.customClass) {
@@ -421,7 +426,7 @@ export class Carousel extends Base {
         // Right now, only horizontal navigation is supported
         lockAxis: "x",
 
-        x: this.pages[this.page].left * -1,
+        x: this.pages.length ? this.pages[this.page].left * -1 : 0,
         centerOnStart: false,
 
         // Make `textSelection` option more easy to customize
@@ -472,7 +477,7 @@ export class Carousel extends Base {
 
     if (this.pages.length > 1 && this.option("infiniteX", this.option("infinite"))) {
       this.Panzoom.boundX = null;
-    } else {
+    } else if (this.pages.length) {
       this.Panzoom.boundX = {
         from: this.pages[this.pages.length - 1].left * -1,
         to: this.pages[0].left * -1,
@@ -495,7 +500,7 @@ export class Carousel extends Base {
     const contentWidth = this.contentWidth;
     const viewportWidth = this.viewportWidth;
 
-    let currentX = this.Panzoom ? this.Panzoom.content.x * -1 : this.pages[this.page].left;
+    let currentX = this.Panzoom ? this.Panzoom.content.x * -1 : this.pages.length ? this.pages[this.page].left : 0;
 
     const preload = this.option("preload");
     const infinite = this.option("infiniteX", this.option("infinite"));
@@ -632,7 +637,7 @@ export class Carousel extends Base {
     const div = document.createElement("div");
 
     div.dataset.index = slide.index;
-    div.classList.add(this.option("classNames.slide"));
+    div.classList.add(this.option("prefix") + this.option("classNames.slide"));
 
     if (slide.customClass) {
       div.classList.add(...slide.customClass.split(" "));
@@ -720,6 +725,9 @@ export class Carousel extends Base {
     });
   }
 
+  /**
+   * Perform all calculations and center current page
+   */
   updatePage() {
     this.updateMetrics();
 
@@ -887,7 +895,7 @@ export class Carousel extends Base {
     } else {
       page = pageIndex = Math.max(0, Math.min(pageIndex, pageCount - 1));
 
-      nextPosition = this.pages[page].left;
+      nextPosition = this.pages.length ? this.pages[page].left : 0;
     }
 
     this.page = page;

@@ -133,7 +133,7 @@ export class Hash {
    * @param {Class} Fancybox
    */
   static startFromUrl() {
-    if (Hash.Fancybox.getInstance()) {
+    if (!Hash.Fancybox || Hash.Fancybox.getInstance()) {
       return;
     }
 
@@ -144,6 +144,7 @@ export class Hash {
     }
 
     // Support custom slug
+    // ===
     let selectedElem = document.querySelector(`[data-slug="${hash}"]`);
 
     if (selectedElem) {
@@ -154,7 +155,8 @@ export class Hash {
       return;
     }
 
-    // Use URL hash value as group name
+    // If elements are not found by custom slug, Use URL hash value as group name
+    // ===
     const groupElems = document.querySelectorAll(`[data-fancybox="${slug}"]`);
 
     if (!groupElems.length) {
@@ -222,24 +224,23 @@ export class Hash {
   /**
    * Add event bindings that will start new Fancybox instance based in the current URL
    */
+  static create(Fancybox) {
+    Hash.Fancybox = Fancybox;
 
-  static onReady() {
-    window.addEventListener("hashchange", Hash.onHashChange, false);
+    function proceed() {
+      window.addEventListener("hashchange", Hash.onHashChange, false);
 
-    Hash.startFromUrl();
-  }
-
-  static create() {
-    // Skip if SSR
-    if (!canUseDOM) {
-      return;
+      Hash.startFromUrl();
     }
 
-    /**
-     * Attempt to start Fancybox
-     */
     window.requestAnimationFrame(() => {
-      Hash.onReady();
+      if (canUseDOM) {
+        if (/complete|interactive|loaded/.test(document.readyState)) {
+          proceed();
+        } else {
+          document.addEventListener("DOMContentLoaded", proceed);
+        }
+      }
     });
   }
 

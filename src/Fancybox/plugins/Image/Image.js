@@ -103,6 +103,7 @@ export class Image {
    */
   onClosing(fancybox) {
     clearTimeout(this.clickTimer);
+    this.clickTimer = null;
 
     // Remove events
     fancybox.Carousel.slides.forEach((slide) => {
@@ -522,7 +523,7 @@ export class Image {
     }
 
     const panzoom = slide.Panzoom;
-    const clickAction = this.fancybox.option("Image.click");
+    const clickAction = this.fancybox.option("Image.click", false, slide);
     const classList = slide.$el.classList;
 
     if (panzoom && clickAction === "toggleZoom") {
@@ -573,7 +574,7 @@ export class Image {
    * @param {Object} event
    */
   onClick(slide, event) {
-    // Check if can click
+    // Check that clicks should be allowed
     if (this.fancybox.state !== "ready") {
       return;
     }
@@ -595,10 +596,6 @@ export class Image {
     }
 
     const process = (action) => {
-      if (this.fancybox.trigger("Image.click", event) === false) {
-        return;
-      }
-
       switch (action) {
         case "toggleZoom":
           event.stopPropagation();
@@ -621,22 +618,20 @@ export class Image {
       }
     };
 
-    // Clear pending single click
-    if (this.clickTimer) {
-      clearTimeout(this.clickTimer);
-      this.clickTimer = null;
-    }
-
     const clickAction = this.fancybox.option("Image.click");
     const dblclickAction = this.fancybox.option("Image.doubleClick");
 
     if (dblclickAction) {
-      if (event.detail === 1) {
+      if (this.clickTimer) {
+        clearTimeout(this.clickTimer);
+        this.clickTimer = null;
+
+        process(dblclickAction);
+      } else {
         this.clickTimer = setTimeout(() => {
+          this.clickTimer = null;
           process(clickAction);
         }, 300);
-      } else if (event.detail === 2) {
-        process(dblclickAction);
       }
     } else {
       process(clickAction);

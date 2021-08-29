@@ -30,7 +30,7 @@ export class Base {
    * @param {*} [fallback] Fallback value for non-existing key
    * @returns {*}
    */
-  option(key, fallback) {
+  option(key, fallback, ...rest) {
     // Make sure it is string
     key = String(key);
 
@@ -38,7 +38,7 @@ export class Base {
 
     // Allow to have functions as options
     if (typeof value === "function") {
-      value = value.call(this, key);
+      value = value.call(this, this, ...rest);
     }
 
     return value === undefined ? fallback : value;

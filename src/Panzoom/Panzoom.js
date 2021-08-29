@@ -839,6 +839,7 @@ export class Panzoom extends Base {
     this.friction = friction;
 
     this.transform = {
+      ...this.transform,
       x,
       y,
       scale,

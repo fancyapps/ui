@@ -5,7 +5,7 @@
   user-select: none;
 }
 
-.carousel {
+.#{$carousel-prefix}carousel {
   position: relative;
   box-sizing: border-box;
 
@@ -26,7 +26,7 @@
   }
 }
 
-.carousel__viewport {
+.#{$carousel-prefix}carousel__viewport {
   position: relative;
   overflow: hidden;
 
@@ -34,11 +34,11 @@
   max-height: 100%;
 }
 
-.carousel__track {
+.#{$carousel-prefix}carousel__track {
   display: flex;
 }
 
-.carousel__slide {
+.#{$carousel-prefix}carousel__slide {
   flex: 0 0 auto;
   width: $carousel-slide-width;
   max-width: 100%;

@@ -1251,17 +1251,23 @@ class Fancybox extends Base {
       .some((opener) => {
         target = eventTarget;
 
-        // Chain closest() to event.target to find and return the parent element,
-        // regardless if clicking on the child elements (icon, label, etc)
-        if (!(target.matches(opener) || (target = target.closest(opener)))) {
-          return;
+        let found = false;
+
+        try {
+          if (target instanceof Element && (typeof opener === "string" || opener instanceof String)) {
+            // Chain closest() to event.target to find and return the parent element,
+            // regardless if clicking on the child elements (icon, label, etc)
+            found = target.matches(opener) || (target = target.closest(opener));
+          }
+        } catch (error) {}
+
+        if (found) {
+          event.preventDefault();
+          matchingOpener = opener;
+          return true;
         }
 
-        event.preventDefault();
-
-        matchingOpener = opener;
-
-        return true;
+        return false;
       });
 
     let rez = false;
@@ -1300,10 +1306,17 @@ class Fancybox extends Base {
       const falseValues = ["false", "0", "no", "null", "undefined"];
       const trueValues = ["true", "1", "yes"];
 
-      const options = Object.assign({}, el.dataset);
+      const dataset = Object.assign({}, el.dataset);
+      const options = {};
 
-      for (let [key, value] of Object.entries(options)) {
-        if (typeof value === "string" || value instanceof String) {
+      for (let [key, value] of Object.entries(dataset)) {
+        if (key === "fancybox") {
+          continue;
+        }
+
+        if (key === "width" || key === "height") {
+          options[`_${key}`] = value;
+        } else if (typeof value === "string" || value instanceof String) {
           if (falseValues.indexOf(value) > -1) {
             options[key] = false;
           } else if (trueValues.indexOf(options[key]) > -1) {
@@ -1315,11 +1328,10 @@ class Fancybox extends Base {
               options[key] = value;
             }
           }
+        } else {
+          options[key] = value;
         }
       }
-
-      delete options.fancybox;
-      delete options.type;
 
       if (el instanceof Element) {
         options.$trigger = el;

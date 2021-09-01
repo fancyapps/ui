@@ -233,15 +233,15 @@ export class Hash {
       Hash.startFromUrl();
     }
 
-    window.requestAnimationFrame(() => {
-      if (canUseDOM) {
+    if (canUseDOM) {
+      window.requestAnimationFrame(() => {
         if (/complete|interactive|loaded/.test(document.readyState)) {
           proceed();
         } else {
           document.addEventListener("DOMContentLoaded", proceed);
         }
-      }
-    });
+      });
+    }
   }
 
   static destroy() {

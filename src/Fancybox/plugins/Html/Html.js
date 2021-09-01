@@ -169,8 +169,8 @@ export class Html {
     if (type === "html5video" || type === "video") {
       slide.video = extend({}, this.fancybox.option("Html.video"), slide.video);
 
-      if (slide.width && slide.height) {
-        slide.ratio = parseFloat(slide.width) / parseFloat(slide.height);
+      if (slide._width && slide._height) {
+        slide.ratio = parseFloat(slide._width) / parseFloat(slide._height);
       } else {
         slide.ratio = slide.ratio || slide.video.ratio || defaults.video.ratio;
       }
@@ -344,36 +344,52 @@ export class Html {
    * @param {Object} slide
    */
   setAspectRatio(slide) {
-    let ratio = slide.ratio;
+    const $content = slide.$content;
+    const ratio = slide.ratio;
 
-    if (!ratio || !slide.$content) {
+    if (!$content) {
       return;
     }
 
-    slide.$content.style.maxWidth = "";
-    slide.$content.style.maxHeight = "";
+    let width = slide._width;
+    let height = slide._height;
 
-    let width = slide.$content.offsetWidth;
-    let height = slide.$content.offsetHeight;
+    if (ratio || (width && height)) {
+      Object.assign($content.style, {
+        width: width && height ? "100%" : "",
+        height: width && height ? "100%" : "",
+        maxWidth: "",
+        maxHeight: "",
+      });
 
-    let maxWidth = slide.width;
-    let maxHeight = slide.height;
+      let maxWidth = $content.offsetWidth;
+      let maxHeight = $content.offsetHeight;
 
-    if (maxWidth && maxHeight && (width > maxWidth || height > maxHeight)) {
-      let maxRatio = Math.min(maxWidth / width, maxHeight / height);
+      width = width || maxWidth;
+      height = height || maxHeight;
 
-      width = width * maxRatio;
-      height = height * maxRatio;
+      // Resize to fit
+      if (width > maxWidth || height > maxHeight) {
+        let maxRatio = Math.min(maxWidth / width, maxHeight / height);
+
+        width = width * maxRatio;
+        height = height * maxRatio;
+      }
+
+      // Recheck ratio
+      if (Math.abs(width / height - ratio) > 0.01) {
+        if (ratio < width / height) {
+          width = height * ratio;
+        } else {
+          height = width / ratio;
+        }
+      }
+
+      Object.assign($content.style, {
+        width: `${width}px`,
+        height: `${height}px`,
+      });
     }
-
-    if (ratio < width / height) {
-      width = height * ratio;
-    } else {
-      height = width / ratio;
-    }
-
-    slide.$content.style.maxWidth = `${width}px`;
-    slide.$content.style.maxHeight = `${height}px`;
   }
 
   /**

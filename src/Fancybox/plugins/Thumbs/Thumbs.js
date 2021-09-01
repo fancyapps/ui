@@ -13,6 +13,9 @@ const defaults = {
 
   // Keyboard shortcut to toggle thumbnail container
   key: "t",
+
+  // Customize Carousel instance
+  Carousel: {},
 };
 
 export class Thumbs {

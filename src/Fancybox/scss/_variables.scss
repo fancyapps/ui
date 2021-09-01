@@ -55,9 +55,10 @@ $fancybox-caption-line-height: 1.375 !default;
 
 $fancybox-thumbs-padding: 0px 3px !default;
 $fancybox-thumbs-spacing: 8px 3px !default;
+$fancybox-thumbs-radius: 8px 3px !default;
 $fancybox-thumbs-width: var(--fancybox-thumbs-width, 96px) !default;
 $fancybox-thumbs-ratio: var(--fancybox-thumbs-ratio, 1.5) !default; /* 3/2 */
-$fancybox-thumbs-border-radius: 4px !default;
+$fancybox-thumbs-border-radius: var(--fancybox-thumbs-border-radius, 4px) !default;
 $fancybox-thumbs-bg: rgba(255, 255, 255, 0.1) !default;
 
 $fancybox-thumbs-selected-opacity: false !default;

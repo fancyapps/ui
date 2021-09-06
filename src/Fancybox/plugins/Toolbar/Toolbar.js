@@ -118,7 +118,7 @@ const defaults = {
       label: "CLOSE",
       class: "fancybox__button--close",
       html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M20 20L4 4m16 0L4 20"></path></svg>',
-      tabindex: 1,
+      tabindex: 0,
       click: function (event) {
         event.stopPropagation();
         event.preventDefault();
@@ -275,7 +275,7 @@ export class Toolbar {
   }
 
   onKeydown(fancybox, key, event) {
-    if (key === " ") {
+    if (key === " " && this.Slideshow) {
       this.Slideshow.toggle();
 
       event.preventDefault();
@@ -436,12 +436,14 @@ export class Toolbar {
     for (const $el of this.fancybox.$container.querySelectorAll("a.fancybox__button--download")) {
       if (src) {
         $el.removeAttribute("disabled");
+        $el.removeAttribute("tabindex");
 
         $el.setAttribute("href", src);
         $el.setAttribute("download", src);
         $el.setAttribute("target", "_blank");
       } else {
         $el.setAttribute("disabled", "");
+        $el.setAttribute("tabindex", -1);
 
         $el.removeAttribute("href");
         $el.removeAttribute("download");

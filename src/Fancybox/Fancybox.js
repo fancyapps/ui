@@ -152,6 +152,8 @@ class Fancybox extends Base {
       "onKeydown",
       "onClick",
 
+      "onFocus",
+
       "onCreateSlide",
 
       "onTouchMove",
@@ -168,7 +170,12 @@ class Fancybox extends Base {
    */
   attachEvents() {
     document.addEventListener("mousedown", this.onMousedown);
-    document.addEventListener("keydown", this.onKeydown);
+    document.addEventListener("keydown", this.onKeydown, true);
+
+    // Trap keyboard focus inside of the modal
+    if (this.option("trapFocus")) {
+      document.addEventListener("focus", this.onFocus, true);
+    }
 
     this.$container.addEventListener("click", this.onClick);
   }
@@ -178,7 +185,9 @@ class Fancybox extends Base {
    */
   detachEvents() {
     document.removeEventListener("mousedown", this.onMousedown);
-    document.removeEventListener("keydown", this.onKeydown);
+    document.removeEventListener("keydown", this.onKeydown, true);
+
+    document.removeEventListener("focus", this.onFocus, true);
 
     this.$container.removeEventListener("click", this.onClick);
   }
@@ -455,6 +464,14 @@ class Fancybox extends Base {
   }
 
   /**
+   * Handle focus event
+   * @param {Event} event - Focus event
+   */
+  onFocus(event) {
+    this.focus(event);
+  }
+
+  /**
    * Handle click event on the container
    * @param {Event} event - Click event
    */
@@ -551,14 +568,6 @@ class Fancybox extends Base {
     document.body.classList.remove("is-using-mouse");
 
     const key = event.key;
-
-    // Trap keyboard focus inside of the modal
-    if (key === "Tab" && this.option("trapFocus")) {
-      this.focus(event);
-
-      return;
-    }
-
     const keyboard = this.option("keyboard");
 
     if (!keyboard || event.ctrlKey || event.altKey || event.shiftKey) {
@@ -613,43 +622,28 @@ class Fancybox extends Base {
    * @param {Event} [event] - Focus event
    */
   focus(event) {
-    if (Fancybox.preventScrollSupported === undefined) {
-      // Detect if .focus() method  supports `preventScroll` option,
-      // see https://developer.mozilla.org/en-US/docs/Web/API/HTMLOrForeignElement/focus
-      Fancybox.preventScrollSupported = (function () {
-        let rez = false;
-
-        document.createElement("div").focus({
-          get preventScroll() {
-            rez = true;
-            return false;
-          },
-        });
-
-        return rez;
-      })();
-    }
-
     const setFocusOn = (node) => {
-      if (node.setActive) {
-        // IE/Edge
-        node.setActive();
-      } else if (Fancybox.preventScrollSupported) {
-        // Modern browsers
-        node.focus({ preventScroll: true });
-      } else {
-        // Safari
-        node.focus();
+      if (!node) {
+        return;
       }
+
+      this.ignoreFocusChange = true;
+
+      try {
+        if (node.setActive) {
+          // IE/Edge
+          node.setActive();
+        } else if (Fancybox.preventScrollSupported) {
+          // Modern browsers
+          node.focus({ preventScroll: true });
+        } else {
+          // Safari
+          node.focus();
+        }
+      } catch (e) {}
+
+      this.ignoreFocusChange = false;
     };
-
-    if (["init", "closing", "customClosing", "destroy"].indexOf(this.state) > -1) {
-      return;
-    }
-
-    if (event) {
-      event.preventDefault();
-    }
 
     const FOCUSABLE_ELEMENTS = [
       "a[href]",
@@ -667,75 +661,80 @@ class Fancybox extends Base {
       '[tabindex]:not([tabindex^="-"]):not([disabled]):not([aria-hidden])',
     ];
 
+    if (this.ignoreFocusChange) {
+      return;
+    }
+
+    if (["init", "closing", "customClosing", "destroy"].indexOf(this.state) > -1) {
+      return;
+    }
+
     const $currentSlide = this.getSlide().$el;
 
     if (!$currentSlide) {
       return;
     }
 
-    // Setting `tabIndex` here helps to avoid Safari issues with random focusing and scrolling
-    $currentSlide.tabIndex = 0;
+    if (event) {
+      event.preventDefault();
+    }
 
-    const allFocusableElems = [].slice.call(this.$container.querySelectorAll(FOCUSABLE_ELEMENTS));
+    const allFocusableElems = Array.from(this.$container.querySelectorAll(FOCUSABLE_ELEMENTS));
 
     let enabledElems = [];
 
+    let $firstEl;
+    let $firstBtn;
+
     for (let node of allFocusableElems) {
-      // Slide element will be the last one, the highest priority has elements having `autofocus` attribute
-      if (node.classList && node.classList.contains("fancybox__slide")) {
-        continue;
-      }
+      const isInsideSlide = $currentSlide.contains(node);
 
-      const $closestSlide = node.closest(".fancybox__slide");
+      if (isInsideSlide || !this.Carousel.$viewport.contains(node)) {
+        enabledElems.push(node);
 
-      if ($closestSlide) {
-        if ($closestSlide === $currentSlide) {
-          enabledElems[node.hasAttribute("autofocus") ? "unshift" : "push"](node);
+        if (node.dataset.origTabindex !== undefined) {
+          node.tabIndex = node.dataset.tabindex;
+          node.removeAttribute("data-tabindex");
+        }
+
+        if (node.hasAttribute("autoFocus") || (!$firstEl && isInsideSlide)) {
+          $firstEl = node;
+        } else if (node.matches(".fancybox__button--close")) {
+          $firstBtn = node;
         }
       } else {
-        enabledElems.push(node);
+        node.dataset.origTabindex =
+          node.dataset.origTabindex === undefined ? node.getAttribute("tabindex") : node.dataset.origTabindex;
+
+        node.tabIndex = -1;
       }
     }
 
-    if (!enabledElems.length) {
+    if (enabledElems.indexOf(document.activeElement) > -1) {
+      this.lastFocus = document.activeElement;
+
       return;
     }
 
-    if (this.Carousel.pages.length > 1) {
-      enabledElems.push($currentSlide);
+    if (!event) {
+      setFocusOn($firstEl || $firstBtn || enabledElems[0]);
+      return;
     }
 
-    // Sort by tabindex
-    enabledElems.sort(function (a, b) {
-      if (a.tabIndex > b.tabIndex) return -1;
-      if (a.tabIndex < b.tabIndex) return 1;
+    if (!$currentSlide.contains(document.activeElement)) {
+      if (this.lastFocus === enabledElems[0]) {
+        setFocusOn(enabledElems[enabledElems.length - 1]);
+      } else {
+        let idx = enabledElems.indexOf(this.lastFocus);
 
-      return 0;
-    });
-
-    const focusedElementIndex = enabledElems.indexOf(document.activeElement);
-
-    const moveForward = event && !event.shiftKey;
-    const moveBackward = event && event.shiftKey;
-
-    if (moveForward) {
-      if (focusedElementIndex === enabledElems.length - 1) {
-        return setFocusOn(enabledElems[0]);
+        if (idx < enabledElems.length - 2) {
+          setFocusOn(enabledElems[idx + 1]);
+        } else {
+          setFocusOn(enabledElems[0]);
+        }
       }
 
-      return setFocusOn(enabledElems[focusedElementIndex + 1]);
-    }
-
-    if (moveBackward) {
-      if (focusedElementIndex === 0) {
-        return setFocusOn(enabledElems[enabledElems.length - 1]);
-      }
-
-      return setFocusOn(enabledElems[focusedElementIndex - 1]);
-    }
-
-    if (focusedElementIndex < 0) {
-      return setFocusOn(enabledElems[0]);
+      this.lastFocus = document.activeElement;
     }
   }
 

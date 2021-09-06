@@ -33,9 +33,7 @@ const defaults = {
   // HTML5 video parameters
   html5video: {
     tpl: `<video class="fancybox__html5video" playsinline controls controlsList="nodownload" poster="{{poster}}">
-  <source src="{{src}}" type="{{format}}" />
-  Sorry, your browser doesn\'t support embedded videos, <a href="{{src}}">download</a> and watch with your favorite video player!
-</video>`,
+  <source src="{{src}}" type="{{format}}" />Sorry, your browser doesn't support embedded videos.</video>`,
     format: "",
   },
 };
@@ -526,13 +524,25 @@ export class Html {
    */
   playVideo(slide) {
     if (slide.type === "html5video" && slide.video.autoplay) {
-      const $video = slide.$el.querySelector("video");
+      try {
+        const $video = slide.$el.querySelector("video");
 
-      if ($video) {
-        try {
-          $video.play();
-        } catch (err) {}
-      }
+        if ($video) {
+          const promise = $video.play();
+
+          if (promise !== undefined) {
+            promise
+              .then(() => {
+                // Autoplay started
+              })
+              .catch((error) => {
+                // Autoplay was prevented.
+                $video.muted = true;
+                $video.play();
+              });
+          }
+        }
+      } catch (err) {}
     }
 
     if (slide.type !== "video" || !(slide.$iframe && slide.$iframe.contentWindow)) {

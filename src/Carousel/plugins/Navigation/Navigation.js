@@ -40,6 +40,7 @@ export class Navigation {
     const $btn = document.createElement("button");
 
     $btn.setAttribute("title", this.carousel.localize(`{{${type.toUpperCase()}}}`));
+    $btn.setAttribute("aria-label", this.carousel.localize(`{{${type.toUpperCase()}}}`));
 
     const classNames = this.option("classNames.button") + " " + this.option(`classNames.${type}`);
 

@@ -106,6 +106,7 @@ export class Dots {
       $dot.setAttribute("role", "button");
       $dot.setAttribute("tabindex", "0");
       $dot.setAttribute("title", this.carousel.localize("{{GOTO}}", [["%d", index + 1]]));
+      $dot.setAttribute("aria-label", this.carousel.localize("{{GOTO}}", [["%d", index + 1]]));
 
       $dot.addEventListener("keydown", (event) => {
         const code = event.code;

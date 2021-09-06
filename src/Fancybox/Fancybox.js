@@ -878,6 +878,7 @@ class Fancybox extends Base {
 
     $btn.classList.add("carousel__button", "is-close");
     $btn.setAttribute("title", this.options.l10n.CLOSE);
+    $btn.setAttribute("aria-label", this.options.l10n.CLOSE);
     $btn.innerHTML = this.option("template.closeButton");
 
     $btn.addEventListener("click", (e) => this.close(e));

@@ -32,6 +32,7 @@ export class Controls {
 
     // Add title from translations
     $btn.setAttribute("title", this.panzoom.localize(`{{CONTROLS.${name.toUpperCase()}}}`));
+    $btn.setAttribute("aria-label", this.panzoom.localize(`{{CONTROLS.${name.toUpperCase()}}}`));
 
     $btn.classList.add("panzoom__button");
     $btn.classList.add(`panzoom__button--${name}`);

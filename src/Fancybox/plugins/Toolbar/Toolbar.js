@@ -315,6 +315,7 @@ export class Toolbar {
 
     if (obj.label) {
       $el.setAttribute("title", this.fancybox.localize(`{{${obj.label}}}`));
+      $el.setAttribute("aria-label", this.fancybox.localize(`{{${obj.label}}}`));
     }
 
     if (obj.click) {

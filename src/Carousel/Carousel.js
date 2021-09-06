@@ -200,7 +200,7 @@ export class Carousel extends Base {
 
     let viewportWidth = Math.max(this.$track.offsetWidth, round(this.$track.getBoundingClientRect().width));
 
-    let viewportStyles = window.getComputedStyle(this.$track);
+    let viewportStyles = getComputedStyle(this.$track);
     viewportWidth = viewportWidth - (parseFloat(viewportStyles.paddingLeft) + parseFloat(viewportStyles.paddingRight));
 
     this.contentWidth = contentWidth;
@@ -505,8 +505,8 @@ export class Carousel extends Base {
     const preload = this.option("preload");
     const infinite = this.option("infiniteX", this.option("infinite"));
 
-    const paddingLeft = parseFloat(window.getComputedStyle(this.$viewport, null).getPropertyValue("padding-left"));
-    const paddingRight = parseFloat(window.getComputedStyle(this.$viewport, null).getPropertyValue("padding-right"));
+    const paddingLeft = parseFloat(getComputedStyle(this.$viewport, null).getPropertyValue("padding-left"));
+    const paddingRight = parseFloat(getComputedStyle(this.$viewport, null).getPropertyValue("padding-right"));
 
     // Check visibility of each slide
     this.slides.forEach((slide) => {

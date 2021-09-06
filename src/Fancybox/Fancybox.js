@@ -1,4 +1,3 @@
-// var global = global || window;
 import { extend } from "../shared/utils/extend.js";
 import { canUseDOM } from "../shared/utils/canUseDOM.js";
 
@@ -11,6 +10,7 @@ import { Plugins } from "./plugins/index.js";
 // Default language
 import en from "./l10n/en.js";
 
+// Default settings
 const defaults = {
   // Index of active slide on the start
   startIndex: 0,
@@ -94,6 +94,10 @@ const defaults = {
   l10n: en,
 };
 
+// Object that contains all active instances of Fancybox
+const instances = {};
+
+// Number of Fancybox instances created, it is used to generate new instance "id"
 let called = 0;
 
 class Fancybox extends Base {
@@ -125,6 +129,8 @@ class Fancybox extends Base {
     this.initCarousel();
 
     this.attachEvents();
+
+    instances[this.id] = this;
 
     // "prepare" event will trigger the creation of additional layout elements, such as thumbnails and toolbar
     this.trigger("prepare");
@@ -486,7 +492,7 @@ class Fancybox extends Base {
     }
 
     // Skip if text is selected
-    if (window.getSelection().toString().length) {
+    if (getSelection().toString().length) {
       return;
     }
 
@@ -836,7 +842,7 @@ class Fancybox extends Base {
     $content.classList.add("fancybox__content");
 
     // Make sure that content is not hidden and will be visible
-    if ($content.style.display === "none" || window.getComputedStyle($content).getPropertyValue("display") === "none") {
+    if ($content.style.display === "none" || getComputedStyle($content).getPropertyValue("display") === "none") {
       $content.style.display = slide.display || this.option("defaultDisplay") || "flex";
     }
 
@@ -1084,7 +1090,7 @@ class Fancybox extends Base {
 
     // First, stop further execution if this instance is already closing
     // (this can happen if, for example, user clicks close button multiple times really fast)
-    if (["closing", "customClosing", "destroy"].indexOf(this.state) > -1) {
+    if (["closing", "customClosing", "destroy"].includes(this.state)) {
       return;
     }
 
@@ -1171,6 +1177,8 @@ class Fancybox extends Base {
         document.body.scrollTop = scrollTop;
       }
     }
+
+    delete instances[this.id];
 
     const nextInstance = Fancybox.getInstance();
 
@@ -1446,23 +1454,21 @@ class Fancybox extends Base {
    * @param {String|Numeric} [id] - Optional instance identifier
    */
   static getInstance(id) {
-    let nodes = [];
-
     if (id) {
-      nodes = [document.getElementById(`fancybox-${id}`)];
-    } else {
-      nodes = Array.from(document.querySelectorAll(".fancybox__container")).reverse();
+      return instances[id];
     }
 
-    for (const $container of nodes) {
-      const instance = $container && $container.Fancybox;
+    const instance = Object.values(instances)
+      .reverse()
+      .find((instance) => {
+        if (!["closing", "customClosing", "destroy"].includes(instance.state)) {
+          return instance;
+        }
 
-      if (instance && instance.state !== "closing" && instance.state !== "customClosing") {
-        return instance;
-      }
-    }
+        return false;
+      });
 
-    return null;
+    return instance || null;
   }
 
   /**

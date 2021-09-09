@@ -24,7 +24,7 @@ const defaults = {
       type: "button",
       class: "fancybox__button--prev",
       label: "PREV",
-      html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M15 4l-8 8 8 8"/></svg>',
+      html: '<svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg>',
       click: function (event) {
         event.preventDefault();
 
@@ -35,7 +35,7 @@ const defaults = {
       type: "button",
       class: "fancybox__button--next",
       label: "NEXT",
-      html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M8 4l8 8-8 8"/></svg>',
+      html: '<svg viewBox="0 0 24 24"><path d="M8 4l8 8-8 8"/></svg>',
       click: function (event) {
         event.preventDefault();
 
@@ -46,7 +46,7 @@ const defaults = {
       type: "button",
       class: "fancybox__button--fullscreen",
       label: "TOGGLE_FULLSCREEN",
-      html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1">
+      html: `<svg viewBox="0 0 24 24">
                 <g><path d="M3 8 V3h5"></path><path d="M21 8V3h-5"></path><path d="M8 21H3v-5"></path><path d="M16 21h5v-5"></path></g>
                 <g><path d="M7 2v5H2M17 2v5h5M2 17h5v5M22 17h-5v5"/></g>
             </svg>`,
@@ -64,7 +64,7 @@ const defaults = {
       type: "button",
       class: "fancybox__button--slideshow",
       label: "TOGGLE_SLIDESHOW",
-      html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1">
+      html: `<svg viewBox="0 0 24 24">
                 <g><path d="M6 4v16"/><path d="M20 12L6 20"/><path d="M20 12L6 4"/></g>
                 <g><path d="M7 4v15M17 4v15"/></g>
             </svg>`,
@@ -78,7 +78,7 @@ const defaults = {
       type: "button",
       class: "fancybox__button--zoom",
       label: "TOGGLE_ZOOM",
-      html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><circle cx="10" cy="10" r="7"></circle><path d="M16 16 L21 21"></svg>',
+      html: '<svg viewBox="0 0 24 24"><circle cx="10" cy="10" r="7"></circle><path d="M16 16 L21 21"></svg>',
       click: function (event) {
         event.preventDefault();
 
@@ -93,7 +93,7 @@ const defaults = {
       type: "link",
       label: "DOWNLOAD",
       class: "fancybox__button--download",
-      html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.62 2.48A2 2 0 004.56 21h14.88a2 2 0 001.94-1.51L22 17"/></svg>',
+      html: '<svg viewBox="0 0 24 24"><path d="M12 15V3m0 12l-4-4m4 4l4-4M2 17l.62 2.48A2 2 0 004.56 21h14.88a2 2 0 001.94-1.51L22 17"/></svg>',
       click: function (event) {
         event.stopPropagation();
       },
@@ -102,7 +102,7 @@ const defaults = {
       type: "button",
       label: "TOGGLE_THUMBS",
       class: "fancybox__button--thumbs",
-      html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><circle cx="4" cy="4" r="1" /><circle cx="12" cy="4" r="1" transform="rotate(90 12 4)"/><circle cx="20" cy="4" r="1" transform="rotate(90 20 4)"/><circle cx="4" cy="12" r="1" transform="rotate(90 4 12)"/><circle cx="12" cy="12" r="1" transform="rotate(90 12 12)"/><circle cx="20" cy="12" r="1" transform="rotate(90 20 12)"/><circle cx="4" cy="20" r="1" transform="rotate(90 4 20)"/><circle cx="12" cy="20" r="1" transform="rotate(90 12 20)"/><circle cx="20" cy="20" r="1" transform="rotate(90 20 20)"/></svg>',
+      html: '<svg viewBox="0 0 24 24"><circle cx="4" cy="4" r="1" /><circle cx="12" cy="4" r="1" transform="rotate(90 12 4)"/><circle cx="20" cy="4" r="1" transform="rotate(90 20 4)"/><circle cx="4" cy="12" r="1" transform="rotate(90 4 12)"/><circle cx="12" cy="12" r="1" transform="rotate(90 12 12)"/><circle cx="20" cy="12" r="1" transform="rotate(90 20 12)"/><circle cx="4" cy="20" r="1" transform="rotate(90 4 20)"/><circle cx="12" cy="20" r="1" transform="rotate(90 12 20)"/><circle cx="20" cy="20" r="1" transform="rotate(90 20 20)"/></svg>',
       click: function (event) {
         event.stopPropagation();
 
@@ -117,7 +117,7 @@ const defaults = {
       type: "button",
       label: "CLOSE",
       class: "fancybox__button--close",
-      html: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" tabindex="-1"><path d="M20 20L4 4m16 0L4 20"></path></svg>',
+      html: '<svg viewBox="0 0 24 24"><path d="M20 20L4 4m16 0L4 20"></path></svg>',
       tabindex: 0,
       click: function (event) {
         event.stopPropagation();
@@ -327,6 +327,14 @@ export class Toolbar {
 
     if (obj.id === "next") {
       $el.setAttribute("data-fancybox-next", "");
+    }
+
+    const $svg = $el.querySelector("svg");
+
+    if ($svg) {
+      $svg.setAttribute("role", "img");
+      $svg.setAttribute("tabindex", "-1");
+      $svg.setAttribute("xmlns", "http://www.w3.org/2000/svg");
     }
 
     return $el;

@@ -825,8 +825,10 @@ class Fancybox extends Base {
         $content = html;
       }
     } else {
+      const $fragment = document.createRange().createContextualFragment(html);
+
       $content = document.createElement("div");
-      $content.innerHTML = html;
+      $content.appendChild($fragment);
     }
 
     if (!($content instanceof Element)) {
@@ -852,7 +854,15 @@ class Fancybox extends Base {
 
     slide.$content = $content;
 
-    $el.prepend($content);
+    // console.log(`---`);
+    // console.log($el);
+    // console.log($content);
+
+    // const frag = document.createRange().createContextualFragment(html);
+    // document.body.appendChild( frag );
+
+    $el.appendChild($content);
+    // $el.appendChild(frag);
 
     this.manageCloseButton(slide);
 

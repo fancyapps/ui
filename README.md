@@ -35,21 +35,21 @@ A pre-bundled scripts that contain components are available on [CDN](https://www
 > **_NOTE:_** Because Fancybox is build on top of both Carousel and Panzoom components, you only have to include `fancybox.umd.js` and all 3 components will be available through the `window` object.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.umd.js"></script>
 ```
 
 Or use ES6 import:
 
 ```html
 <script type="module">
-  import { Fancybox } from "https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.esm.js";
+  import { Fancybox } from "https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.esm.js";
 </script>
 ```
 
 Remember to include the appropriate CSS file, example:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@4.0/dist/fancybox.css" />
 ```
 
 ## Usage

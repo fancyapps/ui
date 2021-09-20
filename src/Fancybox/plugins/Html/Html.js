@@ -325,9 +325,7 @@ export class Html {
 
       $iframe.parentNode.style.visibility = "";
 
-      if (slide.autoSize !== false) {
-        this.autoSizeIframe($iframe);
-      }
+      this.resizeIframe(slide);
 
       if (isFirstLoad) {
         fancybox.revealContent(slide);
@@ -391,15 +389,24 @@ export class Html {
   }
 
   /**
-   * Adjust the width and height of iframe to fit with content
-   * @param {Object} $iframe
+   * Adjust the width and height of the iframe according to the content dimensions, or defined sizes
+   * @param {Object} slide
    */
-  autoSizeIframe($iframe) {
-    if (!$iframe.dataset || $iframe.dataset.ready !== "yes") {
+  resizeIframe(slide) {
+    const $iframe = slide.$iframe;
+
+    if (!$iframe || !$iframe.dataset || $iframe.dataset.ready !== "yes") {
       return;
     }
 
-    let parentStyle = $iframe.parentNode.style;
+    const width_ = slide._width || 0;
+    const height_ = slide._height || 0;
+
+    if (slide.autoSize === false && !(width_ || height_)) {
+      return;
+    }
+
+    const parentStyle = $iframe.parentNode.style;
 
     parentStyle.flex = "1 1 auto";
     parentStyle.width = "";
@@ -416,8 +423,13 @@ export class Html {
       // Get rid of vertical scrollbar
       $body.style.overflow = "hidden";
 
-      const width = $html.scrollWidth;
-      parentStyle.width = `${width + paddingX}px`;
+      let width = $html.scrollWidth + paddingX;
+
+      if (width_) {
+        width = Math.min(width, width_);
+      }
+
+      parentStyle.width = `${width}px`;
 
       $body.style.overflow = "";
 
@@ -425,11 +437,11 @@ export class Html {
       parentStyle.flexShrink = "0";
       parentStyle.height = `${$body.scrollHeight}px`;
 
-      const height = $html.scrollHeight;
+      let height = height_ || $html.scrollHeight + paddingY;
 
-      parentStyle.height = `${height + paddingY}px`;
+      parentStyle.height = `${height}px`;
     } catch (error) {
-      parentStyle = "";
+      parentStyle.flex = "";
     }
   }
 
@@ -445,8 +457,8 @@ export class Html {
         return;
       }
 
-      if (slide.$iframe && slide.autoSize !== false) {
-        this.autoSizeIframe(slide.$iframe);
+      if (slide.$iframe) {
+        this.resizeIframe(slide);
       }
 
       if (slide.ratio) {

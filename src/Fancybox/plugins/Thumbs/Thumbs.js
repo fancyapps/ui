@@ -157,42 +157,38 @@ export class Thumbs {
    */
   toggle() {
     if (this.state === "visible") {
-      this.Carousel.Panzoom.detachEvents();
-
-      this.$container.style.display = "none";
-
-      this.state = "hidden";
-
-      return;
+      this.hide();
+    } else if (this.state === "hidden") {
+      this.show();
+    } else {
+      this.build();
     }
-
-    if (this.state === "hidden") {
-      this.$container.style.display = "";
-
-      this.Carousel.Panzoom.attachEvents();
-
-      this.state = "visible";
-
-      return;
-    }
-
-    this.build();
   }
 
   /**
    * Show thumbnail list
    */
   show() {
-    this.state = "hidden";
-    this.toggle();
+    if (this.state === "hidden") {
+      this.$container.style.display = "";
+
+      this.Carousel.Panzoom.attachEvents();
+
+      this.state = "visible";
+    }
   }
 
   /**
    * Hide thumbnail list
    */
   hide() {
-    this.state = "visible";
-    this.toggle();
+    if (this.state === "visible") {
+      this.Carousel.Panzoom.detachEvents();
+
+      this.$container.style.display = "none";
+
+      this.state = "hidden";
+    }
   }
 
   /**

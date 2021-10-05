@@ -248,6 +248,7 @@ export class Html {
   loadAjaxContent(slide) {
     const fancybox = this.fancybox;
     const xhr = new XMLHttpRequest();
+    xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
 
     fancybox.showLoading(slide);
 

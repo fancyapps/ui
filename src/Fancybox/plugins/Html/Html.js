@@ -293,6 +293,8 @@ export class Html {
 
       this.fancybox.setContent(slide, $iframe);
 
+      this.resizeIframe(slide);
+
       return;
     }
 
@@ -314,8 +316,8 @@ export class Html {
 
       let isFirstLoad = false;
 
-      if ($iframe.dataset.ready !== "yes") {
-        $iframe.dataset.ready = "yes";
+      if (!$iframe.isReady) {
+        $iframe.isReady = true;
         isFirstLoad = true;
       }
 
@@ -395,53 +397,62 @@ export class Html {
   resizeIframe(slide) {
     const $iframe = slide.$iframe;
 
-    if (!$iframe || !$iframe.dataset || $iframe.dataset.ready !== "yes") {
+    if (!$iframe) {
       return;
     }
 
-    const width_ = slide._width || 0;
-    const height_ = slide._height || 0;
+    let width_ = slide._width || 0;
+    let height_ = slide._height || 0;
 
-    if (slide.autoSize === false && !(width_ || height_)) {
-      return;
+    if (width_ && height_) {
+      slide.autoSize = false;
     }
 
-    const parentStyle = $iframe.parentNode.style;
+    const $parent = $iframe.parentNode;
+    const parentStyle = $parent.style;
 
-    parentStyle.flex = "1 1 auto";
-    parentStyle.width = "";
-    parentStyle.height = "";
+    if (slide.preload !== false && slide.autoSize !== false) {
+      try {
+        const compStyles = window.getComputedStyle($parent),
+          paddingX = parseFloat(compStyles.paddingLeft) + parseFloat(compStyles.paddingRight),
+          paddingY = parseFloat(compStyles.paddingTop) + parseFloat(compStyles.paddingBottom);
 
-    try {
-      const document = $iframe.contentWindow.document,
-        $html = document.getElementsByTagName("html")[0],
-        $body = document.body,
-        style = window.getComputedStyle($iframe.parentNode),
-        paddingX = parseFloat(style.paddingLeft) + parseFloat(style.paddingRight),
-        paddingY = parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
+        const document = $iframe.contentWindow.document,
+          $html = document.getElementsByTagName("html")[0],
+          $body = document.body;
 
-      // Get rid of vertical scrollbar
-      $body.style.overflow = "hidden";
+        // Get rid of vertical scrollbar
+        $body.style.overflow = "hidden";
 
-      let width = $html.scrollWidth + paddingX;
+        width_ = width_ || $html.scrollWidth + paddingX;
+
+        parentStyle.width = `${width_}px`;
+
+        $body.style.overflow = "";
+
+        parentStyle.flex = "0 0 auto";
+        parentStyle.height = `${$body.scrollHeight}px`;
+
+        height_ = $html.scrollHeight + paddingY;
+      } catch (error) {
+        //
+      }
+    }
+
+    if (width_ || height_) {
+      const newStyle = {
+        flex: "0 1 auto",
+      };
 
       if (width_) {
-        width = Math.min(width, width_);
+        newStyle.width = `${width_}px`;
       }
 
-      parentStyle.width = `${width}px`;
+      if (height_) {
+        newStyle.height = `${height_}px`;
+      }
 
-      $body.style.overflow = "";
-
-      parentStyle.flex = "";
-      parentStyle.flexShrink = "0";
-      parentStyle.height = `${$body.scrollHeight}px`;
-
-      let height = height_ || $html.scrollHeight + paddingY;
-
-      parentStyle.height = `${height}px`;
-    } catch (error) {
-      parentStyle.flex = "";
+      Object.assign(parentStyle, newStyle);
     }
   }
 
@@ -490,7 +501,7 @@ export class Html {
             .option("Html.html5video.tpl")
             .replace(/\{\{src\}\}/gi, slide.src)
             .replace("{{format}}", slide.format || (slide.html5video && slide.html5video.format) || "")
-            .replace("{{poster}}", slide.thumb || "")
+            .replace("{{poster}}", slide.poster || slide.thumb || "")
         );
 
         break;
@@ -671,11 +682,11 @@ export class Html {
       if ($content.style.display !== "none") {
         $content.style.display = "none";
       }
+    }
 
-      if (slide.$closeButton) {
-        slide.$closeButton.remove();
-        slide.$closeButton = null;
-      }
+    if (slide.$closeButton) {
+      slide.$closeButton.remove();
+      slide.$closeButton = null;
     }
 
     const $placeHolder = $content && $content.$placeHolder;

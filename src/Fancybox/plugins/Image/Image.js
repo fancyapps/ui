@@ -505,7 +505,7 @@ export class Image {
     // therefore animation end position has to be recalculated after each page scroll
     window.addEventListener("scroll", animatePosition);
 
-    Panzoom.on("endAnimation", () => {
+    Panzoom.once("endAnimation", () => {
       window.removeEventListener("scroll", animatePosition);
       fancybox.destroy();
     });
@@ -518,7 +518,7 @@ export class Image {
    * @param {Object} slide
    */
   handleCursor(slide) {
-    if (slide.type !== "image") {
+    if (slide.type !== "image" || !slide.$el) {
       return;
     }
 

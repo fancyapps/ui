@@ -567,7 +567,7 @@ export class Panzoom extends Base {
         // Check to see if there are any changes
         if (Math.abs(rect.width - this.container.width) > 1 || Math.abs(rect.height - this.container.height) > 1) {
           if (this.isAnimating()) {
-            this.endAnimation();
+            this.endAnimation(true);
           }
 
           this.updateMetrics();
@@ -895,8 +895,6 @@ export class Panzoom extends Base {
     } else if (this.state !== "pointerdown") {
       this.endAnimation();
 
-      this.trigger("endAnimation");
-
       return;
     }
 
@@ -1134,7 +1132,7 @@ export class Panzoom extends Base {
   /**
    * Stop animation loop
    */
-  endAnimation() {
+  endAnimation(silently) {
     cancelAnimationFrame(this.rAF);
     this.rAF = null;
 
@@ -1149,6 +1147,10 @@ export class Panzoom extends Base {
     this.state = "ready";
 
     this.handleCursor();
+
+    if (silently !== true) {
+      this.trigger("endAnimation");
+    }
   }
 
   /**

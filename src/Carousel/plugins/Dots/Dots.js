@@ -1,3 +1,8 @@
+const defaults = {
+  // The minimum number of slides to display dots
+  minSlideCount: 2,
+};
+
 export class Dots {
   constructor(carousel) {
     this.carousel = carousel;
@@ -14,7 +19,7 @@ export class Dots {
    * Build wrapping DOM element containing all dots
    */
   buildList() {
-    if (this.carousel.pages.length < 2) {
+    if (this.carousel.pages.length < this.carousel.option("Dots.minSlideCount")) {
       return;
     }
 

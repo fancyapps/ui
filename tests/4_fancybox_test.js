@@ -666,7 +666,7 @@ describe("Fancybox", function () {
     const slide_padding = 36 * 2;
 
     expect(instance.getSlide().$iframe.clientWidth).to.be.closeTo(800 - padding_x - slide_padding, 1);
-    expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(500, 1);
+    expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(250, 1);
 
     instance.close();
   });
@@ -694,14 +694,14 @@ describe("Fancybox", function () {
     const slide_padding = 36 * 2;
 
     expect(instance.getSlide().$iframe.clientWidth).to.be.closeTo(800 - padding_x - slide_padding, 1);
-    expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(500, 1);
+    expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(250, 1);
 
     instance.getSlide().$iframe.src = instance.getSlide().$iframe.src + "?grow";
 
     await delay(500);
 
     expect(instance.getSlide().$iframe.clientWidth).to.be.closeTo(800 - padding_x - slide_padding, 1);
-    expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(700, 1);
+    expect(instance.getSlide().$iframe.clientHeight).to.be.closeTo(350, 1);
 
     instance.close();
   });

@@ -86,6 +86,10 @@ export class ScrollLock {
     const startY = this.startY;
     const zoom = window.innerWidth / window.document.documentElement.clientWidth;
 
+    if (!event.cancelable) {
+      return;
+    }
+
     if (event.touches.length > 1 || zoom !== 1) {
       return;
     }

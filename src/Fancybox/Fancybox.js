@@ -801,6 +801,11 @@ class Fancybox extends Base {
       slide.$content = null;
     }
 
+    if (slide.$closeButton) {
+      slide.$closeButton.remove();
+      slide.$closeButton = null;
+    }
+
     if (slide._className) {
       slide.$el.classList.remove(slide._className);
     }
@@ -1146,6 +1151,10 @@ class Fancybox extends Base {
    * Clean up after closing fancybox
    */
   destroy() {
+    if (this.state === "destroy") {
+      return;
+    }
+
     this.state = "destroy";
 
     this.trigger("destroy");

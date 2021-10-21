@@ -329,8 +329,12 @@ class Fancybox extends Base {
       // Get thumbnail image source
       let thumb = slide.thumb;
 
-      if (!thumb && slide.$thumb) {
+      if (!thumb && $thumb) {
         thumb = $thumb.currentSrc || $thumb.src;
+
+        if (!thumb && $thumb.dataset) {
+          thumb = $thumb.dataset.lazySrc || $thumb.dataset.src;
+        }
       }
 
       // Assume we have image, then use it as thumbnail

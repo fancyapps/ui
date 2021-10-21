@@ -836,8 +836,14 @@ class Fancybox extends Base {
       $content.appendChild($fragment);
     }
 
+    if (slide.filter && !slide.error) {
+      $content = $content.querySelector(slide.filter);
+    }
+
     if (!($content instanceof Element)) {
-      throw new Error("Element expected");
+      this.setError(slide, "{{ELEMENT_NOT_FOUND}}");
+
+      return;
     }
 
     // * Add class name indicating content type, for example `has-image`

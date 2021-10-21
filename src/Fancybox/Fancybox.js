@@ -695,7 +695,9 @@ class Fancybox extends Base {
     for (let node of allFocusableElems) {
       const isInsideSlide = $currentSlide.contains(node);
 
-      if (isInsideSlide || !this.Carousel.$viewport.contains(node)) {
+      // Enable element if it's visible and is inside current slide or
+      // not inside main carousel , e.g., not inside  previous/next slide, but located, for example, inside the toolbar
+      if (node.offsetParent && (isInsideSlide || !this.Carousel.$viewport.contains(node))) {
         enabledElems.push(node);
 
         if (node.dataset.origTabindex !== undefined) {

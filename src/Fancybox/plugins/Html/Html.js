@@ -266,6 +266,7 @@ export class Html {
     };
 
     xhr.open("GET", slide.src);
+    xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     xhr.send(slide.ajax || null);
 
     slide.xhr = xhr;

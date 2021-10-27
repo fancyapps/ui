@@ -20,6 +20,12 @@
     overflow: visible;
     touch-action: none;
 
+    /* Fix Mac OS Safari 11 - 13 */
+    .fancybox__content {
+      flex-direction: row;
+      flex-wrap: wrap;
+    }
+
     .fancybox__image {
       max-width: 100%;
       max-height: 100%;

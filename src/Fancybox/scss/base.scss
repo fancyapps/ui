@@ -20,6 +20,7 @@ body.compensate-for-scrollbar {
   flex-direction: column;
 
   color: $fancybox-container-color;
+  --fancybox-accent-color: #{$fancybox-accent-color};
   -webkit-tap-highlight-color: transparent;
 
   overflow: hidden;
@@ -34,11 +35,11 @@ body.compensate-for-scrollbar {
   }
 
   & :focus {
-    outline: thin dotted;
+    outline: none;
   }
 
-  body.is-using-mouse & :focus {
-    outline: none;
+  body:not(.is-using-mouse) & :focus {
+    box-shadow: $fancybox-focus-shadow;
   }
 
   --carousel-button-width: 48px;
@@ -144,6 +145,11 @@ body.compensate-for-scrollbar {
   z-index: 20;
 
   @include fancybox-breakpoint(content);
+
+  & :focus:not(.carousel__button.is-close) {
+    outline: thin dotted;
+    box-shadow: none;
+  }
 }
 
 .fancybox__caption {
@@ -207,7 +213,7 @@ body.compensate-for-scrollbar {
 /* Close button located inside content area */
 .fancybox__content > .carousel__button.is-close {
   position: absolute;
-  top: -36px;
+  top: -40px;
   right: 0;
 
   color: var(--fancybox-color, #fff);

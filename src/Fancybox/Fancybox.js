@@ -228,6 +228,7 @@ class Fancybox extends Base {
     Object.entries({
       class: "fancybox__container",
       role: "dialog",
+      tabIndex: "-1",
       "aria-modal": "true",
       "aria-hidden": "true",
       "aria-label": this.localize("{{MODAL}}"),
@@ -637,7 +638,7 @@ class Fancybox extends Base {
         return;
       }
 
-      this.ignoreFocusChange = true;
+      Fancybox.ignoreFocusChange = true;
 
       try {
         if (node.setActive) {
@@ -652,7 +653,7 @@ class Fancybox extends Base {
         }
       } catch (e) {}
 
-      this.ignoreFocusChange = false;
+      Fancybox.ignoreFocusChange = false;
     };
 
     const FOCUSABLE_ELEMENTS = [
@@ -671,7 +672,7 @@ class Fancybox extends Base {
       '[tabindex]:not([tabindex^="-"]):not([disabled]):not([aria-hidden])',
     ];
 
-    if (this.ignoreFocusChange) {
+    if (Fancybox.ignoreFocusChange) {
       return;
     }
 
@@ -691,10 +692,8 @@ class Fancybox extends Base {
 
     const allFocusableElems = Array.from(this.$container.querySelectorAll(FOCUSABLE_ELEMENTS));
 
-    let enabledElems = [];
-
+    let enabledElems = [this.$container];
     let $firstEl;
-    let $firstBtn;
 
     for (let node of allFocusableElems) {
       const isInsideSlide = $currentSlide.contains(node);
@@ -711,8 +710,6 @@ class Fancybox extends Base {
 
         if (node.hasAttribute("autoFocus") || (!$firstEl && isInsideSlide)) {
           $firstEl = node;
-        } else if (node.matches(".fancybox__button--close")) {
-          $firstBtn = node;
         }
       } else {
         node.dataset.origTabindex =
@@ -724,17 +721,16 @@ class Fancybox extends Base {
 
     if (enabledElems.indexOf(document.activeElement) > -1) {
       this.lastFocus = document.activeElement;
-
       return;
     }
 
     if (!event) {
-      setFocusOn($firstEl || $firstBtn || enabledElems[0]);
+      setFocusOn($firstEl || enabledElems[0]);
       return;
     }
 
     if (!$currentSlide.contains(document.activeElement)) {
-      if (this.lastFocus === enabledElems[0]) {
+      if (this.lastFocus === enabledElems[1]) {
         setFocusOn(enabledElems[enabledElems.length - 1]);
       } else {
         let idx = enabledElems.indexOf(this.lastFocus);

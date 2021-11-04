@@ -31,7 +31,7 @@ $fancybox-container-padding: env(safe-area-inset-top, 0px) env(safe-area-inset-r
 
 $fancybox-backdrop-bg: var(--fancybox-bg, rgba(24, 24, 27, 0.92)) !default;
 
-$fancybox-accent-color: rgba(1, 210, 232, 0.94) !default;
+$fancybox-accent-color: var(--fancybox-accent-color, rgba(1, 210, 232, 0.94)) !default;
 $fancybox-focus-shadow: 0 0 0 1px #fff, 0 0 0 2px var(--fancybox-accent-color, rgba(1, 210, 232, 0.94)) !default;
 
 $fancybox-spinner-color: var(--fancybox-color, currentColor) !default;

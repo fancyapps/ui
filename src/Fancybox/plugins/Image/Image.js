@@ -524,15 +524,25 @@ export class Image {
 
     const panzoom = slide.Panzoom;
     const clickAction = this.fancybox.option("Image.click", false, slide);
+    const touchIsEnabled = this.fancybox.option("Image.touch");
+
     const classList = slide.$el.classList;
 
+    const zoomInClass = this.fancybox.option("Image.canZoomInClass");
+    const zoomOutClass = this.fancybox.option("Image.canZoomOutClass");
+
     if (panzoom && clickAction === "toggleZoom") {
-      const canZoom =
+      const canZoomIn =
         panzoom && panzoom.content.scale === 1 && panzoom.option("maxScale") - panzoom.content.scale > 0.01;
 
-      classList[canZoom ? "add" : "remove"](this.fancybox.option("Image.canZoomInClass"));
+      if (canZoomIn) {
+        classList.remove(zoomOutClass);
+        classList.add(zoomInClass);
+      } else if (panzoom.content.scale > 1 && !touchIsEnabled) {
+        classList.add(zoomOutClass);
+      }
     } else if (clickAction === "close") {
-      classList.add(this.fancybox.option("Image.canZoomOutClass"));
+      classList.add(zoomOutClass);
     }
   }
 

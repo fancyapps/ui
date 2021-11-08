@@ -20,7 +20,6 @@ body.compensate-for-scrollbar {
   flex-direction: column;
 
   color: $fancybox-container-color;
-  --fancybox-accent-color: #{$fancybox-accent-color};
   -webkit-tap-highlight-color: transparent;
 
   overflow: hidden;

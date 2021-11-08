@@ -38,7 +38,11 @@
         left: 0;
         right: 0;
         bottom: 0;
-        border: 5px solid $fancybox-accent-color;
+
+        border-width: $fancybox-thumbs-selected-border-width;
+        border-style: solid;
+        border-color: $fancybox-thumbs-selected-border-color;
+
         opacity: 0;
         transition: opacity 0.15s ease;
 

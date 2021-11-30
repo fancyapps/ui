@@ -23,15 +23,16 @@
   "keywords": [
     "javascript",
     "lightbox",
+    "fancybox",
+    "carousel",
+    "panzoom",
     "pinchzoom",
     "pinch",
     "zoom",
     "gesture",
     "touch",
     "drag",
-    "gallery",
-    "carousel",
-    "panzoom"
+    "gallery"
   ],
   "license": "SEE LICENSE IN LICENSE.md",
   "homepage": "https://fancyapps.com/",

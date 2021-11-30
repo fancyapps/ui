@@ -1,5 +1,6 @@
 import { extend } from "../shared/utils/extend.js";
 import { canUseDOM } from "../shared/utils/canUseDOM.js";
+import { FOCUSABLE_ELEMENTS, setFocusOn } from "../shared/utils/setFocusOn.js";
 
 import { Base } from "../shared/Base/Base.js";
 
@@ -143,7 +144,7 @@ class Fancybox extends Base {
     // Reveal container
     this.$container.setAttribute("aria-hidden", "false");
 
-    // Focus on the first focus element in this instance
+    // Set focus on the first focusable element inside this instance
     if (this.option("trapFocus")) {
       this.focus();
     }
@@ -161,6 +162,7 @@ class Fancybox extends Base {
       "onFocus",
 
       "onCreateSlide",
+      "onSettle",
 
       "onTouchMove",
       "onTouchEnd",
@@ -424,6 +426,7 @@ class Fancybox extends Base {
             "*": (name, ...details) => this.trigger(`Carousel.${name}`, ...details),
             init: (carousel) => (this.Carousel = carousel),
             createSlide: this.onCreateSlide,
+            settle: this.onSettle,
           },
         },
 
@@ -471,6 +474,15 @@ class Fancybox extends Base {
 
       slide.$el.classList.add("has-caption");
       slide.$el.setAttribute("aria-labelledby", id);
+    }
+  }
+
+  /**
+   * Handle Carousel `settle` event
+   */
+  onSettle() {
+    if (this.option("autoFocus")) {
+      this.focus();
     }
   }
 
@@ -564,7 +576,9 @@ class Fancybox extends Base {
    * Handle `mousedown` event to mark that the mouse is in use
    */
   onMousedown() {
-    document.body.classList.add("is-using-mouse");
+    if (this.state === "ready") {
+      document.body.classList.add("is-using-mouse");
+    }
   }
 
   /**
@@ -633,45 +647,6 @@ class Fancybox extends Base {
    * @param {Event} [event] - Focus event
    */
   focus(event) {
-    const setFocusOn = (node) => {
-      if (!node) {
-        return;
-      }
-
-      Fancybox.ignoreFocusChange = true;
-
-      try {
-        if (node.setActive) {
-          // IE/Edge
-          node.setActive();
-        } else if (Fancybox.preventScrollSupported) {
-          // Modern browsers
-          node.focus({ preventScroll: true });
-        } else {
-          // Safari
-          node.focus();
-        }
-      } catch (e) {}
-
-      Fancybox.ignoreFocusChange = false;
-    };
-
-    const FOCUSABLE_ELEMENTS = [
-      "a[href]",
-      "area[href]",
-      'input:not([disabled]):not([type="hidden"]):not([aria-hidden])',
-      "select:not([disabled]):not([aria-hidden])",
-      "textarea:not([disabled]):not([aria-hidden])",
-      "button:not([disabled]):not([aria-hidden])",
-      "iframe",
-      "object",
-      "embed",
-      "video",
-      "audio",
-      "[contenteditable]",
-      '[tabindex]:not([tabindex^="-"]):not([disabled]):not([aria-hidden])',
-    ];
-
     if (Fancybox.ignoreFocusChange) {
       return;
     }
@@ -680,38 +655,44 @@ class Fancybox extends Base {
       return;
     }
 
-    const $currentSlide = this.getSlide().$el;
-
-    if (!$currentSlide) {
-      return;
-    }
-
     if (event) {
       event.preventDefault();
     }
 
-    const allFocusableElems = Array.from(this.$container.querySelectorAll(FOCUSABLE_ELEMENTS));
+    Fancybox.ignoreFocusChange = true;
 
-    let enabledElems = [this.$container];
+    const $container = this.$container;
+    const currentSlide = this.getSlide();
+    const $currentSlide = currentSlide.state === "done" ? currentSlide.$el : null;
+
+    const allFocusableElems = Array.from($container.querySelectorAll(FOCUSABLE_ELEMENTS));
+
+    let enabledElems = [];
     let $firstEl;
 
     for (let node of allFocusableElems) {
-      const isInsideSlide = $currentSlide.contains(node);
+      // Enable element if it's visible and
+      // is inside the current slide or is outside main carousel (for example, inside the toolbar)
+      const isNodeVisible = node.offsetParent;
+      const isNodeInsideCurrentSlide = $currentSlide && $currentSlide.contains(node);
+      const isNodeOutsideCarousel = !this.Carousel.$viewport.contains(node);
 
-      // Enable element if it's visible and is inside current slide or
-      // not inside main carousel , e.g., not inside  previous/next slide, but located, for example, inside the toolbar
-      if (node.offsetParent && (isInsideSlide || !this.Carousel.$viewport.contains(node))) {
+      if (isNodeVisible && (isNodeInsideCurrentSlide || isNodeOutsideCarousel)) {
         enabledElems.push(node);
 
         if (node.dataset.origTabindex !== undefined) {
-          node.tabIndex = node.dataset.tabindex;
-          node.removeAttribute("data-tabindex");
+          node.tabIndex = node.dataset.origTabindex;
+          node.removeAttribute("data-orig-tabindex");
         }
 
-        if (node.hasAttribute("autoFocus") || (!$firstEl && isInsideSlide)) {
+        if (
+          node.hasAttribute("autoFocus") ||
+          (!$firstEl && isNodeInsideCurrentSlide && !node.classList.contains("carousel__button"))
+        ) {
           $firstEl = node;
         }
       } else {
+        // Element is either hidden or is inside preloaded slide (e.g., not inside current slide, but next/prev)
         node.dataset.origTabindex =
           node.dataset.origTabindex === undefined ? node.getAttribute("tabindex") : node.dataset.origTabindex;
 
@@ -719,31 +700,27 @@ class Fancybox extends Base {
       }
     }
 
-    if (enabledElems.indexOf(document.activeElement) > -1) {
-      this.lastFocus = document.activeElement;
-      return;
-    }
-
     if (!event) {
-      setFocusOn($firstEl || enabledElems[0]);
-      return;
-    }
-
-    if (!$currentSlide.contains(document.activeElement)) {
-      if (this.lastFocus === enabledElems[1]) {
-        setFocusOn(enabledElems[enabledElems.length - 1]);
+      if (this.option("autoFocus") && $firstEl) {
+        setFocusOn($firstEl);
+      } else if (enabledElems.indexOf(document.activeElement) < 0) {
+        setFocusOn($container);
+      }
+    } else {
+      if (enabledElems.indexOf(event.target) > -1) {
+        this.lastFocus = event.target;
       } else {
-        let idx = enabledElems.indexOf(this.lastFocus);
-
-        if (idx < enabledElems.length - 2) {
-          setFocusOn(enabledElems[idx + 1]);
+        if (this.lastFocus === $container) {
+          setFocusOn(enabledElems[enabledElems.length - 1]);
         } else {
-          setFocusOn(enabledElems[0]);
+          setFocusOn($container);
         }
       }
-
-      this.lastFocus = document.activeElement;
     }
+
+    this.lastFocus = document.activeElement;
+
+    Fancybox.ignoreFocusChange = false;
   }
 
   /**
@@ -1185,16 +1162,7 @@ class Fancybox extends Base {
     this.$container = this.$backdrop = this.$carousel = null;
 
     if ($trigger) {
-      // `preventScroll` option is not yet supported by Safari
-      // https://bugs.webkit.org/show_bug.cgi?id=178583
-
-      if (Fancybox.preventScrollSupported) {
-        $trigger.focus({ preventScroll: true });
-      } else {
-        const scrollTop = document.body.scrollTop; // Save position
-        $trigger.focus();
-        document.body.scrollTop = scrollTop;
-      }
+      setFocusOn($trigger);
     }
 
     delete instances[this.id];
@@ -1371,22 +1339,26 @@ class Fancybox extends Base {
       target = options.target || null;
 
     // Get options
+    // ===
     options = extend({}, options, Fancybox.openers.get(opener));
 
     // Get matching nodes
-    const groupAttr = options.groupAttr === undefined ? "data-fancybox" : options.groupAttr;
-    const groupValue = groupAttr && target && target.getAttribute(`${groupAttr}`);
-
+    // ===
     const groupAll = options.groupAll === undefined ? false : options.groupAll;
 
-    if (groupAll || groupValue) {
-      items = [].slice.call(document.querySelectorAll(opener));
+    const groupAttr = options.groupAttr === undefined ? "data-fancybox" : options.groupAttr;
+    const groupValue = groupAttr && target ? target.getAttribute(`${groupAttr}`) : "";
 
-      if (!groupAll) {
+    if (!target || groupValue || groupAll) {
+      items = [].slice.call(document.querySelectorAll(opener));
+    }
+
+    if (target && !groupAll) {
+      if (groupValue) {
         items = items.filter((el) => el.getAttribute(`${groupAttr}`) === groupValue);
+      } else {
+        items = [target];
       }
-    } else {
-      items = [target];
     }
 
     if (!items.length) {
@@ -1394,13 +1366,17 @@ class Fancybox extends Base {
     }
 
     // Exit if current instance is triggered from the same element
+    // ===
     const currentInstance = Fancybox.getInstance();
 
     if (currentInstance && items.indexOf(currentInstance.options.$trigger) > -1) {
       return false;
     }
 
-    // Index of current item in the gallery
+    // Start Fancybox
+    // ===
+
+    // Get index of current item in the gallery
     index = target ? items.indexOf(target) : index;
 
     // Convert items in a format supported by fancybox

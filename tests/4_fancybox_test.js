@@ -306,7 +306,7 @@ describe("Fancybox", function () {
     expect(instance.state).to.be.equal("destroy");
   });
 
-  it("sets focus on close button by default", async function () {
+  it("sets focus on container by default", async function () {
     const instance = new Fancybox(
       [
         {
@@ -320,7 +320,7 @@ describe("Fancybox", function () {
       }
     );
 
-    expect(document.activeElement.classList.contains("is-close")).to.be.true;
+    expect(document.activeElement.classList.contains("fancybox__container")).to.be.true;
 
     instance.close();
   });

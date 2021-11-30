@@ -6,7 +6,17 @@ import { Slideshow } from "../../../shared/utils/Slideshow.js";
 
 const defaults = {
   // What toolbar items to display
-  display: ["counter", "zoom", "slideshow", "fullscreen", "thumbs", "close"],
+  display: [
+    "counter",
+    //"prev",
+    //"next",
+    //"download",
+    "zoom",
+    "slideshow",
+    "fullscreen",
+    "thumbs",
+    "close",
+  ],
 
   // Only create a toolbar item if there is at least one image in the group
   autoEnable: true,
@@ -458,7 +468,7 @@ export class Toolbar {
       }
     }
 
-    // Zoom buttons
+    // Zoom button
     // ===
     const panzoom = slide.Panzoom;
     const canZoom = panzoom && panzoom.option("maxScale") > panzoom.option("baseScale");
@@ -481,7 +491,8 @@ export class Toolbar {
       $el.innerHTML = cnt;
     }
 
-    // Disable prev/next links if gallery is not infinite and reached start/end
+    // Disable previous/next links if gallery is not infinite and has reached start/end
+    // ===
     if (!this.fancybox.option("infinite")) {
       for (const $el of this.fancybox.$container.querySelectorAll("[data-fancybox-prev]")) {
         if (idx === 0) {

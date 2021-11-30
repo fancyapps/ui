@@ -1,3 +1,7 @@
+html.with-fancybox {
+  scroll-behavior: auto;
+}
+
 body.compensate-for-scrollbar {
   overflow: hidden !important;
   touch-action: none;

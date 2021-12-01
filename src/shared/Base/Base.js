@@ -52,18 +52,18 @@ export class Base {
    * @returns {String}
    */
   localize(str, params = []) {
-    return String(str).replace(/\{\{(\w+).?(\w+)?\}\}/g, (match, key, subkey) => {
-      let rez = false;
+    str = String(str).replace(/\{\{(\w+).?(\w+)?\}\}/g, (match, key, subkey) => {
+      let rez = "";
 
       // Plugins have `Plugin.l10n.KEY`
       if (subkey) {
         rez = this.option(`${key[0] + key.toLowerCase().substring(1)}.l10n.${subkey}`);
-      } else {
+      } else if (key) {
         rez = this.option(`l10n.${key}`);
       }
 
       if (!rez) {
-        return key;
+        rez = match;
       }
 
       for (let index = 0; index < params.length; index++) {
@@ -72,6 +72,12 @@ export class Base {
 
       return rez;
     });
+
+    str = str.replace(/\{\{(.*)\}\}/, (match, key) => {
+      return key;
+    });
+
+    return str;
   }
 
   /**

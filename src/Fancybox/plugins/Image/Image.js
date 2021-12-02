@@ -287,6 +287,9 @@ export class Image {
         viewport: slide.$wrap,
         content: slide.$image,
 
+        width: slide._width,
+        height: slide._height,
+
         wrapInner: false,
 
         // Allow to select caption text
@@ -370,7 +373,7 @@ export class Image {
     return {
       top: shiftedTop,
       left: shiftedLeft,
-      scale: thumbRect.width / contentWidth,
+      scale: contentWidth && thumbWidth ? thumbWidth / contentWidth : 1,
       opacity: opacity,
     };
   }
@@ -383,6 +386,10 @@ export class Image {
       $container = fancybox.$container;
 
     if (window.visualViewport && window.visualViewport.scale !== 1) {
+      return false;
+    }
+
+    if (slide.Panzoom && !slide.Panzoom.content.width) {
       return false;
     }
 

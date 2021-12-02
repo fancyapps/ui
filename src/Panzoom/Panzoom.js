@@ -181,8 +181,8 @@ export class Panzoom extends Base {
 
     this.content = {
       // Full content dimensions (naturalWidth/naturalHeight for images)
-      origHeight: 0,
       origWidth: 0,
+      origHeight: 0,
 
       // Current dimensions of the content
       width: 0,
@@ -636,16 +636,19 @@ export class Panzoom extends Base {
     const $content = this.$content;
     const $viewport = this.$viewport;
 
-    const contentIsImage = this.$content instanceof HTMLImageElement;
+    const contentIsImage = $content instanceof HTMLImageElement;
     const contentIsZoomable = this.option("zoom");
     const shouldResizeParent = this.option("resizeParent", contentIsZoomable);
 
-    let origWidth = getFullWidth(this.$content);
-    let origHeight = getFullHeight(this.$content);
+    let width = this.option("width");
+    let height = this.option("height");
+
+    let origWidth = width || getFullWidth($content);
+    let origHeight = height || getFullHeight($content);
 
     Object.assign($content.style, {
-      width: "",
-      height: "",
+      width: width ? `${width}px` : "",
+      height: height ? `${height}px` : "",
       maxWidth: "",
       maxHeight: "",
     });
@@ -659,8 +662,8 @@ export class Panzoom extends Base {
     origWidth = round(origWidth * ratio);
     origHeight = round(origHeight * ratio);
 
-    let width = origWidth;
-    let height = origHeight;
+    width = origWidth;
+    height = origHeight;
 
     const contentRect = $content.getBoundingClientRect();
     const viewportRect = $viewport.getBoundingClientRect();

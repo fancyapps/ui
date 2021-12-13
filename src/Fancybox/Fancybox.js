@@ -1213,9 +1213,28 @@ class Fancybox extends Base {
       return;
     }
 
+    let eventTarget = event.target;
+
+    if (eventTarget.matches("[data-fancybox-close]")) {
+      Fancybox.close(false);
+
+      return;
+    }
+
+    if (eventTarget.matches("[data-fancybox-next]")) {
+      Fancybox.next();
+
+      return;
+    }
+
+    if (eventTarget.matches("[data-fancybox-prev]")) {
+      Fancybox.prev();
+
+      return;
+    }
+
     // Support `trigger` element, e.g., start fancybox from different DOM element, for example,
     // to have one preview image for hidden image gallery
-    let eventTarget = event.target;
     let triggerGroupName;
 
     if (
@@ -1477,6 +1496,28 @@ class Fancybox extends Base {
       instance.close();
 
       if (!all) return;
+    }
+  }
+
+  /**
+   * Slide topmost currently active instance to next page
+   */
+  static next() {
+    const instance = Fancybox.getInstance();
+
+    if (instance) {
+      instance.next();
+    }
+  }
+
+  /**
+   * Slide topmost currently active instance to previous page
+   */
+  static prev() {
+    const instance = Fancybox.getInstance();
+
+    if (instance) {
+      instance.prev();
     }
   }
 }

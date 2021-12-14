@@ -503,8 +503,31 @@ class Fancybox extends Base {
       return;
     }
 
+    let eventTarget = event.target;
+
+    if (eventTarget.matches("[data-fancybox-close]")) {
+      event.preventDefault();
+      Fancybox.close(false);
+
+      return;
+    }
+
+    if (eventTarget.matches("[data-fancybox-next]")) {
+      event.preventDefault();
+      Fancybox.next();
+
+      return;
+    }
+
+    if (eventTarget.matches("[data-fancybox-prev]")) {
+      event.preventDefault();
+      Fancybox.prev();
+
+      return;
+    }
+
     // Skip if clicked inside content area
-    if (event.target.closest(".fancybox__content")) {
+    if (eventTarget.closest(".fancybox__content")) {
       return;
     }
 
@@ -1214,24 +1237,6 @@ class Fancybox extends Base {
     }
 
     let eventTarget = event.target;
-
-    if (eventTarget.matches("[data-fancybox-close]")) {
-      Fancybox.close(false);
-
-      return;
-    }
-
-    if (eventTarget.matches("[data-fancybox-next]")) {
-      Fancybox.next();
-
-      return;
-    }
-
-    if (eventTarget.matches("[data-fancybox-prev]")) {
-      Fancybox.prev();
-
-      return;
-    }
 
     // Support `trigger` element, e.g., start fancybox from different DOM element, for example,
     // to have one preview image for hidden image gallery

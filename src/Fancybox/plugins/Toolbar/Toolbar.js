@@ -35,22 +35,14 @@ const defaults = {
       class: "fancybox__button--prev",
       label: "PREV",
       html: '<svg viewBox="0 0 24 24"><path d="M15 4l-8 8 8 8"/></svg>',
-      click: function (event) {
-        event.preventDefault();
-
-        this.fancybox.prev();
-      },
+      attr: { "data-fancybox-prev": "" },
     },
     next: {
       type: "button",
       class: "fancybox__button--next",
       label: "NEXT",
       html: '<svg viewBox="0 0 24 24"><path d="M8 4l8 8-8 8"/></svg>',
-      click: function (event) {
-        event.preventDefault();
-
-        this.fancybox.next();
-      },
+      attr: { "data-fancybox-next": "" },
     },
     fullscreen: {
       type: "button",
@@ -129,12 +121,7 @@ const defaults = {
       class: "fancybox__button--close",
       html: '<svg viewBox="0 0 24 24"><path d="M20 20L4 4m16 0L4 20"></path></svg>',
       tabindex: 0,
-      click: function (event) {
-        event.stopPropagation();
-        event.preventDefault();
-
-        this.fancybox.close();
-      },
+      attr: { "data-fancybox-close": "" },
     },
   },
 };
@@ -211,6 +198,7 @@ export class Toolbar {
   }
 
   onPrepare() {
+    const fancybox = this.fancybox;
     // Skip if disabled
     if (this.state !== "init") {
       return;
@@ -220,16 +208,16 @@ export class Toolbar {
 
     this.update();
 
-    this.Slideshow = new Slideshow(this.fancybox);
+    this.Slideshow = new Slideshow(fancybox);
 
-    if (!this.fancybox.Carousel.prevPage) {
-      if (this.fancybox.option("slideshow.autoStart")) {
+    if (!fancybox.Carousel.prevPage) {
+      if (fancybox.option("slideshow.autoStart")) {
         this.Slideshow.activate();
       }
 
-      if (this.fancybox.option("fullscreen.autoStart") && !Fullscreen.element()) {
+      if (fancybox.option("fullscreen.autoStart") && !Fullscreen.element()) {
         try {
-          Fullscreen.activate(this.fancybox.$container);
+          Fullscreen.activate(fancybox.$container);
         } catch (error) {}
       }
     }
@@ -240,14 +228,14 @@ export class Toolbar {
   }
 
   onSettle() {
-    if (this.Slideshow && this.Slideshow.isActive()) {
-      if (
-        this.fancybox.getSlide().index === this.fancybox.Carousel.slides.length - 1 &&
-        !this.fancybox.option("infinite")
-      ) {
-        this.Slideshow.deactivate();
-      } else if (this.fancybox.getSlide().state === "done") {
-        this.Slideshow.setTimer();
+    const fancybox = this.fancybox;
+    const slideshow = this.Slideshow;
+
+    if (slideshow && slideshow.isActive()) {
+      if (fancybox.getSlide().index === fancybox.Carousel.slides.length - 1 && !fancybox.option("infinite")) {
+        slideshow.deactivate();
+      } else if (fancybox.getSlide().state === "done") {
+        slideshow.setTimer();
       }
     }
   }
@@ -261,14 +249,16 @@ export class Toolbar {
   }
 
   onDone(fancybox, slide) {
+    const slideshow = this.Slideshow;
+
     if (slide.index === fancybox.getSlide().index) {
       this.update();
 
-      if (this.Slideshow && this.Slideshow.isActive()) {
-        if (!this.fancybox.option("infinite") && slide.index === this.fancybox.Carousel.slides.length - 1) {
-          this.Slideshow.deactivate();
+      if (slideshow && slideshow.isActive()) {
+        if (!fancybox.option("infinite") && slide.index === fancybox.Carousel.slides.length - 1) {
+          slideshow.deactivate();
         } else {
-          this.Slideshow.setTimer();
+          slideshow.setTimer();
         }
       }
     }
@@ -321,6 +311,10 @@ export class Toolbar {
 
     if (obj.class) {
       $el.classList.add(...obj.class.split(" "));
+    }
+
+    for (let prop in obj.attr) {
+      $el.setAttribute(prop, obj[prop]);
     }
 
     if (obj.label) {

@@ -610,9 +610,8 @@ export class Carousel extends Base {
         slide.$el.dataset.index = slide.index;
 
         // Lazy load images
-        const $lazyNodes = slide.$el.querySelectorAll("[data-lazy-src]");
-
-        $lazyNodes.forEach((node) => {
+        // ===
+        slide.$el.querySelectorAll("[data-lazy-src]").forEach((node) => {
           let lazySrc = node.dataset.lazySrc;
 
           if (node instanceof HTMLImageElement) {
@@ -622,6 +621,12 @@ export class Carousel extends Base {
           }
         });
 
+        slide.$el.querySelectorAll("[data-lazy-srcset]").forEach((node) => {
+          node.srcset = node.dataset.lazySrcset;
+        });
+
+        // Lazy load slide background image
+        // ===
         let lazySrc;
 
         if ((lazySrc = slide.$el.dataset.lazySrc)) {

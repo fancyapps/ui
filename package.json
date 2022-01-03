@@ -1,6 +1,6 @@
 {
   "name": "@fancyapps/ui",
-  "version": "4.0.12",
+  "version": "4.0.13",
   "description": "JavaScript UI Component Library",
   "main": "dist/fancybox.umd.js",
   "module": "dist/fancybox.esm.js",

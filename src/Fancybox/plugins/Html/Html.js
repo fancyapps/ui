@@ -1,9 +1,30 @@
 import { extend } from "../../../shared/utils/extend.js";
 
-const buildURLQuery = (obj) => {
-  return Object.entries(obj)
-    .map((pair) => pair.map(encodeURIComponent).join("="))
+const buildURLQuery = (src, obj) => {
+  let url = new URL(src);
+  let params = new URLSearchParams(url.search);
+
+  let rez = [...params, ...Object.entries(obj)]
+    .map((pair) => {
+      // Youtube
+      if (pair[0] === "t") {
+        pair[0] = "start";
+        pair[1] = parseInt(pair[1]);
+      }
+
+      return pair.map(encodeURIComponent).join("=");
+    })
     .join("&");
+
+  // Vimeo
+  // https://vimeo.zendesk.com/hc/en-us/articles/360000121668-Starting-playback-at-a-specific-timecode
+  let matches = src.match(/#t=((.*)?\d+s)/);
+
+  if (matches) {
+    rez += `#t=${matches[1]}`;
+  }
+
+  return rez;
 };
 
 const defaults = {
@@ -112,7 +133,7 @@ export class Html {
         /(?:youtube\.com|youtu\.be|youtube\-nocookie\.com)\/(?:watch\?(?:.*&)?v=|v\/|u\/|embed\/?)?(videoseries\?list=(?:.*)|[\w-]{11}|\?listType=(?:.*)&list=(?:.*))(?:.*)/i
       ))
     ) {
-      const params = buildURLQuery(this.fancybox.option("Html.youtube"));
+      const params = buildURLQuery(src, this.fancybox.option("Html.youtube"));
       const videoId = encodeURIComponent(rez[1]);
 
       slide.videoId = videoId;
@@ -122,7 +143,7 @@ export class Html {
 
       type = "video";
     } else if ((rez = src.match(/^.+vimeo.com\/(?:\/)?([\d]+)(.*)?/))) {
-      const params = buildURLQuery(this.fancybox.option("Html.vimeo"));
+      const params = buildURLQuery(src, this.fancybox.option("Html.vimeo"));
       const videoId = encodeURIComponent(rez[1]);
 
       slide.videoId = videoId;

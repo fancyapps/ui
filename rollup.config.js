@@ -1,8 +1,8 @@
 import resolve from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import replace from "@rollup/plugin-replace";
+import babel from "@rollup/plugin-babel";
 
-import babel from "rollup-plugin-babel";
 import { eslint } from "rollup-plugin-eslint";
 import { terser } from "rollup-plugin-terser";
 import banner from "rollup-plugin-banner";
@@ -60,6 +60,7 @@ for (const file_name of files) {
         babelrc: false,
         exclude: "node_modules/**",
         presets: [["@babel/preset-env"]],
+        babelHelpers: "bundled",
       }),
       resolve(),
       commonjs(),

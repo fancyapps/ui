@@ -920,33 +920,28 @@ export class Panzoom extends Base {
 
     scale = scale || this.transform.scale;
 
-    const fitWidth = this.content.fitWidth;
-    const fitHeight = this.content.fitHeight;
-
-    const width = fitWidth * scale;
-    const height = fitHeight * scale;
+    const width = this.content.fitWidth * scale;
+    const height = this.content.fitHeight * scale;
 
     const viewportWidth = this.viewport.width;
     const viewportHeight = this.viewport.height;
 
-    if (fitWidth <= viewportWidth) {
-      const deltaX1 = (viewportWidth - width) * 0.5;
-      const deltaX2 = (width - fitWidth) * 0.5;
+    if (width < viewportWidth) {
+      const deltaX = round((viewportWidth - width) * 0.5);
 
-      boundX.from = round(deltaX1 - deltaX2);
-      boundX.to = round(deltaX1 + deltaX2);
+      boundX.from = deltaX;
+      boundX.to = deltaX;
     } else {
       boundX.from = round(viewportWidth - width);
     }
 
-    if (fitHeight <= viewportHeight) {
-      const deltaY1 = (viewportHeight - height) * 0.5;
-      const deltaY2 = (height - fitHeight) * 0.5;
+    if (height < viewportHeight) {
+      const deltaY = (viewportHeight - height) * 0.5;
 
-      boundY.from = round(deltaY1 - deltaY2);
-      boundY.to = round(deltaY1 + deltaY2);
+      boundY.from = deltaY;
+      boundY.to = deltaY;
     } else {
-      boundY.from = round(viewportHeight - width);
+      boundY.from = round(viewportHeight - height);
     }
 
     return { boundX, boundY };

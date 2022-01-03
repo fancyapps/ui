@@ -611,6 +611,10 @@ export class Carousel extends Base {
 
         // Lazy load images
         // ===
+        slide.$el.querySelectorAll("[data-lazy-srcset]").forEach((node) => {
+          node.srcset = node.dataset.lazySrcset;
+        });
+
         slide.$el.querySelectorAll("[data-lazy-src]").forEach((node) => {
           let lazySrc = node.dataset.lazySrc;
 
@@ -619,10 +623,6 @@ export class Carousel extends Base {
           } else {
             node.style.backgroundImage = `url('${lazySrc}')`;
           }
-        });
-
-        slide.$el.querySelectorAll("[data-lazy-srcset]").forEach((node) => {
-          node.srcset = node.dataset.lazySrcset;
         });
 
         // Lazy load slide background image

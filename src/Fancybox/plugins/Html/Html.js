@@ -1,20 +1,22 @@
 import { extend } from "../../../shared/utils/extend.js";
 
 const buildURLQuery = (src, obj) => {
-  let url = new URL(src);
-  let params = new URLSearchParams(url.search);
+  const url = new URL(src);
+  const params = new URLSearchParams(url.search);
 
-  let rez = [...params, ...Object.entries(obj)]
-    .map((pair) => {
-      // Youtube
-      if (pair[0] === "t") {
-        pair[0] = "start";
-        pair[1] = parseInt(pair[1]);
-      }
+  let rez = new URLSearchParams();
 
-      return pair.map(encodeURIComponent).join("=");
-    })
-    .join("&");
+  for (const [key, value] of [...params, ...Object.entries(obj)]) {
+    // Youtube
+    if (key === "t") {
+      rez.set("start", parseInt(value));
+    } else {
+      rez.set(key, value);
+    }
+  }
+
+  // Convert to 'foo=1&bar=2&baz=3'
+  rez = rez.toString();
 
   // Vimeo
   // https://vimeo.zendesk.com/hc/en-us/articles/360000121668-Starting-playback-at-a-specific-timecode

@@ -4,7 +4,6 @@ import { round } from "../shared/utils/round.js";
 import { ResizeObserver } from "../shared/utils/ResizeObserver.js";
 import { PointerTracker, getMidpoint, getDistance } from "../shared/utils/PointerTracker.js";
 
-import { isScrollable } from "../shared/utils/isScrollable.js";
 import { getTextNodeFromPoint } from "../shared/utils/getTextNodeFromPoint.js";
 
 import { getFullWidth, getFullHeight, calculateAspectRatioFit } from "../shared/utils/getDimensions.js";
@@ -362,10 +361,6 @@ export class Panzoom extends Base {
 
           // Allow text selection
           if (this.option("textSelection") && getTextNodeFromPoint(event.target, event.clientX, event.clientY)) {
-            return false;
-          }
-          // Allow scrolling
-          if (isScrollable(event.target)) {
             return false;
           }
         }

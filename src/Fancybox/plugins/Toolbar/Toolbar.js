@@ -24,11 +24,11 @@ const defaults = {
   // Toolbar items; can be links, buttons or `div` elements
   items: {
     counter: {
+      position: "left",
       type: "div",
       class: "fancybox__counter",
       html: '<span data-fancybox-index=""></span>&nbsp;/&nbsp;<span data-fancybox-count=""></span>',
-      tabindex: -1,
-      position: "left",
+      attr: { tabindex: -1 },
     },
     prev: {
       type: "button",
@@ -120,8 +120,7 @@ const defaults = {
       label: "CLOSE",
       class: "fancybox__button--close",
       html: '<svg viewBox="0 0 24 24"><path d="M20 20L4 4m16 0L4 20"></path></svg>',
-      tabindex: 0,
-      attr: { "data-fancybox-close": "" },
+      attr: { "data-fancybox-close": "", tabindex: 0 },
     },
   },
 };
@@ -313,8 +312,8 @@ export class Toolbar {
       $el.classList.add(...obj.class.split(" "));
     }
 
-    for (let prop in obj.attr) {
-      $el.setAttribute(prop, obj[prop]);
+    for (const prop in obj.attr) {
+      $el.setAttribute(prop, obj.attr[prop]);
     }
 
     if (obj.label) {

@@ -435,8 +435,6 @@ export class Image {
 
     const { top, left, scale, opacity } = this.getZoomInfo(slide);
 
-    slide.state = "zoomIn";
-
     fancybox.trigger("reveal", slide);
 
     // Scale and move to start position
@@ -449,6 +447,8 @@ export class Image {
     });
 
     slide.$content.style.visibility = "";
+
+    slide.state = "zoomIn";
 
     if (opacity === true) {
       Panzoom.on("afterTransform", (panzoom) => {

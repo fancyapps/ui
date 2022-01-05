@@ -2,8 +2,6 @@ import { clearTextSelection } from "./clearTextSelection.js";
 
 class Pointer {
   constructor(nativePointer) {
-    this.id = -1;
-
     this.id = nativePointer.pointerId || nativePointer.identifier || -1;
 
     this.pageX = nativePointer.pageX;

@@ -298,7 +298,7 @@ export class Carousel extends Base {
       if (initialSlide !== null) {
         page = this.findPageForSlide(initialSlide);
       } else {
-        page = this.option("initialPage", 0);
+        page = parseInt(this.option("initialPage", 0), 10) || 0;
       }
 
       if (!rez[page]) {
@@ -356,6 +356,8 @@ export class Carousel extends Base {
    * @returns {Integer|null} Index of the page if found, or null
    */
   findPageForSlide(index) {
+    index = parseInt(index, 10) || 0;
+
     const page = this.pages.find((page) => {
       return page.indexes.indexOf(index) > -1;
     });
@@ -604,7 +606,7 @@ export class Carousel extends Base {
     }
 
     if (slide.$el) {
-      let curentIndex = parseInt(slide.$el.dataset.index, 10);
+      let curentIndex = parseInt(slide.$el.dataset.index, 10) || 0;
 
       if (curentIndex !== slide.index) {
         slide.$el.dataset.index = slide.index;

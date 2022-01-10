@@ -539,10 +539,12 @@ export class Html {
         this.loadAjaxContent(slide);
         break;
 
-      case "iframe":
       case "pdf":
       case "video":
       case "map":
+        slide.preload = false;
+
+      case "iframe":
         this.loadIframeContent(slide);
 
         break;

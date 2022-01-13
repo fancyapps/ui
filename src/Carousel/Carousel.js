@@ -606,9 +606,9 @@ export class Carousel extends Base {
     }
 
     if (slide.$el) {
-      let curentIndex = parseInt(slide.$el.dataset.index, 10) || 0;
+      let curentIndex = slide.$el.dataset.index;
 
-      if (curentIndex !== slide.index) {
+      if (!curentIndex || parseInt(curentIndex, 10) !== slide.index) {
         slide.$el.dataset.index = slide.index;
 
         // Lazy load images

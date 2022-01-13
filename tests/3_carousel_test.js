@@ -644,4 +644,38 @@ describe("Carousel", function () {
 
     destroyInstance(instance);
   });
+
+  it("supports lazy loading", async function () {
+    const instance = createInstance({
+      markup: `<div class="carousel">
+        <div class="carousel__slide">
+          <img data-lazy-src="https://lipsum.app/id/1/300x200" />
+        </div>
+        <div class="carousel__slide">
+          <img data-lazy-src="https://lipsum.app/id/2/300x200" />
+        </div>
+        <div class="carousel__slide">
+          <img data-lazy-src="https://lipsum.app/id/3/300x200" />
+        </div>
+        <div class="carousel__slide">
+          <img data-lazy-src="https://lipsum.app/id/4/300x200" />
+        </div>
+        <div class="carousel__slide">
+          <img data-lazy-src="https://lipsum.app/id/5/300x200" />
+        </div>
+      </div>`,
+    });
+
+    let nodes = [...instance.$track.querySelectorAll("[data-lazy-src]")];
+
+    expect(nodes.length).to.equal(5);
+
+    expect(nodes[0].src).to.equal("https://lipsum.app/id/1/300x200");
+    expect(nodes[1].src).to.equal("https://lipsum.app/id/2/300x200");
+    expect(nodes[2].src).to.equal("");
+    expect(nodes[3].src).to.equal("");
+    expect(nodes[4].src).to.equal("https://lipsum.app/id/5/300x200");
+
+    destroyInstance(instance);
+  });
 });

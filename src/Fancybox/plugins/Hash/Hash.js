@@ -1,21 +1,5 @@
 import { canUseDOM } from "../../../shared/utils/canUseDOM.js";
 
-/**
- * Helper method to split URL hash into useful pieces
- */
-const getParsedURL = function () {
-  const hash = window.location.hash.substr(1),
-    tmp = hash.split("-"),
-    index = tmp.length > 1 && /^\+?\d+$/.test(tmp[tmp.length - 1]) ? parseInt(tmp.pop(-1), 10) || null : null,
-    slug = tmp.join("-");
-
-  return {
-    hash,
-    slug,
-    index,
-  };
-};
-
 export class Hash {
   constructor(fancybox) {
     this.fancybox = fancybox;
@@ -49,22 +33,19 @@ export class Hash {
     }
 
     const firstRun = carousel.prevPage === null;
-
-    const slide = fancybox.getSlide();
-
-    const dataset = slide.$trigger && slide.$trigger.dataset;
-
     const currentHash = window.location.hash.substr(1);
+    const slide = fancybox.getSlide();
 
     let newHash = false;
 
     if (slide.slug) {
       newHash = slide.slug;
     } else {
-      let dataAttribute = dataset && dataset.fancybox;
+      const dataset = slide.$trigger && slide.$trigger.dataset;
+      const slug = fancybox.option("slug") || (dataset && dataset.fancybox);
 
-      if (dataAttribute && dataAttribute.length && dataAttribute !== "true") {
-        newHash = dataAttribute + (carousel.slides.length > 1 ? "-" + (slide.index + 1) : "");
+      if (slug && slug.length && slug !== "true") {
+        newHash = slug + (carousel.slides.length > 1 ? "-" + (slide.index + 1) : "");
       }
     }
 
@@ -137,7 +118,7 @@ export class Hash {
       return;
     }
 
-    const { hash, slug, index } = getParsedURL();
+    const { hash, slug, index } = Hash.getParsedURL();
 
     if (!slug) {
       return;
@@ -155,7 +136,7 @@ export class Hash {
       return;
     }
 
-    // If elements are not found by custom slug, Use URL hash value as group name
+    // If elements are not found by custom slug, use URL hash value as group name
     // ===
     const groupElems = document.querySelectorAll(`[data-fancybox="${slug}"]`);
 
@@ -178,7 +159,7 @@ export class Hash {
    * Handle `hash` change, change gallery item to current index or start/close current instance
    */
   static onHashChange() {
-    const { slug, index } = getParsedURL();
+    const { slug, index } = Hash.getParsedURL();
 
     const instance = Hash.Fancybox.getInstance();
 
@@ -186,6 +167,14 @@ export class Hash {
       // Look if this is inside currently active gallery
       if (slug) {
         const carousel = instance.Carousel;
+
+        /**
+         * Support manually opened gallery
+         */
+        if (slug === instance.option("slug")) {
+          return carousel.slideTo(index - 1);
+        }
+
         /**
          * Check if URL hash matches `data-slug` value of active element
          */
@@ -246,5 +235,21 @@ export class Hash {
 
   static destroy() {
     window.removeEventListener("hashchange", Hash.onHashChange, false);
+  }
+
+  /**
+   * Helper method to split URL hash into useful pieces
+   */
+  static getParsedURL() {
+    const hash = window.location.hash.substr(1),
+      tmp = hash.split("-"),
+      index = tmp.length > 1 && /^\+?\d+$/.test(tmp[tmp.length - 1]) ? parseInt(tmp.pop(-1), 10) || null : null,
+      slug = tmp.join("-");
+
+    return {
+      hash,
+      slug,
+      index,
+    };
   }
 }

@@ -108,6 +108,14 @@ class Fancybox extends Base {
    * @param {Object} [options] - Options for Fancybox
    */
   constructor(items, options = {}) {
+    // Quick hack to fix variable naming collision
+    items = items.map((item) => {
+      if (item.width) item._width = item.width;
+      if (item.height) item._height = item.height;
+
+      return item;
+    });
+
     super(extend(true, {}, defaults, options));
 
     this.bindHandlers();

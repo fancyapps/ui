@@ -747,6 +747,52 @@ describe("Fancybox", function () {
     instance.close();
   });
 
+  it("can display video with custom dimensions", async function () {
+    Fancybox.show([
+      {
+        src: "https://www.youtube.com/watch?v=DLX62G4lc44",
+        type: "video",
+        width: 300,
+        height: 200,
+      },
+    ]);
+
+    await delay(300);
+
+    const rect = Fancybox.getInstance().getSlide().$content.getBoundingClientRect();
+
+    expect(rect.width).to.be.equal(300);
+    expect(rect.height).to.be.equal(200);
+
+    Fancybox.getInstance().close();
+  });
+
+  it("can display iframe with custom dimensions", async function () {
+    Fancybox.show(
+      [
+        {
+          src: "https://www.w3.org/",
+          type: "iframe",
+          width: 300,
+          height: 200,
+          preload: false,
+        },
+      ],
+      {
+        animated: false,
+        showClass: false,
+        hideClass: false,
+      }
+    );
+
+    const rect = Fancybox.getInstance().getSlide().$content.getBoundingClientRect();
+
+    expect(rect.width).to.be.equal(300);
+    expect(rect.height).to.be.equal(200);
+
+    Fancybox.getInstance().close();
+  });
+
   it("can load HTML content using ajax", async function () {
     const instance = new Fancybox([
       {

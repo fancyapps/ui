@@ -567,17 +567,29 @@ describe("Fancybox", function () {
       },
     ];
 
+    expect(new URL(document.URL).hash).to.be.equal("");
+
     triggers[0].click();
 
     const instance = Fancybox.getInstance();
 
     await delay(300);
 
+    expect(new URL(document.URL).hash).to.be.equal("#gallery-1");
+
     expect(instance.items).to.deep.equal(items);
+
+    instance.next();
+
+    await delay(300);
+
+    expect(new URL(document.URL).hash).to.be.equal("#gallery-2");
 
     instance.close();
 
     await delay(300);
+
+    expect(new URL(document.URL).hash).to.be.equal("");
 
     sandbox.parentNode.removeChild(sandbox);
   });

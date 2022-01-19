@@ -24,8 +24,7 @@ export class Hash {
    * @param {Object} fancybox
    * @param {Object} carousel
    */
-  onChange() {
-    const fancybox = this.fancybox;
+  onChange(fancybox) {
     const carousel = fancybox.Carousel;
 
     if (this.timer) {
@@ -33,24 +32,25 @@ export class Hash {
     }
 
     const firstRun = carousel.prevPage === null;
-    const currentHash = window.location.hash.substr(1);
-    const slide = fancybox.getSlide();
+    const currentSlide = fancybox.getSlide();
+
+    const currentHash = new URL(document.URL).hash;
 
     let newHash = false;
 
-    if (slide.slug) {
-      newHash = slide.slug;
+    if (currentSlide.slug) {
+      newHash = "#" + currentSlide.slug;
     } else {
-      const dataset = slide.$trigger && slide.$trigger.dataset;
+      const dataset = currentSlide.$trigger && currentSlide.$trigger.dataset;
       const slug = fancybox.option("slug") || (dataset && dataset.fancybox);
 
       if (slug && slug.length && slug !== "true") {
-        newHash = slug + (carousel.slides.length > 1 ? "-" + (slide.index + 1) : "");
+        newHash = "#" + slug + (carousel.slides.length > 1 ? "-" + (currentSlide.index + 1) : "");
       }
     }
 
     if (firstRun) {
-      this.origHash = currentHash !== newHash ? this.origHash : "";
+      this.origHash = currentHash !== newHash ? currentHash : "";
     }
 
     if (newHash && currentHash !== newHash) {
@@ -59,7 +59,7 @@ export class Hash {
           window.history[firstRun ? "pushState" : "replaceState"](
             {},
             document.title,
-            window.location.pathname + window.location.search + "#" + newHash
+            window.location.pathname + window.location.search + newHash
           );
 
           if (firstRun) {
@@ -114,7 +114,9 @@ export class Hash {
    * @param {Class} Fancybox
    */
   static startFromUrl() {
-    if (!Hash.Fancybox || Hash.Fancybox.getInstance()) {
+    const Fancybox = Hash.Fancybox;
+
+    if (!Fancybox || Fancybox.getInstance() || Fancybox.defaults.Hash === false) {
       return;
     }
 
@@ -132,7 +134,7 @@ export class Hash {
       selectedElem.dispatchEvent(new CustomEvent("click", { bubbles: true, cancelable: true }));
     }
 
-    if (Hash.Fancybox.getInstance()) {
+    if (Fancybox.getInstance()) {
       return;
     }
 
@@ -161,9 +163,10 @@ export class Hash {
   static onHashChange() {
     const { slug, index } = Hash.getParsedURL();
 
-    const instance = Hash.Fancybox.getInstance();
+    const Fancybox = Hash.Fancybox;
+    const instance = Fancybox && Fancybox.getInstance();
 
-    if (instance) {
+    if (instance && instance.plugins.Hash) {
       // Look if this is inside currently active gallery
       if (slug) {
         const carousel = instance.Carousel;
@@ -206,7 +209,6 @@ export class Hash {
     /**
      * Attempt to start
      */
-
     Hash.startFromUrl();
   }
 

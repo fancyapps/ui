@@ -621,6 +621,7 @@ export class Panzoom extends Base {
 
   /**
    * Trigger update events before/after resizing content and viewport
+   * @param {Boolean} silently Should trigger `afterUpdate` event at the end
    */
   updateMetrics(silently) {
     if (silently !== true) {

@@ -538,12 +538,14 @@ export class Image {
     const zoomInClass = this.fancybox.option("Image.canZoomInClass");
     const zoomOutClass = this.fancybox.option("Image.canZoomOutClass");
 
+    classList.remove(zoomOutClass);
+    classList.remove(zoomInClass);
+
     if (panzoom && clickAction === "toggleZoom") {
       const canZoomIn =
         panzoom && panzoom.content.scale === 1 && panzoom.option("maxScale") - panzoom.content.scale > 0.01;
 
       if (canZoomIn) {
-        classList.remove(zoomOutClass);
         classList.add(zoomInClass);
       } else if (panzoom.content.scale > 1 && !touchIsEnabled) {
         classList.add(zoomOutClass);

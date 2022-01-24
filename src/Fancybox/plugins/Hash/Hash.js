@@ -83,21 +83,16 @@ export class Hash {
       return;
     }
 
-    // Simply make browser to move back one page in the session history,
-    // if new history entry is successfully created
-    if (!this.hasCreatedHistory) {
-      try {
-        window.history.replaceState(
-          {},
-          document.title,
-          window.location.pathname + window.location.search + (this.origHash ? "#" + this.origHash : "")
-        );
+    // Restore original url
+    try {
+      window.history.replaceState(
+        {},
+        document.title,
+        window.location.pathname + window.location.search + (this.origHash || "")
+      );
 
-        return;
-      } catch (e) {}
-    }
-
-    window.history.back();
+      return;
+    } catch (e) {}
   }
 
   attach(fancybox) {
@@ -167,7 +162,7 @@ export class Hash {
     const instance = Fancybox && Fancybox.getInstance();
 
     if (instance && instance.plugins.Hash) {
-      // Look if this is inside currently active gallery
+      // Check if hash matches currently active gallery
       if (slug) {
         const carousel = instance.Carousel;
 

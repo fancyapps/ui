@@ -128,7 +128,7 @@ export class Carousel extends Base {
 
     if (!this.$viewport) {
       this.$viewport = document.createElement("div");
-      this.$viewport.classList.add(prefix + classNames.viewport);
+      this.$viewport.classList.add(...(prefix + classNames.viewport).split(" "));
 
       this.$viewport.append(...this.$container.childNodes);
 
@@ -139,7 +139,7 @@ export class Carousel extends Base {
 
     if (!this.$track) {
       this.$track = document.createElement("div");
-      this.$track.classList.add(prefix + classNames.track);
+      this.$track.classList.add(...(prefix + classNames.track).split(" "));
 
       this.$track.append(...this.$viewport.childNodes);
 
@@ -327,7 +327,7 @@ export class Carousel extends Base {
 
       node.dataset.isTestEl = 1;
       node.style.visibility = "hidden";
-      node.classList.add(this.option("prefix") + this.option("classNames.slide"));
+      node.classList.add(...(this.option("prefix") + this.option("classNames.slide")).split(" "));
 
       // Assume all slides have the same custom class, if any
       if (firstSlide.customClass) {
@@ -644,7 +644,7 @@ export class Carousel extends Base {
     const div = document.createElement("div");
 
     div.dataset.index = slide.index;
-    div.classList.add(this.option("prefix") + this.option("classNames.slide"));
+    div.classList.add(...(this.option("prefix") + this.option("classNames.slide")).split(" "));
 
     if (slide.customClass) {
       div.classList.add(...slide.customClass.split(" "));

@@ -8,6 +8,7 @@
       #{$p}.has-pdf &,
       #{$p}.has-video &,
       #{$p}.has-html5video & {
+        max-width: 100%;
         flex-shrink: 1;
         min-height: 1px;
         overflow: visible;

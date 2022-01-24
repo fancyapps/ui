@@ -445,6 +445,9 @@ export class Html {
           $html = document.getElementsByTagName("html")[0],
           $body = document.body;
 
+        // Allow content to expand horizontally
+        parentStyle.width = "";
+
         // Get rid of vertical scrollbar
         $body.style.overflow = "hidden";
 

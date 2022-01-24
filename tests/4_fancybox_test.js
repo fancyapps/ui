@@ -814,4 +814,54 @@ describe("Fancybox", function () {
 
     instance.close();
   });
+
+  it("correctly restores URL hash after closing", async function () {
+    const sandbox = createSandbox(imageGalleryMarkup);
+    const triggers = sandbox.querySelectorAll("a");
+
+    var url = new URL(document.URL);
+
+    url.hash = "#aaa";
+    document.location.href = url.href;
+
+    // Gallery
+    // ====
+    await delay(100);
+
+    triggers[0].click();
+
+    const instance = Fancybox.getInstance();
+
+    await delay(300);
+
+    expect(new URL(document.URL).hash).to.be.equal("#gallery-1");
+
+    instance.next();
+
+    await delay(300);
+
+    expect(new URL(document.URL).hash).to.be.equal("#gallery-2");
+
+    instance.close();
+
+    await delay(300);
+
+    expect(new URL(document.URL).hash).to.be.equal("#aaa");
+
+    // Single
+    // ====
+    Fancybox.show([{ src: "<p>Lorem ipsum dolor sit amet</p>", type: "html" }]);
+
+    await delay(300);
+
+    Fancybox.close();
+
+    await delay(300);
+
+    expect(new URL(document.URL).hash).to.be.equal("#aaa");
+
+    history.replaceState({}, document.title, window.location.href.split("#")[0]);
+
+    sandbox.parentNode.removeChild(sandbox);
+  });
 });

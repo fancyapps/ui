@@ -63,7 +63,7 @@ export class Navigation {
   build() {
     if (!this.$container) {
       this.$container = document.createElement("div");
-      this.$container.classList.add(this.option("classNames.main"));
+      this.$container.classList.add(...this.option("classNames.main").split(" "));
 
       this.carousel.$container.appendChild(this.$container);
     }

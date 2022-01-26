@@ -34,7 +34,7 @@ export class ScrollLock {
     window.addEventListener("touchmove", this.onTouchmove, { passive: false });
 
     //* Prevent window scrolling with mouse wheel
-    this.fancybox.$container.addEventListener("wheel", this.onWheel, { passive: false });
+    window.addEventListener("wheel", this.onWheel, { passive: false });
   }
 
   /**
@@ -122,7 +122,9 @@ export class ScrollLock {
    * Handle `wheel` event
    */
   onWheel(event) {
-    event.preventDefault();
+    if (!isScrollable(event.target)) {
+      event.preventDefault();
+    }
   }
 
   /**
@@ -144,7 +146,7 @@ export class ScrollLock {
     window.removeEventListener("touchstart", this.onTouchstart, false);
     window.removeEventListener("touchmove", this.onTouchmove, false);
 
-    this.fancybox.$container.removeEventListener("wheel", this.onWheel, { passive: false });
+    window.removeEventListener("wheel", this.onWheel, { passive: false });
   }
 
   attach() {

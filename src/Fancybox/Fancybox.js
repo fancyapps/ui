@@ -96,7 +96,7 @@ const defaults = {
 };
 
 // Object that contains all active instances of Fancybox
-const instances = {};
+const instances = new Map();
 
 // Number of Fancybox instances created, it is used to generate new instance "id"
 let called = 0;
@@ -139,7 +139,7 @@ class Fancybox extends Base {
 
     this.attachEvents();
 
-    instances[this.id] = this;
+    instances.set(this.id, this);
 
     // "prepare" event will trigger the creation of additional layout elements, such as thumbnails and toolbar
     this.trigger("prepare");
@@ -518,7 +518,7 @@ class Fancybox extends Base {
 
     if (eventTarget.matches("[data-fancybox-close]")) {
       event.preventDefault();
-      Fancybox.close(false);
+      Fancybox.close(false, event);
 
       return;
     }
@@ -1199,7 +1199,7 @@ class Fancybox extends Base {
       setFocusOn($trigger);
     }
 
-    delete instances[this.id];
+    instances.delete(this.id);
 
     const nextInstance = Fancybox.getInstance();
 
@@ -1485,10 +1485,10 @@ class Fancybox extends Base {
    */
   static getInstance(id) {
     if (id) {
-      return instances[id];
+      return instances.get(id);
     }
 
-    const instance = Object.values(instances)
+    const instance = Array.from(instances.values())
       .reverse()
       .find((instance) => {
         if (!["closing", "customClosing", "destroy"].includes(instance.state)) {
@@ -1504,14 +1504,19 @@ class Fancybox extends Base {
   /**
    * Close all or topmost currently active instance.
    * @param {boolean} [all] - All or only topmost active instance
+   * @param {any} [arguments] - Optional data
    */
-  static close(all = true) {
-    let instance = null;
+  static close(all = true, args) {
+    if (all) {
+      for (const instance of instances.values()) {
+        instance.close(args);
+      }
+    } else {
+      const instance = Fancybox.getInstance();
 
-    while ((instance = Fancybox.getInstance())) {
-      instance.close();
-
-      if (!all) return;
+      if (instance) {
+        instance.close(args);
+      }
     }
   }
 

@@ -326,12 +326,15 @@ class Fancybox extends Base {
           if (origTarget instanceof HTMLImageElement) {
             $thumb = origTarget;
           } else {
-            $thumb = origTarget.querySelector("img");
+            $thumb = origTarget.querySelector("img:not([aria-hidden])");
           }
         }
 
         if (!$thumb && slide.$trigger) {
-          $thumb = slide.$trigger instanceof HTMLImageElement ? slide.$trigger : slide.$trigger.querySelector("img");
+          $thumb =
+            slide.$trigger instanceof HTMLImageElement
+              ? slide.$trigger
+              : slide.$trigger.querySelector("img:not([aria-hidden])");
         }
       }
 

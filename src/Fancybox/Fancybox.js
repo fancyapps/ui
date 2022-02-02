@@ -159,6 +159,27 @@ class Fancybox extends Base {
   }
 
   /**
+   * Override `option` method to get value from the current slide
+   * @param {String} name option name
+   * @param  {...any} rest optional extra parameters
+   * @returns {any}
+   */
+  option(name, ...rest) {
+    const slide = this.getSlide();
+    const value = slide ? slide[name] : undefined;
+
+    if (value !== undefined) {
+      if (typeof value === "function") {
+        value = value.call(this, this, ...rest);
+      }
+
+      return value;
+    }
+
+    return super.option(name, ...rest);
+  }
+
+  /**
    * Bind event handlers for referencability
    */
   bindHandlers() {
@@ -280,7 +301,7 @@ class Fancybox extends Base {
     }
 
     // Add custom class name to main element
-    const mainClass = this.options.mainClass;
+    const mainClass = this.option("mainClass");
 
     if (mainClass) {
       this.$container.classList.add(...mainClass.split(" "));
@@ -416,7 +437,7 @@ class Fancybox extends Base {
 
             panOnlyZoomed: () => {
               return (
-                this.Carousel && this.Carousel.pages && this.Carousel.pages.length < 2 && !this.options.dragToClose
+                this.Carousel && this.Carousel.pages && this.Carousel.pages.length < 2 && !this.option("dragToClose")
               );
             },
 
@@ -424,7 +445,7 @@ class Fancybox extends Base {
               if (this.Carousel) {
                 let rez = "x";
 
-                if (this.options.dragToClose) {
+                if (this.option("dragToClose")) {
                   rez += "y";
                 }
 
@@ -538,7 +559,13 @@ class Fancybox extends Base {
     }
 
     // Skip if clicked inside content area
-    if (eventTarget.closest(".fancybox__content")) {
+    const content_class = ".fancybox__content";
+
+    if (eventTarget.closest(content_class)) {
+      if (eventTarget.matches(content_class)) {
+        document.activeElement.blur();
+      }
+
       return;
     }
 

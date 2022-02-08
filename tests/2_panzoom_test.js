@@ -230,22 +230,21 @@ describe("Panzoom", function () {
     destroyInstance(instance);
   });
 
-  it("is draggable using pointer events", async function () {
+  it("is draggable using pointing device", async function () {
     const instance = await createInstanceWithImage({}, true);
 
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$container, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousedown", {
+      buttons: 1,
       clientX: x + 60,
       clientY: y + 60,
     });
 
     expect(instance.$content.style.transform).to.equal("translate3d(-37.5px, -25px, 0px) scale(1)");
 
-    triggerEvent(instance.$container, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousemove", {
       clientX: x + 40,
       clientY: y + 60,
     });
@@ -259,9 +258,47 @@ describe("Panzoom", function () {
     expect(instance.content.x).to.be.closeTo(-57.5, 0.5);
     expect(instance.content.y).to.equal(-25);
 
-    triggerEvent(instance.$container, "pointerup", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mouseup", {});
+
+    destroyInstance(instance);
+  });
+
+  it("is draggable using touch device", async function () {
+    const instance = await createInstanceWithImage({}, true);
+
+    const x = instance.$content.getClientRects()[0].left;
+    const y = instance.$content.getClientRects()[0].top;
+
+    triggerEvent(instance.$container, "touchstart", {
+      changedTouches: [
+        {
+          clientX: x + 60,
+          clientY: y + 60,
+        },
+      ],
     });
+
+    expect(instance.$content.style.transform).to.equal("translate3d(-37.5px, -25px, 0px) scale(1)");
+
+    triggerEvent(instance.$container, "touchmove", {
+      changedTouches: [
+        {
+          clientX: x + 40,
+          clientY: y + 60,
+        },
+      ],
+    });
+
+    await delay(250);
+
+    // It should be moved
+    expect(instance.dragOffset.x).to.equal(-20);
+    expect(instance.dragOffset.y).to.equal(0);
+
+    expect(instance.content.x).to.be.closeTo(-57.5, 0.5);
+    expect(instance.content.y).to.equal(-25);
+
+    triggerEvent(instance.$container, "touchend", {});
 
     destroyInstance(instance);
   });
@@ -277,16 +314,15 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$container, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousedown", {
+      buttons: 1,
       clientX: x,
       clientY: y + 50,
     });
 
     await delay();
 
-    triggerEvent(instance.$container, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousemove", {
       clientX: x + 300,
       clientY: y + 50,
     });
@@ -308,9 +344,7 @@ describe("Panzoom", function () {
       });
 
       // This will Start pull-back animation
-      triggerEvent(instance.$container, "pointerup", {
-        pointerId: 1,
-      });
+      triggerEvent(instance.$container, "mouseup", {});
     });
 
     expect(result.content.x).to.be.closeTo(0, 0.5);
@@ -326,16 +360,15 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$container, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousedown", {
+      buttons: 1,
       clientX: x + 50,
       clientY: y + 50,
     });
 
     await delay();
 
-    triggerEvent(instance.$container, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousemove", {
       clientX: x + 30,
       clientY: y + 30,
     });
@@ -346,9 +379,7 @@ describe("Panzoom", function () {
     expect(instance.content.x).to.be.closeTo(-20, 0.5);
     expect(instance.content.y).to.be.equal(25);
 
-    triggerEvent(instance.$container, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.$container, "mouseup", {});
 
     destroyInstance(instance);
   });
@@ -359,14 +390,13 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$container, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousedown", {
+      buttons: 1,
       clientX: x + 50,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.$container, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.$container, "mousemove", {
       clientX: x + 45,
       clientY: y + 40,
     });
@@ -377,9 +407,7 @@ describe("Panzoom", function () {
     expect(instance.content.y).to.be.closeTo(22, 0.5);
     expect(instance.content.x).to.equal(0);
 
-    triggerEvent(instance.$container, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.$container, "mouseup", {});
 
     destroyInstance(instance);
   });
@@ -502,14 +530,13 @@ describe("Panzoom", function () {
     const x = instance.$content.getClientRects()[0].left;
     const y = instance.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.$content, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.$content, "mousedown", {
+      buttons: 1,
       clientX: x + 40,
       clientY: y + 40,
     });
 
-    triggerEvent(instance.$content, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.$content, "mousemove", {
       clientX: x + 20,
       clientY: y + 20,
     });
@@ -520,9 +547,7 @@ describe("Panzoom", function () {
     expect(instance.content.x).to.be.closeTo(-6, 1);
     expect(instance.content.y).to.be.closeTo(-6, 1);
 
-    triggerEvent(instance.$container, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.$container, "mouseup", {});
 
     // Wait for pull-back animation
     await delay(300);
@@ -547,13 +572,11 @@ describe("Panzoom", function () {
     const y = instance.$content.getClientRects()[0].top;
 
     triggerEvent(instance.$content, "pointerdown", {
-      pointerId: 1,
       clientX: x + 50,
       clientY: y + 50,
     });
 
     triggerEvent(instance.$content, "pointermove", {
-      pointerId: 1,
       clientX: x + 10,
       clientY: y + 10,
     });
@@ -564,9 +587,7 @@ describe("Panzoom", function () {
     expect(instance.content.x).to.be.equal(0);
     expect(instance.content.y).to.be.equal(0);
 
-    triggerEvent(instance.$content, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.$content, "pointerup", {});
 
     destroyInstance(instance);
   });
@@ -581,9 +602,7 @@ describe("Panzoom", function () {
     expect(instance.content.x).to.be.equal(0);
     expect(instance.content.y).to.be.equal(0);
 
-    triggerEvent(instance.$content, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.$content, "pointerup", {});
 
     destroyInstance(instance);
   });
@@ -598,9 +617,7 @@ describe("Panzoom", function () {
     expect(instance.content.x).to.be.equal(10);
     expect(instance.content.y).to.be.equal(10);
 
-    triggerEvent(instance.$content, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.$content, "pointerup", {});
 
     destroyInstance(instance);
   });

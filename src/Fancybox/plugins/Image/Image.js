@@ -571,7 +571,9 @@ export class Image {
 
     switch (this.fancybox.option("Image.wheel")) {
       case "zoom":
-        slide.Panzoom && slide.Panzoom.zoomWithWheel(event);
+        if (slide.state === "done") {
+          slide.Panzoom && slide.Panzoom.zoomWithWheel(event);
+        }
 
         break;
 

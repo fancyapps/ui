@@ -84,6 +84,8 @@ export class Carousel extends Base {
     this.slidePrev = throttle(this.slidePrev.bind(this), 250, true);
 
     this.init();
+
+    $container.__Carousel = this;
   }
 
   /**

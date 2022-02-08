@@ -1,5 +1,6 @@
 import { extend } from "../shared/utils/extend.js";
 import { round } from "../shared/utils/round.js";
+import { isScrollable } from "../shared/utils/isScrollable.js";
 
 import { ResizeObserver } from "../shared/utils/ResizeObserver.js";
 import { PointerTracker, getMidpoint, getDistance } from "../shared/utils/PointerTracker.js";
@@ -126,6 +127,8 @@ export class Panzoom extends Base {
         friction: 0,
       });
     }
+
+    $container.__Panzoom = this;
   }
 
   /**
@@ -348,7 +351,7 @@ export class Panzoom extends Base {
         }
 
         if (this.velocity.scale < 0) {
-          return;
+          return false;
         }
 
         if (!pointerTracker.currentPointers.length) {
@@ -363,6 +366,10 @@ export class Panzoom extends Base {
           if (this.option("textSelection") && getTextNodeFromPoint(event.target, event.clientX, event.clientY)) {
             return false;
           }
+        }
+
+        if (isScrollable(event.target)) {
+          return false;
         }
 
         if (this.trigger("touchStart", event) === false) {
@@ -383,7 +390,7 @@ export class Panzoom extends Base {
           return;
         }
 
-        if (this.trigger("touchMove", event) == false) {
+        if (this.trigger("touchMove", event) === false) {
           event.preventDefault();
           return;
         }
@@ -391,7 +398,7 @@ export class Panzoom extends Base {
         // Disable touch action if current zoom level is below base level
         if (
           currentPointers.length < 2 &&
-          this.option("panOnlyZoomed") == true &&
+          this.option("panOnlyZoomed") === true &&
           this.content.width <= this.viewport.width &&
           this.content.height <= this.viewport.height &&
           this.transform.scale <= this.option("baseScale")
@@ -403,9 +410,6 @@ export class Panzoom extends Base {
           return;
         }
 
-        event.preventDefault();
-        event.stopPropagation();
-
         const prevMidpoint = getMidpoint(previousPointers[0], previousPointers[1]);
         const newMidpoint = getMidpoint(currentPointers[0], currentPointers[1]);
 
@@ -415,7 +419,7 @@ export class Panzoom extends Base {
         const prevDistance = getDistance(previousPointers[0], previousPointers[1]);
         const newDistance = getDistance(currentPointers[0], currentPointers[1]);
 
-        const scaleDiff = prevDistance ? newDistance / prevDistance : 1;
+        const scaleDiff = prevDistance && newDistance ? newDistance / prevDistance : 1;
 
         this.dragOffset.x += panX;
         this.dragOffset.y += panY;
@@ -428,17 +432,27 @@ export class Panzoom extends Base {
 
         if (axisToLock && !this.lockAxis) {
           if (Math.abs(this.dragOffset.x) < 6 && Math.abs(this.dragOffset.y) < 6) {
+            event.preventDefault();
             return;
           }
 
-          if (axisToLock === "xy") {
-            const angle = Math.abs((Math.atan2(this.dragOffset.y, this.dragOffset.x) * 180) / Math.PI);
+          const angle = Math.abs((Math.atan2(this.dragOffset.y, this.dragOffset.x) * 180) / Math.PI);
 
-            this.lockAxis = angle > 45 && angle < 135 ? "y" : "x";
-          } else {
-            this.lockAxis = axisToLock;
-          }
+          this.lockAxis = angle > 45 && angle < 135 ? "y" : "x";
         }
+
+        if (axisToLock !== "xy" && this.lockAxis === "y") {
+          if (event.type === "mousemove") {
+            event.preventDefault();
+          }
+
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+
+        event.stopImmediatePropagation();
 
         if (this.lockAxis) {
           this.dragOffset[this.lockAxis === "x" ? "y" : "x"] = 0;

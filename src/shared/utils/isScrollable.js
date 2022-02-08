@@ -22,6 +22,10 @@ export const isScrollable = function (node) {
     return false;
   }
 
+  if (node.__Panzoom) {
+    return false;
+  }
+
   if (hasScrollbars(node)) {
     return node;
   }

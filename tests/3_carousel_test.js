@@ -580,23 +580,20 @@ describe("Carousel", function () {
     const x = instance.Panzoom.$content.getClientRects()[0].left;
     const y = instance.Panzoom.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.Panzoom.$container, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.Panzoom.$container, "mousedown", {
+      buttons: 1,
       clientX: x + 150,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.Panzoom.$container, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.Panzoom.$container, "mousemove", {
       clientX: x + 50,
       clientY: y + 50,
     });
 
     await delay(300);
 
-    triggerEvent(instance.Panzoom.$container, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.Panzoom.$container, "mouseup", {});
 
     expect(instance.page).to.equal(1);
 
@@ -618,23 +615,20 @@ describe("Carousel", function () {
     const x = instance.Panzoom.$content.getClientRects()[0].left;
     const y = instance.Panzoom.$content.getClientRects()[0].top;
 
-    triggerEvent(instance.Panzoom.$container, "pointerdown", {
-      pointerId: 1,
+    triggerEvent(instance.Panzoom.$container, "mousedown", {
+      buttons: 1,
       clientX: x + 150,
       clientY: y + 50,
     });
 
-    triggerEvent(instance.Panzoom.$container, "pointermove", {
-      pointerId: 1,
+    triggerEvent(instance.Panzoom.$container, "mousemove", {
       clientX: x + 50,
       clientY: y + 50,
     });
 
     await delay(300);
 
-    triggerEvent(instance.Panzoom.$container, "pointerup", {
-      pointerId: 1,
-    });
+    triggerEvent(instance.Panzoom.$container, "mouseup", {});
 
     expect(instance.page).to.equal(1);
 

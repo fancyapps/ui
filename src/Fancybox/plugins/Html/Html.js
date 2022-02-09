@@ -433,9 +433,9 @@ export class Html {
     }
 
     const $parent = $iframe.parentNode;
-    const parentStyle = $parent.style;
+    const parentStyle = $parent && $parent.style;
 
-    if (slide.preload !== false && slide.autoSize !== false) {
+    if (slide.preload !== false && slide.autoSize !== false && parentStyle) {
       try {
         const compStyles = window.getComputedStyle($parent),
           paddingX = parseFloat(compStyles.paddingLeft) + parseFloat(compStyles.paddingRight),

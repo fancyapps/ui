@@ -124,16 +124,16 @@ class PointerTracker {
     this._moveCallback = move;
     this._endCallback = end;
 
-    this._element.addEventListener("mousedown", this._pointerStart, { passive: true });
-    this._element.addEventListener("touchstart", this._touchStart, { passive: true });
+    this._element.addEventListener("mousedown", this._pointerStart, { passive: false });
+    this._element.addEventListener("touchstart", this._touchStart, { passive: false });
     this._element.addEventListener("touchmove", this._move, { passive: false });
     this._element.addEventListener("touchend", this._touchEnd);
     this._element.addEventListener("touchcancel", this._touchEnd);
   }
 
   stop() {
-    this._element.removeEventListener("mousedown", this._pointerStart, { passive: true });
-    this._element.removeEventListener("touchstart", this._touchStart, { passive: true });
+    this._element.removeEventListener("mousedown", this._pointerStart, { passive: false });
+    this._element.removeEventListener("touchstart", this._touchStart, { passive: false });
     this._element.removeEventListener("touchmove", this._move, { passive: false });
     this._element.removeEventListener("touchend", this._touchEnd);
     this._element.removeEventListener("touchcancel", this._touchEnd);

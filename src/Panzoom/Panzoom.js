@@ -354,26 +354,32 @@ export class Panzoom extends Base {
           return false;
         }
 
+        const target = event.composedPath()[0];
+
         if (!pointerTracker.currentPointers.length) {
           const ignoreClickedElement =
-            ["BUTTON", "TEXTAREA", "OPTION", "INPUT", "SELECT", "VIDEO"].indexOf(event.target.nodeName) !== -1;
+            ["BUTTON", "TEXTAREA", "OPTION", "INPUT", "SELECT", "VIDEO"].indexOf(target.nodeName) !== -1;
 
           if (ignoreClickedElement) {
             return false;
           }
 
           // Allow text selection
-          if (this.option("textSelection") && getTextNodeFromPoint(event.target, event.clientX, event.clientY)) {
+          if (this.option("textSelection") && getTextNodeFromPoint(target, event.clientX, event.clientY)) {
             return false;
           }
         }
 
-        if (isScrollable(event.target)) {
+        if (isScrollable(target)) {
           return false;
         }
 
         if (this.trigger("touchStart", event) === false) {
           return false;
+        }
+
+        if (event.type === "mousedown") {
+          event.preventDefault();
         }
 
         this.state = "pointerdown";
@@ -442,10 +448,6 @@ export class Panzoom extends Base {
         }
 
         if (axisToLock !== "xy" && this.lockAxis === "y") {
-          if (event.type === "mousemove") {
-            event.preventDefault();
-          }
-
           return;
         }
 

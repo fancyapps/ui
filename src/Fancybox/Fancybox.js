@@ -535,7 +535,7 @@ class Fancybox extends Base {
       return;
     }
 
-    let eventTarget = event.target;
+    let eventTarget = event.composedPath()[0];
 
     if (eventTarget.matches("[data-fancybox-close]")) {
       event.preventDefault();
@@ -660,6 +660,8 @@ class Fancybox extends Base {
       return;
     }
 
+    const target = event.composedPath()[0];
+
     const classList = document.activeElement && document.activeElement.classList;
     const isUIElement = classList && classList.contains("carousel__button");
 
@@ -667,7 +669,7 @@ class Fancybox extends Base {
     if (key !== "Escape" && !isUIElement) {
       let ignoreElements =
         event.target.isContentEditable ||
-        ["BUTTON", "TEXTAREA", "OPTION", "INPUT", "SELECT", "VIDEO"].indexOf(event.target.nodeName) !== -1;
+        ["BUTTON", "TEXTAREA", "OPTION", "INPUT", "SELECT", "VIDEO"].indexOf(target.nodeName) !== -1;
 
       if (ignoreElements) {
         return;
@@ -1274,7 +1276,9 @@ class Fancybox extends Base {
       return;
     }
 
-    let eventTarget = event.target;
+    const origTarget = event.composedPath()[0];
+
+    let eventTarget = origTarget;
 
     // Support `trigger` element, e.g., start fancybox from different DOM element, for example,
     // to have one preview image for hidden image gallery
@@ -1295,7 +1299,7 @@ class Fancybox extends Base {
     }
 
     if (!eventTarget) {
-      eventTarget = event.target;
+      eventTarget = origTarget;
     }
 
     // * Try to find matching openener
@@ -1332,7 +1336,7 @@ class Fancybox extends Base {
       options.event = event;
       options.target = target;
 
-      target.origTarget = event.target;
+      target.origTarget = origTarget;
 
       rez = Fancybox.fromOpener(matchingOpener, options);
 
@@ -1412,7 +1416,9 @@ class Fancybox extends Base {
     const groupValue = groupAttr && target ? target.getAttribute(`${groupAttr}`) : "";
 
     if (!target || groupValue || groupAll) {
-      items = [].slice.call(document.querySelectorAll(opener));
+      const $root = options.root || (target ? target.getRootNode() : document.body);
+
+      items = [].slice.call($root.querySelectorAll(opener));
     }
 
     if (target && !groupAll) {

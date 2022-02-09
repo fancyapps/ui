@@ -97,8 +97,7 @@ export class ScrollLock {
       return;
     }
 
-    const target = event.target;
-    const el = isScrollable(target);
+    const el = isScrollable(event.composedPath()[0]);
 
     if (!el) {
       event.preventDefault();
@@ -122,7 +121,7 @@ export class ScrollLock {
    * Handle `wheel` event
    */
   onWheel(event) {
-    if (!isScrollable(event.target)) {
+    if (!isScrollable(event.composedPath()[0])) {
       event.preventDefault();
     }
   }

@@ -64,8 +64,8 @@ $fancybox-thumbs-bg: rgba(255, 255, 255, 0.1) !default;
 
 $fancybox-thumbs-selected-opacity: false !default;
 $fancybox-thumbs-selected-border: true !default;
-$fancybox-thumbs-selected-border-width: 5px;
-$fancybox-thumbs-selected-border-color: $fancybox-accent-color;
+$fancybox-thumbs-selected-border-width: 5px !default;
+$fancybox-thumbs-selected-border-color: $fancybox-accent-color !default;
 
 /*
   HTML plugin

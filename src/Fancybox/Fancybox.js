@@ -166,7 +166,8 @@ class Fancybox extends Base {
    */
   option(name, ...rest) {
     const slide = this.getSlide();
-    const value = slide ? slide[name] : undefined;
+
+    let value = slide ? slide[name] : undefined;
 
     if (value !== undefined) {
       if (typeof value === "function") {
@@ -558,14 +559,12 @@ class Fancybox extends Base {
       return;
     }
 
+    if (!eventTarget.matches(FOCUSABLE_ELEMENTS)) {
+      document.activeElement.blur();
+    }
+
     // Skip if clicked inside content area
-    const content_class = ".fancybox__content";
-
-    if (eventTarget.closest(content_class)) {
-      if (eventTarget.matches(content_class)) {
-        document.activeElement.blur();
-      }
-
+    if (eventTarget.closest(".fancybox__content")) {
       return;
     }
 
@@ -718,15 +717,20 @@ class Fancybox extends Base {
       return;
     }
 
+    const $container = this.$container;
+    const currentSlide = this.getSlide();
+    const $currentSlide = currentSlide.state === "done" ? currentSlide.$el : null;
+
+    // Skip if the DOM element that is currently in focus is already inside the current slide
+    if ($currentSlide && $currentSlide.contains(document.activeElement)) {
+      return;
+    }
+
     if (event) {
       event.preventDefault();
     }
 
     Fancybox.ignoreFocusChange = true;
-
-    const $container = this.$container;
-    const currentSlide = this.getSlide();
-    const $currentSlide = currentSlide.state === "done" ? currentSlide.$el : null;
 
     const allFocusableElems = Array.from($container.querySelectorAll(FOCUSABLE_ELEMENTS));
 

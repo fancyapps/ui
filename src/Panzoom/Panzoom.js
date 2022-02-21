@@ -365,7 +365,7 @@ export class Panzoom extends Base {
           }
 
           // Allow text selection
-          if (this.option("textSelection") && getTextNodeFromPoint(target, event.clientX, event.clientY)) {
+          if (this.option("textSelection") && getTextNodeFromPoint(target, pointer.clientX, pointer.clientY)) {
             return false;
           }
         }

@@ -237,6 +237,7 @@ describe("Panzoom", function () {
     const y = instance.$content.getClientRects()[0].top;
 
     triggerEvent(instance.$container, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x + 60,
       clientY: y + 60,
@@ -315,6 +316,7 @@ describe("Panzoom", function () {
     const y = instance.$content.getClientRects()[0].top;
 
     triggerEvent(instance.$container, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x,
       clientY: y + 50,
@@ -361,6 +363,7 @@ describe("Panzoom", function () {
     const y = instance.$content.getClientRects()[0].top;
 
     triggerEvent(instance.$container, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x + 50,
       clientY: y + 50,
@@ -391,6 +394,7 @@ describe("Panzoom", function () {
     const y = instance.$content.getClientRects()[0].top;
 
     triggerEvent(instance.$container, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x + 50,
       clientY: y + 50,
@@ -531,6 +535,7 @@ describe("Panzoom", function () {
     const y = instance.$content.getClientRects()[0].top;
 
     triggerEvent(instance.$content, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x + 40,
       clientY: y + 40,

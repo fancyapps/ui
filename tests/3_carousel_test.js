@@ -581,6 +581,7 @@ describe("Carousel", function () {
     const y = instance.Panzoom.$content.getClientRects()[0].top;
 
     triggerEvent(instance.Panzoom.$container, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x + 150,
       clientY: y + 50,
@@ -616,6 +617,7 @@ describe("Carousel", function () {
     const y = instance.Panzoom.$content.getClientRects()[0].top;
 
     triggerEvent(instance.Panzoom.$container, "mousedown", {
+      button: 0,
       buttons: 1,
       clientX: x + 150,
       clientY: y + 50,

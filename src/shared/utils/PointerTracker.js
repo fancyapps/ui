@@ -39,7 +39,7 @@ class PointerTracker {
     this.currentPointers = [];
 
     this._pointerStart = (event) => {
-      if (!(event.buttons & 1)) {
+      if (event.buttons > 0 && event.button !== 0) {
         return;
       }
 
@@ -53,8 +53,8 @@ class PointerTracker {
         return;
       }
 
-      window.addEventListener("mousemove", this._move, { passive: false });
-      window.addEventListener("mouseup", this._pointerEnd, { passive: false });
+      window.addEventListener("mousemove", this._move);
+      window.addEventListener("mouseup", this._pointerEnd);
     };
 
     this._touchStart = (event) => {
@@ -87,10 +87,6 @@ class PointerTracker {
     };
 
     this._triggerPointerEnd = (pointer, event) => {
-      if (!isTouchEvent(event) && event.buttons & 1) {
-        return false;
-      }
-
       const index = this.currentPointers.findIndex((p) => p.id === pointer.id);
 
       if (index < 0) {
@@ -106,12 +102,16 @@ class PointerTracker {
     };
 
     this._pointerEnd = (event) => {
+      if (event.buttons > 0 && event.button !== 0) {
+        return;
+      }
+
       if (!this._triggerPointerEnd(new Pointer(event), event)) {
         return;
       }
 
-      window.removeEventListener("mousemove", this._move);
-      window.removeEventListener("mouseup", this._pointerEnd);
+      window.removeEventListener("mousemove", this._move, { passive: false });
+      window.removeEventListener("mouseup", this._pointerEnd, { passive: false });
     };
 
     this._touchEnd = (event) => {
@@ -138,8 +138,8 @@ class PointerTracker {
     this._element.removeEventListener("touchend", this._touchEnd);
     this._element.removeEventListener("touchcancel", this._touchEnd);
 
-    window.removeEventListener("mousemove", this._move, { passive: false });
-    window.removeEventListener("mouseup", this._pointerEnd, { passive: false });
+    window.removeEventListener("mousemove", this._move);
+    window.removeEventListener("mouseup", this._pointerEnd);
   }
 
   _triggerPointerStart(pointer, event) {

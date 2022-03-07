@@ -1,15 +1,19 @@
 .has-dots {
-  margin-bottom: calc(#{$carousel-dots-margin} + #{$carousel-dots-height});
+  @if ($carousel-dots-margin > 0) {
+    margin-bottom: calc(#{$carousel-dots-margin} + #{$carousel-dots-height});
+  }
 }
 
 .carousel__dots {
   margin: 0 auto;
   padding: 0;
 
-  position: absolute;
-  top: calc(100% + #{$carousel-dots-margin});
-  left: 0;
-  right: 0;
+  @if ($carousel-dots-absolute) {
+    position: absolute;
+    top: calc(100% + #{$carousel-dots-margin});
+    left: 0;
+    right: 0;
+  }
 
   display: flex;
   justify-content: center;
@@ -33,7 +37,7 @@
       content: "";
       width: $carousel-dots-dot-width;
       height: $carousel-dots-dot-height;
-      border-radius: 50%;
+      border-radius: $carousel-dots-dot-radius;
 
       position: absolute;
       top: 50%;

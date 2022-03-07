@@ -4,6 +4,7 @@ $carousel-slide-width: var(--carousel-slide-width, 60%) !default;
 /*
     Dots plugin
 */
+$carousel-dots-absolute: true !default;
 $carousel-dots-margin: 0.5rem !default;
 $carousel-dots-width: 22px !default;
 $carousel-dots-height: 22px !default;
@@ -12,6 +13,7 @@ $carousel-dots-dot-width: 8px !default;
 $carousel-dots-dot-height: 8px !default;
 $carousel-dots-dot-color: currentColor !default;
 $carousel-dots-dot-opacity: 0.25 !default;
+$carousel-dots-dot-radius: 50% !default;
 
 /*
     Navigation plugin

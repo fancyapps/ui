@@ -33,7 +33,9 @@
 
 .#{$carousel-prefix}carousel__slide {
   flex: 0 0 auto;
-  width: $carousel-slide-width;
+  @if ($carousel-slide-width) {
+    width: $carousel-slide-width;
+  }
   max-width: 100%;
   padding: 1rem;
   position: relative;

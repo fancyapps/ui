@@ -288,9 +288,12 @@ export class Html {
       }
     };
 
-    xhr.open("GET", slide.src);
+    const data = slide.ajax || null;
+
+    xhr.open(data ? "POST" : "GET", slide.src);
+    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest");
-    xhr.send(slide.ajax || null);
+    xhr.send(data);
 
     slide.xhr = xhr;
   }

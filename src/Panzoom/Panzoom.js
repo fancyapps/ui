@@ -230,10 +230,15 @@ export class Panzoom extends Base {
     }
 
     // Skip if text is selected
-    if (this.option("textSelection") && window.getSelection().toString().length) {
+    if (
+      this.option("textSelection") &&
+      window.getSelection().toString().length &&
+      !(event.target && event.target.hasAttribute("data-fancybox-close"))
+    ) {
       event.stopPropagation();
       return;
     }
+    // console.log(`onClickonClickonClickonClick#2`);
 
     const rect = this.$content.getClientRects()[0];
 

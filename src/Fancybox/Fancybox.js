@@ -559,8 +559,16 @@ class Fancybox extends Base {
       return;
     }
 
-    if (!eventTarget.matches(FOCUSABLE_ELEMENTS)) {
-      document.activeElement.blur();
+    const activeElement = document.activeElement;
+
+    if (activeElement) {
+      if (activeElement.closest("[contenteditable]")) {
+        return;
+      }
+
+      if (!eventTarget.matches(FOCUSABLE_ELEMENTS)) {
+        activeElement.blur();
+      }
     }
 
     // Skip if clicked inside content area

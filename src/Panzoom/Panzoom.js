@@ -229,6 +229,10 @@ export class Panzoom extends Base {
       return;
     }
 
+    if (document.activeElement && document.activeElement.closest("[contenteditable]")) {
+      return;
+    }
+
     // Skip if text is selected
     if (
       this.option("textSelection") &&
@@ -238,7 +242,6 @@ export class Panzoom extends Base {
       event.stopPropagation();
       return;
     }
-    // console.log(`onClickonClickonClickonClick#2`);
 
     const rect = this.$content.getClientRects()[0];
 

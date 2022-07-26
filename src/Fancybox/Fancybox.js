@@ -1239,7 +1239,7 @@ class Fancybox extends Base {
 
     this.trigger("destroy");
 
-    const $trigger = this.option("placeFocusBack") ? this.getSlide().$trigger : null;
+    const $trigger = this.option("placeFocusBack") ? this.option("triggerTarget", this.getSlide().$trigger) : null;
 
     // Destroy Carousel and then detach plugins;
     // * Note: this order allows plugins to receive `removeSlide` event
@@ -1309,7 +1309,6 @@ class Fancybox extends Base {
     }
 
     const origTarget = event.composedPath()[0];
-
     let eventTarget = origTarget;
 
     // Support `trigger` element, e.g., start fancybox from different DOM element, for example,
@@ -1320,6 +1319,7 @@ class Fancybox extends Base {
       eventTarget.matches("[data-fancybox-trigger]") ||
       (eventTarget = eventTarget.closest("[data-fancybox-trigger]"))
     ) {
+      options.triggerTarget = eventTarget;
       triggerGroupName = eventTarget && eventTarget.dataset && eventTarget.dataset.fancyboxTrigger;
     }
 
@@ -1330,10 +1330,6 @@ class Fancybox extends Base {
       eventTarget = triggerItems.length ? triggerItems[triggerIndex] : eventTarget;
     }
 
-    if (!eventTarget) {
-      eventTarget = origTarget;
-    }
-
     // * Try to find matching openener
     let matchingOpener;
     let target;
@@ -1341,7 +1337,7 @@ class Fancybox extends Base {
     Array.from(Fancybox.openers.keys())
       .reverse()
       .some((opener) => {
-        target = eventTarget;
+        target = eventTarget || origTarget;
 
         let found = false;
 

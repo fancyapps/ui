@@ -524,6 +524,10 @@ class Fancybox extends Base {
    * @param {Event} event - Focus event
    */
   onFocus(event) {
+    if (!this.isTopmost()) {
+      return;
+    }
+
     this.focus(event);
   }
 
@@ -654,7 +658,7 @@ class Fancybox extends Base {
    * @param {Event} event Keydown event
    */
   onKeydown(event) {
-    if (Fancybox.getInstance().id !== this.id) {
+    if (!this.isTopmost()) {
       return;
     }
 
@@ -1149,6 +1153,22 @@ class Fancybox extends Base {
   }
 
   /**
+   * Check if current instance is trying to close or is already closed
+   * @returns {Boolean}
+   */
+  isClosing() {
+    return ["closing", "customClosing", "destroy"].includes(this.state);
+  }
+
+  /**
+   * Check if the current instance is not blocked by another instance
+   * @returns {Boolean}
+   */
+  isTopmost() {
+    return Fancybox.getInstance().id == this.id;
+  }
+
+  /**
    * Start closing the current instance
    * @param {Event} [event] - Optional click event
    */
@@ -1157,7 +1177,7 @@ class Fancybox extends Base {
 
     // First, stop further execution if this instance is already closing
     // (this can happen if, for example, user clicks close button multiple times really fast)
-    if (["closing", "customClosing", "destroy"].includes(this.state)) {
+    if (this.isClosing()) {
       return;
     }
 
@@ -1536,7 +1556,7 @@ class Fancybox extends Base {
     const instance = Array.from(instances.values())
       .reverse()
       .find((instance) => {
-        if (!["closing", "customClosing", "destroy"].includes(instance.state)) {
+        if (!instance.isClosing()) {
           return instance;
         }
 

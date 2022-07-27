@@ -5,6 +5,7 @@ html.with-fancybox {
 body.compensate-for-scrollbar {
   overflow: hidden !important;
   touch-action: none;
+  padding-right: var(--fancybox-scrollbar-compensate, 0);
 }
 
 .fancybox__container {

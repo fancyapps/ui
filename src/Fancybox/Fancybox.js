@@ -825,7 +825,7 @@ class Fancybox extends Base {
 
       $style.id = id;
       $style.type = "text/css";
-      $style.innerHTML = `.compensate-for-scrollbar {padding-right: ${scrollbarWidth}px;}`;
+      $style.innerHTML = `.compensate-for-scrollbar {--fancybox-scrollbar-compensate: ${scrollbarWidth}px;}`;
 
       document.getElementsByTagName("head")[0].appendChild($style);
 

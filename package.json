@@ -4,6 +4,7 @@
   "description": "JavaScript UI Component Library",
   "main": "dist/fancybox.umd.js",
   "module": "dist/fancybox.esm.js",
+  "types": "types/index.d.ts",
   "style": "dist/fancybox.css",
   "files": [
     "dist/",

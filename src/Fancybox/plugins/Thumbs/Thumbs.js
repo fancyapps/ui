@@ -16,6 +16,8 @@ const defaults = {
 
   // Customize Carousel instance
   Carousel: {},
+
+  tpl: `<div class="fancybox__thumb" style="background-image:url('{{src}}')"></div>`,
 };
 
 export class Thumbs {
@@ -142,7 +144,7 @@ export class Thumbs {
 
       if (thumb) {
         slides.push({
-          html: `<div class="fancybox__thumb" style="background-image:url('${thumb}')"></div>`,
+          html: this.fancybox.option("Thumbs.tpl").replace(/\{\{src\}\}/gi, thumb),
           customClass: `has-thumb has-${slide.type || "image"}`,
         });
       }

@@ -53,6 +53,10 @@ const defaults = {
     show_portrait: 0,
     fullscreen: 1,
   },
+  // Rutube embed parameters
+  rutube:{
+    frameBorder: 0,
+  },
   // HTML5 video parameters
   html5video: {
     tpl: `<video class="fancybox__html5video" playsinline controls controlsList="nodownload" poster="{{poster}}">
@@ -152,6 +156,15 @@ export class Html {
       slide.src = `https://player.vimeo.com/video/${videoId}?${params}`;
       slide.vendor = "vimeo";
 
+      type = "video";
+    } else if ((rez = src.match(/^.+rutube.ru(\/live)?\/video\/(.*\/)?([\w]+)(.*)\/?/))){
+      const videoId = rez[3];
+
+      slide.videoId = videoId;
+      slide.thumb = slide.thumb || `https://rutube.ru/api/video/${videoId}/thumbnail/?redirect=1`;
+      slide.src = `https://rutube.ru/play/embed/${videoId}`;
+      slide.vendor = "rutube";
+      
       type = "video";
     } else if (
       (rez = src.match(

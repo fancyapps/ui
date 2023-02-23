@@ -38,7 +38,7 @@ export interface ComponentOptionsType {
     /**
      * The name of the transition animation when changing Carousel pages
      */
-    transition: "crossfade" | "fade" | string | false;
+    transition: "crossfade" | "fade" | "slide" | "classic" | string | false;
     /**
      * Number of pages to preload before/after the active page
      */

@@ -38,6 +38,7 @@ export type HtmlOptionsType = {
         byline: 0 | 1;
         color: string;
         controls: 0 | 1;
+        dnt: 0 | 1;
         muted: 0 | 1;
     };
     /**

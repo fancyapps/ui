@@ -1,3 +1,9 @@
+# 5.0.3 (2023-02-26)
+
+### Bug Fixes
+
+- **Fancybox** Fix `Images.protected` option
+
 # 5.0.2 (2023-02-24)
 
 ### Bug Fixes

@@ -1,3 +1,9 @@
+# 5.0.5 (2023-03-02)
+
+### Bug Fixes
+
+- **Fancybox** Fix issue with zoom-in animation from large images
+
 # 5.0.4 (2023-03-01)
 
 ### Bug Fixes

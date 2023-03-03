@@ -1,3 +1,14 @@
+# 5.0.6 (2023-03-03)
+
+### Bug Fixes
+
+- **Fancybox** Fix issue with page scrolling when using `wheel: "slide"` and `hideScrollbar: false` options
+
+### Features
+
+- **Fancybox** Changed navigation order when using `wheel: "slide"` option
+- **Fancybox** Added class name for thumbnails to indicate content type (`type-image`, `type-video`, etc)
+
 # 5.0.5 (2023-03-02)
 
 ### Bug Fixes

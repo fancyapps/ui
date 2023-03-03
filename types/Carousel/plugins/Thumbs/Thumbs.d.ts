@@ -28,11 +28,11 @@ export type ThumbsOptionsType = {
      */
     on?: Record<"ready", (...any: any) => void>;
     /**
-     * Change where thumnail container is appended
+     * Change where thumbnail container is appended
      */
     parentEl?: HTMLElement | null | (() => HTMLElement | null);
     /**
-     * Template for the thumnail element
+     * Template for the thumbnail element
      */
     thumbTpl: string;
     /**

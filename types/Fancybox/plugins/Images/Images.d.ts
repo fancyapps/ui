@@ -8,7 +8,7 @@ export type OptionsType = {
     /**
      * Initial image zoom level, see Panzoom documentation for more information.
      */
-    initialSize: "fit" | "cover" | "full" | "max";
+    initialSize: "fit" | "cover" | "full" | "max" | ((instance: Images) => "fit" | "cover" | "full" | "max");
     /**
      * Custom options for Panzoom instance, see Panzoom documentation for more information.
      */

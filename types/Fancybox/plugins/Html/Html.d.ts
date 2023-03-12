@@ -79,7 +79,7 @@ declare module "../../../Carousel/types" {
 }
 export declare class Html extends Plugin<Fancybox, HtmlOptionsType, ""> {
     static defaults: HtmlOptionsType;
-    private onInitSlides;
+    private onInitSlide;
     private onCreateSlide;
     private onRemoveSlide;
     private onSelectSlide;

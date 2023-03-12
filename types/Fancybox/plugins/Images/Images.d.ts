@@ -31,6 +31,8 @@ declare module "../../../Carousel/types" {
     interface slideType {
         panzoom?: Panzoom;
         imageEl?: HTMLImageElement | null;
+        srcset?: string;
+        sizes?: string;
     }
 }
 declare module "../../../Fancybox/options" {
@@ -42,7 +44,7 @@ export type ImagesOptionsType = Partial<OptionsType>;
 export declare class Images extends Plugin<Fancybox, ImagesOptionsType, ""> {
     static defaults: OptionsType;
     onCreateSlide(_fancybox: Fancybox, _carousel: Carousel, slide: slideType): void;
-    onRemoveSlide(slide: slideType): void;
+    onRemoveSlide(_fancybox: Fancybox, _carousel: Carousel, slide: slideType): void;
     onChange(_fancybox: Fancybox, carousel: Carousel, page: number, _prevPage: number): void;
     onClose(): void;
     setContent(slide: slideType, imageSrc: string): Promise<Panzoom>;

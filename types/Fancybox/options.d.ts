@@ -28,6 +28,10 @@ export interface ComponentOptionsType {
      */
     autoFocus: boolean;
     /**
+     * Change caption per slide
+     */
+    caption?: string | ((instance: Fancybox, slide: slideType, caption?: string) => string);
+    /**
      * Optional object to extend options for main Carousel
      */
     Carousel: Partial<CarouselOptionsType>;
@@ -70,6 +74,15 @@ export interface ComponentOptionsType {
      */
     groupAttr: string;
     /**
+     * Class name to be applied to the content to hide it.
+     * Note: If you disable image zoom, this class name will be used to run the image hide animation.
+     */
+    hideClass: string | false;
+    /**
+     * If browser scrollbar should be hidden
+     */
+    hideScrollbar: boolean;
+    /**
      * Custom `id` for the instance
      */
     id?: number | string;
@@ -78,30 +91,39 @@ export interface ComponentOptionsType {
      */
     idle: number | false;
     /**
+     * Keyboard events
+     */
+    keyboard: keyboardType;
+    /**
+     * Custom class name for the container
+     */
+    mainClass?: string;
+    /**
      * Element where container is appended
      * Note. If no element is specified, container is appended to the `document.body`
      */
     parentEl?: HTMLElement | null;
     /**
-     * Index of active slide on the start
+     * Set focus back to trigger element after closing Fancybox
      */
-    startIndex: number;
+    placeFocusBack: boolean;
     /**
-     * If browser scrollbar should be hidden
+     * Change source per slide
      */
-    hideScrollbar: boolean;
+    src?: string | HTMLElement | ((instance: Fancybox, slide: slideType) => string | HTMLElement);
     /**
      * Class name to be applied to the content to reveal it.
      * Note: If you disable image zoom, this class name will be used to run the image reveal animation.
      */
     showClass: string | false;
     /**
-     * Class name to be applied to the content to hide it.
-     * Note: If you disable image zoom, this class name will be used to run the image hide animation.
+     * Index of active slide on the start
      */
-    hideClass: string | false;
-    src?: string | HTMLElement | ((instance: Fancybox, slide: slideType) => string | HTMLElement);
-    caption?: string | ((instance: Fancybox, slide: slideType, caption?: string) => string);
+    startIndex: number;
+    /**
+     *  Trap focus inside Fancybox
+     */
+    trapFocus: boolean;
     width?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
     height?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
     contentClick: ClickAction | ((any?: any) => ClickAction | void);
@@ -110,21 +132,9 @@ export interface ComponentOptionsType {
     on?: Partial<Events>;
     l10n?: Record<string, string>;
     tpl: {
-        closeButton: string;
-        main: string;
+        closeButton?: string;
+        main?: string;
     };
-    /**
-     *  Trap focus inside Fancybox
-     */
-    trapFocus: boolean;
-    /**
-     * Set focus back to trigger element after closing Fancybox
-     */
-    placeFocusBack: boolean;
-    /**
-     * Keyboard events
-     */
-    keyboard: keyboardType;
     /**
      * Mouse wheel event listener
      */
@@ -132,6 +142,12 @@ export interface ComponentOptionsType {
     event?: MouseEvent | undefined;
     trigger?: HTMLElement | null;
     delegate?: HTMLElement | null;
+    Hash?: any;
+    Html?: any;
+    Images?: any;
+    Slideshow?: any;
+    Thumbs?: any;
+    Toolbar?: any;
 }
 export declare const defaultOptions: ComponentOptionsType;
 export type OptionsType = PluginsOptionsType & ComponentOptionsType;

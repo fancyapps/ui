@@ -34,9 +34,9 @@ export declare const ToolbarItems: {
 };
 export type ToolbarItemType = {
     tpl: string;
-    click?: (event: Event) => void;
+    click?: (instance: Toolbar, event: Event) => void;
 };
-export type ToolbarItemsType = Record<keyof typeof ToolbarItems, ToolbarItemType>;
+export type ToolbarItemsType = Record<keyof typeof ToolbarItems | string, ToolbarItemType>;
 export type ToolbarItemKey = keyof PanzoomButtonsType | keyof ToolbarItemsType;
 export type ToolbarPosition = "left" | "middle" | "right";
 export type OptionsType = {

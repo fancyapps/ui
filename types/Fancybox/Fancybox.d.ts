@@ -36,6 +36,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     private idle;
     private idleTimer;
     private clickTimer;
+    private prevWheelTime;
     private ignoreFocusChange;
     state: States;
     id: number | string;

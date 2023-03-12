@@ -1,3 +1,18 @@
+# 5.0.7 (2023-03-12)
+
+### Bug Fixes
+
+- **Fancybox** Use image src as fallback for thumbnail source ([#434](https://github.com/fancyapps/ui/issues/434))
+- **Fancybox** Link focus on opening ([#424](https://github.com/fancyapps/ui/issues/424))
+- **Fancybox** Typescript warnings ([#427](https://github.com/fancyapps/ui/issues/427) and [#429](https://github.com/fancyapps/ui/issues/429))
+
+### Features
+
+- **Fancybox** Add `mainClass` option ([432](https://github.com/fancyapps/ui/issues/432))
+- **Carousel** Revised flick gesture recognition
+- **Carousel** Revised thumbnail size and spacing
+- **Carousel** Improved positioning when changing container width
+
 # 5.0.6 (2023-03-03)
 
 ### Bug Fixes

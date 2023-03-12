@@ -34,6 +34,7 @@ export declare class Sync extends Plugin<Carousel, SyncOptionsType, SyncEventsTy
     private onNavReady;
     private onTargetReady;
     private onNavClick;
+    private onNavTouch;
     private onNavCreateSlide;
     private onTargetChange;
     private markSelectedSlide;

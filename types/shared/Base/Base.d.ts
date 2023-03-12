@@ -8,7 +8,7 @@ export declare class Base<OptionsType, EventsType> {
     setOptions(options: Partial<OptionsType>): void;
     option<T extends DeepKeyOf<OptionsType>>(key: T, ...rest: any): Exclude<DeepGet<OptionsType, T>, Function>;
     optionFor<T extends DeepKeyOf<OptionsType>>(obj: any, key: T, fallback?: DeepGet<OptionsType, T>, ...rest: any): Exclude<DeepGet<OptionsType, T>, Function>;
-    cn<T extends keyof OptionsType["classes"]>(key: T): string;
+    cn(key: string): string;
     localize(str: string, params?: Array<[string, any]>): string;
     on(what: EventsType | EventsType[] | "*", listener: Listener): void;
     off(what: EventsType | EventsType[] | "*", listener: Listener): void;

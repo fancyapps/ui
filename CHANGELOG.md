@@ -1,3 +1,15 @@
+# 5.0.8 (2023-03-16)
+
+### Bug Fixes
+
+- **Fancybox** Improved focus handling
+
+### Features
+
+- Added language template and Polish translations
+- **Fancybox** Support private Vimeo videos ([436](https://github.com/fancyapps/ui/issues/436))
+- **Carousel** Added `getProgress(slideIndex)` method that can be used for tweening (parallax effects, etc)
+
 # 5.0.7 (2023-03-12)
 
 ### Bug Fixes

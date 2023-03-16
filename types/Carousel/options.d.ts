@@ -103,6 +103,11 @@ export interface ComponentOptionsType {
      * Optional event listeners
      */
     on?: Partial<Events>;
+    Autoplay?: any;
+    Dots?: any;
+    Navigation?: any;
+    Sync?: any;
+    Thumbs?: any;
 }
 export declare const defaultOptions: ComponentOptionsType;
 export type OptionsType = PluginsOptionsType & ComponentOptionsType;

@@ -167,6 +167,8 @@ export interface ComponentOptionsType {
      * Optional event listeners
      */
     on?: Partial<Events>;
+    Pins?: any;
+    Toolbar?: any;
 }
 export declare const defaultOptions: ComponentOptionsType;
 export type OptionsType = PluginsOptionsType & ComponentOptionsType;

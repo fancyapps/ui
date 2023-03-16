@@ -9,6 +9,9 @@ export interface slideType {
     pos: number;
     transition: string | false;
     thumb?: string | HTMLImageElement;
+    thumbSrc?: string;
+    thumbElSrc?: string;
+    thumbEl?: HTMLImageElement;
 }
 import { Constructor } from "../shared/Base/types";
 import { Plugin } from "../shared/Base/Plugin";

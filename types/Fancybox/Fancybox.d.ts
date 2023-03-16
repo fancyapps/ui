@@ -71,7 +71,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     /**
      * Make sure the element, that has the focus, is inside the container
      */
-    checkFocus(): void;
+    checkFocus(event?: FocusEvent): void;
     /**
      * Place focus on the first focusable element inside current slide
      */

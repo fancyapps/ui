@@ -77,7 +77,6 @@ export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready">
     state: States;
     private formatThumb;
     private getSlides;
-    private getProgress;
     private onInitSlide;
     private onInitSlides;
     private onRefreshM;

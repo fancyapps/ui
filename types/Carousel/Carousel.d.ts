@@ -97,10 +97,6 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     private markSelectedSlides;
     private flipInfiniteTrack;
     private lazyLoadSlide;
-    /**
-     * Stop transition effect
-     */
-    clearTransitions(): void;
     private onAnimationEnd;
     private onDecel;
     private onClick;
@@ -134,6 +130,10 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
      */
     slidePrev(): void;
     /**
+     * Stop transition effect
+     */
+    clearTransitions(): void;
+    /**
      * Create slide(s) and prepend to the beginning of the carousel
      */
     prependSlide(what: userSlideType | Array<userSlideType>): void;
@@ -149,6 +149,10 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
      * Forces to recalculate elements metrics
      */
     updateMetrics(): void;
+    /**
+     * Get the progress of the active or selected page relative to the "center"
+     */
+    getProgress(index?: number): number;
     /**
      * Set the height of the viewport to match the maximum height of the slides on the current page
      */

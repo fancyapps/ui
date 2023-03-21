@@ -1,3 +1,16 @@
+# 5.0.9 (2023-03-21)
+
+### Bug Fixes
+
+- **Fancybox** Background scrolls behind dialog ([450](https://github.com/fancyapps/ui/issues/450))
+- **Fancybox** Fixed unwanted double click in specific scenarios
+
+### Features
+
+- Added Italian translations
+- **Fancybox** Opt out of youtube nocookie ([447](https://github.com/fancyapps/ui/issues/447))
+- **Fancybox** Allow to download as different names ([440](https://github.com/fancyapps/ui/issues/440))
+
 # 5.0.8 (2023-03-16)
 
 ### Bug Fixes

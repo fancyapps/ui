@@ -2,6 +2,17 @@
 
 ### Bug Fixes
 
+- **Fancybox** Reverse the scroll direction of the mouse wheel ([425](https://github.com/fancyapps/ui/issues/425))
+
+### Features
+
+- Added Spanish translations
+- Added French translations
+
+# 5.0.9 (2023-03-21)
+
+### Bug Fixes
+
 - **Fancybox** Background scrolls behind dialog ([450](https://github.com/fancyapps/ui/issues/450))
 - **Fancybox** Fixed unwanted double click in specific scenarios
 

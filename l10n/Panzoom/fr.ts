@@ -1,4 +1,4 @@
-export const en = {
+export const fr = {
   PANUP: "Déplacer vers le haut",
   PANDOWN: "Déplacer vers le bas",
   PANLEFT: "Déplacer vers la gauche",

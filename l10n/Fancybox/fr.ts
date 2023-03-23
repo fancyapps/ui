@@ -1,7 +1,7 @@
-import { en as PANZOOM_EN } from "../Panzoom/en";
+import { fr as PANZOOM_FR } from "../Panzoom/fr";
 
-export const en = {
-  ...PANZOOM_EN,
+export const fr = {
+  ...PANZOOM_FR,
   CLOSE: "Fermer",
   NEXT: "Suivant",
   PREV: "Précédent",

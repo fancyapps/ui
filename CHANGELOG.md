@@ -1,3 +1,10 @@
+# 5.0.11 (2023-03-23)
+
+### Bug Fixes
+
+- Fix French translations
+- **Panzoom** Don't add `is-draggable` class name if content fits
+
 # 5.0.10 (2023-03-22)
 
 ### Bug Fixes

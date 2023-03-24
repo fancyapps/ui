@@ -1,3 +1,13 @@
+# 5.0.12 (2023-03-24)
+
+### Bug Fixes
+
+- **Carousel** Fix scrolling issue on Macbook using Firefox
+
+### Features
+
+- **Panzoom** Add support for the `<picture>` element
+
 # 5.0.11 (2023-03-23)
 
 ### Bug Fixes

@@ -3,7 +3,7 @@
 ### Features
 
 - Add Japanese translations
-- **Fancybox** Add support for the `<picture>` element using a new `Images.source` option
+- **Fancybox** Add support for the `<picture>` element using a new `Images.content` option
 
 # 5.0.12 (2023-03-24)
 

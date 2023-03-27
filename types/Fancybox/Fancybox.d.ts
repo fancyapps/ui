@@ -9,12 +9,13 @@ declare module "../Carousel/types" {
         src?: string | HTMLElement;
         width?: number | "auto";
         height?: number | "auto";
-        downloadSrc?: string;
-        filter?: string;
         id?: string;
         display?: string;
         error?: string;
+        filter?: string;
         caption?: string;
+        downloadSrc?: string;
+        downloadFilename?: string;
         contentEl?: HTMLElement;
         captionEl?: HTMLElement;
         spinnerEl?: HTMLElement;
@@ -36,7 +37,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     private idle;
     private idleTimer;
     private clickTimer;
-    private prevWheelTime;
+    private pwt;
     private ignoreFocusChange;
     state: States;
     id: number | string;

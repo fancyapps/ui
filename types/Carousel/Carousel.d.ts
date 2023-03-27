@@ -152,7 +152,7 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     /**
      * Get the progress of the active or selected page relative to the "center"
      */
-    getProgress(index?: number): number;
+    getProgress(index?: number, raw?: boolean): number;
     /**
      * Set the height of the viewport to match the maximum height of the slides on the current page
      */

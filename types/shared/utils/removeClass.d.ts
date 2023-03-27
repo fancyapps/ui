@@ -1,1 +1,1 @@
-export declare const removeClass: (el: HTMLElement, classes?: string) => void;
+export declare const removeClass: (el: HTMLElement | null, classes?: string) => void;

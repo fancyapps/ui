@@ -1,1 +1,1 @@
-export declare const addClass: (el: HTMLElement, classes?: string) => void;
+export declare const addClass: (el: HTMLElement | null, classes?: string) => void;

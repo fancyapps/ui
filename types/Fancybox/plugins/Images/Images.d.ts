@@ -6,6 +6,10 @@ import { slideType } from "../../../Carousel/types";
 import { Fancybox } from "../../Fancybox";
 export type OptionsType = {
     /**
+     * Set custom content per slide
+     */
+    content?: (instance: Images, slide: slideType) => string | HTMLElement | HTMLPictureElement;
+    /**
      * Initial image zoom level, see Panzoom documentation for more information.
      */
     initialSize: "fit" | "cover" | "full" | "max" | ((instance: Images) => "fit" | "cover" | "full" | "max");
@@ -30,7 +34,7 @@ export declare const defaultOptions: OptionsType;
 declare module "../../../Carousel/types" {
     interface slideType {
         panzoom?: Panzoom;
-        imageEl?: HTMLImageElement | null;
+        imageEl?: HTMLImageElement | HTMLPictureElement;
         srcset?: string;
         sizes?: string;
     }

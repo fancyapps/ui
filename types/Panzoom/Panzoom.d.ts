@@ -17,10 +17,9 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
     private isBouncingY;
     private clicks;
     private trackingPoints;
-    private wheelDelta;
-    private prevWheelDelta;
-    private prevWheelTime;
-    private prevMouseMoveEvent;
+    private pwt;
+    private cwd;
+    private pmme;
     /**
      * Current state of the instance
      */
@@ -36,7 +35,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
     /**
      * Reference to the content element
      */
-    content: HTMLElement | HTMLImageElement;
+    content: HTMLElement | HTMLImageElement | HTMLPictureElement;
     /**
      * Reference to the loading indicator element
      */
@@ -213,7 +212,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
      */
     updateControls(): void;
     /**
-     * Pan content to selected position and scale
+     * Pan content to selected position and scale, use `friction` to control duration
      */
     panTo({ x, y, scale, friction, angle, originX, originY, flipX, flipY, ignoreBounds, }: {
         x?: number;

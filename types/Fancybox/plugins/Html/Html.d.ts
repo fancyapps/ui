@@ -48,6 +48,7 @@ export type HtmlOptionsType = {
     youtube: {
         controls: 0 | 1;
         enablejsapi: 0 | 1;
+        nocookie: 0 | 1;
         rel: 0 | 1;
         fs: 0 | 1;
     };

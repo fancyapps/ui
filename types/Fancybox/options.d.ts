@@ -28,6 +28,10 @@ export interface ComponentOptionsType {
      */
     autoFocus: boolean;
     /**
+     * The action to perform when the user clicks on the backdrop
+     */
+    backdropClick: ClickAction | ((any?: any) => ClickAction | void);
+    /**
      * Change caption per slide
      */
     caption?: string | ((instance: Fancybox, slide: slideType, caption?: string) => string);
@@ -47,6 +51,14 @@ export interface ComponentOptionsType {
      * If compact mode needs to be activated
      */
     compact: boolean | ((instance: Fancybox) => boolean);
+    /**
+     * The action to perform when the user clicks on the content
+     */
+    contentClick: ClickAction | ((any?: any) => ClickAction | void);
+    /**
+     * The action to take when the user double-clicks on the content
+     */
+    contentDblClick: ClickAction | ((any?: any) => ClickAction | void);
     /**
      * Default content type
      */
@@ -74,6 +86,10 @@ export interface ComponentOptionsType {
      */
     groupAttr: string;
     /**
+     * Change content height per slide
+     */
+    height?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
+    /**
      * Class name to be applied to the content to hide it.
      * Note: If you disable image zoom, this class name will be used to run the image hide animation.
      */
@@ -95,9 +111,17 @@ export interface ComponentOptionsType {
      */
     keyboard: keyboardType;
     /**
+     * Localization of strings
+     */
+    l10n?: Record<string, string>;
+    /**
      * Custom class name for the container
      */
     mainClass?: string;
+    /**
+     * Optional event listeners
+     */
+    on?: Partial<Events>;
     /**
      * Element where container is appended
      * Note. If no element is specified, container is appended to the `document.body`
@@ -121,20 +145,20 @@ export interface ComponentOptionsType {
      */
     startIndex: number;
     /**
-     *  Trap focus inside Fancybox
+     * HTML templates for various elements
      */
-    trapFocus: boolean;
-    width?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
-    height?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
-    contentClick: ClickAction | ((any?: any) => ClickAction | void);
-    contentDblClick: ClickAction | ((any?: any) => ClickAction | void);
-    backdropClick: ClickAction | ((any?: any) => ClickAction | void);
-    on?: Partial<Events>;
-    l10n?: Record<string, string>;
     tpl: {
         closeButton?: string;
         main?: string;
     };
+    /**
+     *  Trap focus inside Fancybox
+     */
+    trapFocus: boolean;
+    /**
+     * Change content width per slide
+     */
+    width?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
     /**
      * Mouse wheel event listener
      */

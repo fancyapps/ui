@@ -1,3 +1,10 @@
+# 5.0.13 (2023-03-27)
+
+### Features
+
+- Add Japanese translations
+- **Fancybox** Add support for the `<picture>` element using a new `Images.source` option
+
 # 5.0.12 (2023-03-24)
 
 ### Bug Fixes
@@ -23,8 +30,8 @@
 
 ### Features
 
-- Added Spanish translations
-- Added French translations
+- Add Spanish translations
+- Add French translations
 
 # 5.0.9 (2023-03-21)
 

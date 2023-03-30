@@ -10,6 +10,7 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     private userOptions;
     private userPlugins;
     private bp;
+    private lp;
     private get axis();
     /**
      * Current state of the instance

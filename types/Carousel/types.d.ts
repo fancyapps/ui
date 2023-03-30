@@ -76,6 +76,10 @@ export type CarouselEventsType = ComponentEventsType
  */
  | "click"
 /**
+ * The image is lazy loaded
+ */
+ | "load"
+/**
  * The slide change animation has finished
  */
  | "settle" | `Panzoom.${PanzoomEventsType}`;

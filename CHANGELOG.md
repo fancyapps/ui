@@ -1,3 +1,16 @@
+# 5.0.14 (2023-03-30)
+
+### Bug Fixes
+
+- **Panzoom** Fix issue with rotation animation after quick click
+- **Panzoom** Fix the original image size rounding issue
+
+### Features
+
+- **Carousel** New `load` event for lazy loaded images
+- **Carousel** Add support for viewport element padding
+- **Fancybox** Add support for HTML content as a simple text string as well as multiple elements
+
 # 5.0.13 (2023-03-27)
 
 ### Features

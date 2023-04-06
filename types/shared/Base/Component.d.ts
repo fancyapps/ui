@@ -5,5 +5,5 @@ export declare class Component<ComponentOptionsType, ComponentEventsType> extend
     plugins: Record<string, Plugin<Component<ComponentOptionsType, ComponentEventsType>, any, any>>;
     constructor(options?: Partial<ComponentOptionsType>);
     attachPlugins(Plugins?: Record<string, Constructor<Plugin<Component<ComponentOptionsType, ComponentEventsType>, any, any>>>): void;
-    detachPlugins(): this;
+    detachPlugins(Plugins?: string[]): this;
 }

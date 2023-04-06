@@ -1,3 +1,17 @@
+# 5.0.15 (2023-04-06)
+
+### Bug Fixes
+
+- **Fancybox** Fix `parentEl` option
+- **Fancybox** Fix click event while highlighting text in input ([471](https://github.com/fancyapps/ui/issues/471))
+- **Fancybox** Fix close button not showing in HTML5 Video ([469](https://github.com/fancyapps/ui/issues/469))
+
+### Features
+
+- **Fancybox** Add `fromSelector()` static method
+- **Fancybox** Improve zoom-in animation performance
+- **Carousel** Improve guesture handling
+
 # 5.0.14 (2023-03-30)
 
 ### Bug Fixes

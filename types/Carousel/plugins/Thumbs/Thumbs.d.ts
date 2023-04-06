@@ -1,6 +1,6 @@
 import { Plugin } from "../../../shared/Base/Plugin";
 import type { Carousel } from "../../Carousel";
-import { OptionsType as CarouselOptionsType } from "../../../Carousel/options";
+import { OptionsType as CarouselOptionsType } from "../../options";
 export type ThumbsOptionsType = {
     /**
      * Customize carousel options

@@ -186,8 +186,22 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
      * Immediately destroy all instances (without closing animation) and clean up
      */
     static destroy(): void;
+    /**
+     * Start Fancybox using click event
+     */
     static fromEvent(event: MouseEvent): Fancybox;
-    static fromNodes(nodes: Array<HTMLElement>, options: Partial<OptionsType>): Fancybox;
+    /**
+     * Start Fancybox using the previously assigned selector
+     */
+    static fromSelector(selector: string): void;
+    /**
+     * Start Fancybox using the previously assigned selector for the given container
+     */
+    static fromSelector(container: HTMLElement | null, selector: string): void;
+    /**
+     * Start Fancybox using HTML elements
+     */
+    static fromNodes(nodes: Array<HTMLElement>, options?: Partial<OptionsType>): Fancybox;
     /**
      * Retrieve instance by identifier or the top most instance, if identifier is not provided
      */

@@ -15,6 +15,10 @@ export type HtmlOptionsType = {
      */
     preload: boolean;
     /**
+     * Attributes of an iframe element
+     */
+    iframeAttr: Record<string, string>;
+    /**
      * If videos should start playing automatically after they are displayed
      */
     videoAutoplay: boolean;

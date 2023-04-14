@@ -1,3 +1,11 @@
+# 5.0.16 (2023-04-14)
+
+### Features
+
+- **Fancybox** Add `Html.iframeAttr` option that allows to customize the attributes of an iframe element
+- **Carousel** The `slidesPerPage` option now respects the actual width of each slide element
+- Fancybox and Carousel components now expose the components they use and thus they do not need to be loaded separately
+
 # 5.0.15 (2023-04-06)
 
 ### Bug Fixes

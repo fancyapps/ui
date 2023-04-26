@@ -15,6 +15,10 @@ export type OptionsType = {
      */
     playOnStart: boolean;
     /**
+     * Change where progress bar is appended
+     */
+    progressParentEl: HTMLElement | null | ((slideshow: Slideshow) => HTMLElement | null);
+    /**
      * Delay (in milliseconds) before the slide change
      */
     timeout: number;

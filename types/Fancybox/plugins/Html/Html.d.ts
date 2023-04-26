@@ -11,13 +11,13 @@ export type HtmlOptionsType = {
      */
     autoSize: boolean;
     /**
-     * If wait for iframe content to load before displaying
-     */
-    preload: boolean;
-    /**
      * Attributes of an iframe element
      */
     iframeAttr: Record<string, string>;
+    /**
+     * If wait for iframe content to load before displaying
+     */
+    preload: boolean;
     /**
      * If videos should start playing automatically after they are displayed
      */

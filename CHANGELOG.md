@@ -1,3 +1,12 @@
+# 5.0.17 (2023-04-26)
+
+### Features
+
+- **Fancybox** Scale the container to maintain dimensions regardless of the pinch zoom level of the device
+- **Fancybox** Add `Slideshow.progressParentEl` option to more easily specify the location of progress bar
+- **Fancybox** Add support for YouTube Shorts
+- **Carousel** Remove infinite navigation restriction in specific cases
+
 # 5.0.16 (2023-04-14)
 
 ### Features

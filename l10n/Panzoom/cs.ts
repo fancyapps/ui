@@ -1,4 +1,4 @@
-export const en = {
+export const cs = {
   PANUP: "Posunout nahoru",
   PANDOWN: "Posunout dolů",
   PANLEFT: "Posunout vlevo",

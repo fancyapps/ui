@@ -1,3 +1,13 @@
+# 5.0.18 (2023-05-22)
+
+### Features
+
+- **Fancybox** Add `startSlideshow` and `endSlideshow` events
+- **Fancybox** Add navigation using the mouse wheel above the thumbnails
+- **Fancybox** Add option to show custom content instead of default error message ([388](https://github.com/fancyapps/ui/issues/388))
+- Add Czech translations
+- Add Chinese (Simplified) translations
+
 # 5.0.17 (2023-04-26)
 
 ### Features

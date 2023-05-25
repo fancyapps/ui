@@ -1,3 +1,13 @@
+# 5.0.19 (2023-05-25)
+
+### Bug Fixes
+
+- **Carousel** In specific cases, an incorrect position occurs after a click ([498](https://github.com/fancyapps/ui/issues/498))
+
+### Features
+
+- **Fancybox** Add `createSlide` event to the thumbnail plugin
+
 # 5.0.18 (2023-05-22)
 
 ### Features

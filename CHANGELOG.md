@@ -1,3 +1,13 @@
+# 5.0.20 (2023-07-04)
+
+### Features
+
+- **Fancybox** Add ability to position elements (for example, navigation arrows) relative to the image
+- **Fancybox** Add ability to place caption anywhere (including toolbar)
+- **Fancybox** Add ability to dynamically add new content (example: `Fancybox.getInstance().carousel.appendSlide({src : "https://lipsum.app/id/1/800x600/"});`)
+- Add Latvian translations
+- **Fancybox** Add CSS variable `--f-transition-duration` to control transition duration more easily
+
 # 5.0.19 (2023-05-25)
 
 ### Bug Fixes

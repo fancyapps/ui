@@ -1,3 +1,18 @@
+# 5.0.21 (2023-08-08)
+
+### Features
+
+- **Fancybox** Allow Caption to be an Element ([531](https://github.com/fancyapps/ui/issues/531))
+- **Carousel** `appendSlide()` supports a custom element ([531](https://github.com/fancyapps/ui/issues/537))
+- **Panzoom** Zoom in on the current display area centered around the axis ([519](https://github.com/fancyapps/ui/issues/519))
+
+### Bug Fixes
+
+- **Fancybox** Videos wrong size when scrolling through carousel ([535](https://github.com/fancyapps/ui/issues/535))
+- **Fancybox** Classic mode thumbnails are refreshed repeatedly ([540](https://github.com/fancyapps/ui/issues/540))
+- **Fancybox** Carousel swipe doesn't work with links ([524](https://github.com/fancyapps/ui/issues/524))
+- **Fancybox** Focus outline for thumbnails after using keyboard
+
 # 5.0.20 (2023-07-04)
 
 ### Features

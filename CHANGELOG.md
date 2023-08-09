@@ -1,3 +1,10 @@
+# 5.0.22 (2023-08-09)
+
+### Bug Fixes
+
+- **Fancybox** Classic thumbnails doesn't work on click ([548](https://github.com/fancyapps/ui/issues/535))
+- **Fancybox** The cursor should indicate whether the carousel is draggable or currently being dragged
+
 # 5.0.21 (2023-08-08)
 
 ### Features

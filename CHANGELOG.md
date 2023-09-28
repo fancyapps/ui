@@ -1,8 +1,22 @@
+# 5.0.23 (2023-09-28)
+
+### Bug Fixes
+
+- **Fancybox** Fix close button click event not working when text is selected ([565](https://github.com/fancyapps/ui/issues/565))
+- **Fancybox** Fix repetition of events ([554](https://github.com/fancyapps/ui/issues/554))
+- **Fancybox** Fix an issue with not yet loaded image after very fast clicks on toolbar buttons
+- **Fancybox** Fix an issue with captions containing only numbers
+- **Fancybox** HTML5 videos should support `data-width` and `data-height` attributes
+- **Carousel** Fix scrolling in Safari when using a mouse ([529](https://github.com/fancyapps/ui/issues/529))
+- **Carousel** Fix an issue when combining Carousel with Panzoom and using lazy image loading
+- **Panzoom** Fix pin position after resizing window in full screen mode
+- **Panzoom** Allow the click event of the Pins plugin to be executed in order to combine with Fancybox
+
 # 5.0.22 (2023-08-09)
 
 ### Bug Fixes
 
-- **Fancybox** Classic thumbnails doesn't work on click ([548](https://github.com/fancyapps/ui/issues/535))
+- **Fancybox** Classic thumbnails doesn't work on click ([535](https://github.com/fancyapps/ui/issues/535))
 - **Fancybox** The cursor should indicate whether the carousel is draggable or currently being dragged
 
 # 5.0.21 (2023-08-08)
@@ -10,7 +24,7 @@
 ### Features
 
 - **Fancybox** Allow Caption to be an Element ([531](https://github.com/fancyapps/ui/issues/531))
-- **Carousel** `appendSlide()` supports a custom element ([531](https://github.com/fancyapps/ui/issues/537))
+- **Carousel** `appendSlide()` supports a custom element ([537](https://github.com/fancyapps/ui/issues/537))
 - **Panzoom** Zoom in on the current display area centered around the axis ([519](https://github.com/fancyapps/ui/issues/519))
 
 ### Bug Fixes
@@ -158,9 +172,9 @@
 
 ### Bug Fixes
 
-- **Fancybox** Use image src as fallback for thumbnail source ([#434](https://github.com/fancyapps/ui/issues/434))
-- **Fancybox** Link focus on opening ([#424](https://github.com/fancyapps/ui/issues/424))
-- **Fancybox** Typescript warnings ([#427](https://github.com/fancyapps/ui/issues/427) and [#429](https://github.com/fancyapps/ui/issues/429))
+- **Fancybox** Use image src as fallback for thumbnail source ([434](https://github.com/fancyapps/ui/issues/434))
+- **Fancybox** Link focus on opening ([424](https://github.com/fancyapps/ui/issues/424))
+- **Fancybox** Typescript warnings ([427](https://github.com/fancyapps/ui/issues/427) and [429](https://github.com/fancyapps/ui/issues/429))
 
 ### Features
 
@@ -206,7 +220,7 @@
 
 ### Bug Fixes
 
-- **Fancybox** Typos in the template ([#406](https://github.com/fancyapps/ui/issues/406))
+- **Fancybox** Typos in the template ([406](https://github.com/fancyapps/ui/issues/406))
 
 ## Features
 
@@ -216,7 +230,7 @@
 
 ### Bug Fixes
 
-- **Fancybox** Problem with preloading images ([#403](https://github.com/fancyapps/ui/issues/403))
+- **Fancybox** Problem with preloading images ([403](https://github.com/fancyapps/ui/issues/403))
 
 # 5.0.0 (2023-02-22)
 

@@ -1,4 +1,4 @@
-export const cs = {
+export const sk = {
   PANUP: "Posunúť hore",
   PANDOWN: "Posunúť dole",
   PANLEFT: "Posunúť vľavo",

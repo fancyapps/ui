@@ -1,7 +1,7 @@
-import { cs as PANZOOM_CS } from "../Panzoom/cs";
+import { sk as PANZOOM_SK } from "../Panzoom/sk";
 
-export const cs = {
-  ...PANZOOM_CS,
+export const sk = {
+  ...PANZOOM_SK,
   CLOSE: "Zavrieť",
   NEXT: "Ďalší",
   PREV: "Predchádzajúci",

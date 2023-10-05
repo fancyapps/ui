@@ -51,7 +51,8 @@ export declare class Images extends Plugin<Fancybox, ImagesOptionsType, ""> {
     onRemoveSlide(_fancybox: Fancybox, _carousel: Carousel, slide: slideType): void;
     onChange(_fancybox: Fancybox, carousel: Carousel, page: number, _prevPage: number): void;
     onClose(): void;
-    setContent(slide: slideType, imageSrc: string): Promise<Panzoom>;
+    setImage(slide: slideType, imageSrc: string): void;
+    process(slide: slideType, imageSrc: string): Promise<Panzoom>;
     zoomIn(slide: slideType): Promise<Panzoom>;
     getZoomInfo(slide: slideType): false | {
         x: number;

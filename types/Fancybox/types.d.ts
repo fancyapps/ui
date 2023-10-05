@@ -42,6 +42,10 @@ export type EventsType = ComponentEventsType
  */
  | "done"
 /**
+ * Cleared content inside the slide
+ */
+ | "clearContent"
+/**
  * The idle state is activated
  */
  | "setIdle"
@@ -49,6 +53,10 @@ export type EventsType = ComponentEventsType
  * The idle state is deactivated
  */
  | "endIdle"
+/**
+ * The slideshow has been deactivated
+ */
+ | "endSlideshow"
 /**
  * A keyboard button is pressed
  */
@@ -69,6 +77,10 @@ export type EventsType = ComponentEventsType
  * Closing has begun and can be prevented
  */
  | "shouldClose"
+/**
+ * The slideshow is activated
+ */
+ | "startSlideshow"
 /**
  * Closing is ongoing
  */

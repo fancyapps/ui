@@ -58,10 +58,9 @@ declare module "../../../Carousel/types" {
 export declare enum States {
     Init = 0,
     Ready = 1,
-    Hidden = 2,
-    Disabled = 3
+    Hidden = 2
 }
-export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready"> {
+export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready" | "createSlide"> {
     static defaults: ThumbsOptionsType;
     type: "modern" | "classic";
     container: HTMLElement | null;
@@ -91,6 +90,7 @@ export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready">
     private lazyLoadModern;
     private resizeModernSlide;
     private getModernThumbPos;
+    isDisabled(): Boolean;
     build(): void;
     cleanup(): void;
     attach(): void;

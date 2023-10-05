@@ -1,6 +1,6 @@
 import { MatrixKeys } from "./consts";
 export type MatrixValues = {
-    [K in typeof MatrixKeys[number]]: number;
+    [K in (typeof MatrixKeys)[number]]: number;
 };
 export type Bounds = {
     x: {
@@ -107,7 +107,7 @@ export type ClickAction = "toggleZoom" | "toggleCover" | "toggleMax" | "zoomToFi
 export type WheelAction = "zoom" | "pan" | false;
 export type ZoomOptions = {
     friction?: number | "auto";
-    originX?: number;
-    originY?: number;
+    originX?: number | "auto";
+    originY?: number | "auto";
     event?: Event & MouseEvent;
 };

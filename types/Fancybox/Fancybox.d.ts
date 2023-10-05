@@ -13,7 +13,7 @@ declare module "../Carousel/types" {
         display?: string;
         error?: string;
         filter?: string;
-        caption?: string;
+        caption?: string | HTMLElement;
         downloadSrc?: string;
         downloadFilename?: string;
         contentEl?: HTMLElement;
@@ -50,7 +50,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     fsAPI: {
         request: (el: Element) => Promise<void>;
         exit: () => Promise<void> | undefined;
-        isFullscreen: () => boolean;
+        isFullscreen: () => HTMLElement | undefined;
     } | undefined;
     get isIdle(): boolean;
     get isCompact(): boolean;
@@ -60,6 +60,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     private initCarousel;
     private attachEvents;
     private detachEvents;
+    private scale;
     private onClick;
     private onWheel;
     private onKeydown;

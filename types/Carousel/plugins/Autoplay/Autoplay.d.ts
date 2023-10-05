@@ -1,6 +1,6 @@
 import { Plugin } from "../../../shared/Base/Plugin";
 import { Carousel } from "../../Carousel";
-type AutoplayEventsType = "set" | "pause" | "resume" | "stop";
+type AutoplayEventsType = "start" | "set" | "pause" | "resume" | "stop";
 type AutoplayEvents = Record<AutoplayEventsType, (...args: any[]) => void>;
 export type AutoplayOptionsType = {
     /**

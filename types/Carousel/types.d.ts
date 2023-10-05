@@ -1,8 +1,9 @@
 export interface slideType {
-    html: string;
+    html: string | HTMLElement;
     el: HTMLElement | null;
     isDom: boolean;
     class: string;
+    customClass: string;
     index: number;
     dim: number;
     gap: number;
@@ -17,7 +18,7 @@ import { Constructor } from "../shared/Base/types";
 import { Plugin } from "../shared/Base/Plugin";
 import { Carousel } from "./Carousel";
 export type PluginsType = Record<string, Constructor<Plugin<Carousel, any, any>>>;
-export type userSlideType = String | HTMLElement | Partial<slideType>;
+export type userSlideType = string | HTMLElement | Partial<slideType>;
 export type pageType = {
     index: number;
     slides: Array<slideType>;
@@ -67,6 +68,10 @@ export type CarouselEventsType = ComponentEventsType
  * Carousel metrics have been updated
  */
  | "refresh"
+/**
+ * Right before the active page of the carousel is changed
+ */
+ | "beforeChange"
 /**
  * The active page of the carousel is changed
  */

@@ -63,8 +63,8 @@ declare module "../../../Fancybox/options" {
     }
 }
 export declare const defaultOptions: HtmlOptionsType;
-export declare const contentTypes: readonly ["image", "html", "ajax", "inline", "clone", "iframe", "map", "pdf", "html5video", "youtube", "vimeo", "video"];
-type contentType = typeof contentTypes[number];
+export declare const contentTypes: readonly ["image", "html", "ajax", "inline", "clone", "iframe", "map", "pdf", "html5video", "youtube", "vimeo"];
+type contentType = (typeof contentTypes)[number];
 declare module "../../../Carousel/types" {
     interface slideType {
         type?: contentType;
@@ -86,7 +86,7 @@ export declare class Html extends Plugin<Fancybox, HtmlOptionsType, ""> {
     static defaults: HtmlOptionsType;
     private onInitSlide;
     private onCreateSlide;
-    private onRemoveSlide;
+    private onClearContent;
     private onSelectSlide;
     private onUnselectSlide;
     private onDone;

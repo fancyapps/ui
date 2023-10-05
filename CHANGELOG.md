@@ -1,3 +1,15 @@
+# 5.0.24 (2023-10-05)
+
+### Bug Fixes
+
+- **Fancybox** Exit fullscreen mode only if started by Fancybox ([520](https://github.com/fancyapps/ui/issues/520))
+- **Fancybox** Fix an issue with elements inside the content that contain Panzoom data attributes
+
+### Features
+
+- Added Slovak translations
+- **Carousel** Added event `beforeChange`, can be used to prevent slide change
+
 # 5.0.23 (2023-09-28)
 
 ### Bug Fixes

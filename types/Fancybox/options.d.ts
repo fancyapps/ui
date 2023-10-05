@@ -34,7 +34,7 @@ export interface ComponentOptionsType {
     /**
      * Change caption per slide
      */
-    caption?: string | ((instance: Fancybox, slide: slideType, caption?: string) => string);
+    caption?: string | HTMLElement | false | ((instance: Fancybox, slide: slideType, caption?: string | HTMLElement) => string | HTMLElement | false);
     /**
      * Optional object to extend options for main Carousel
      */
@@ -62,7 +62,7 @@ export interface ComponentOptionsType {
     /**
      * Default content type
      */
-    defaultType: "image" | "iframe" | "video" | "inline" | "html";
+    defaultType: "image" | "iframe" | "youtube" | "vimeo" | "inline" | "html";
     /**
      * The default value of the CSS `display` property for hidden inline elements
      */
@@ -164,7 +164,7 @@ export interface ComponentOptionsType {
      */
     wheel: "zoom" | "pan" | "close" | "slide" | false | ((instance: Fancybox, event: MouseEvent) => "zoom" | "pan" | "close" | "slide" | false);
     event?: MouseEvent | undefined;
-    trigger?: HTMLElement | null;
+    triggerEl?: HTMLElement | null;
     delegate?: HTMLElement | null;
     Hash?: any;
     Html?: any;

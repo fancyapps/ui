@@ -108,7 +108,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
     /**
      * Current pan mode - `mousemove` or `drag`
      */
-    get panMode(): "drag" | "mousemove";
+    get panMode(): "mousemove" | "drag";
     /**
      * If the content can be dragged when it fits into the container
      */

@@ -7,11 +7,11 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     static Panzoom: typeof Panzoom;
     static defaults: Partial<OptionsType>;
     static Plugins: PluginsType;
-    private userOptions;
-    private userPlugins;
     private bp;
     private lp;
     private get axis();
+    userOptions: Partial<OptionsType>;
+    userPlugins: PluginsType;
     /**
      * Current state of the instance
      */

@@ -1,3 +1,16 @@
+# 5.0.25 (2023-11-03)
+
+### Bug Fixes
+
+- **Fancybox** Issue with animations ([579](https://github.com/fancyapps/ui/issues/579))
+
+### Features
+
+- **Carousel** Added new method `addSlide()` that allows to add a new slide at a selected location
+- **Carousel** A completely reworked thumbail plugin:
+  1. Modern thumbnails can now be infinite, this also improves overall performance with large number of items.
+  2. New thumbnails are also created when new slides are added to the carousel. This allows, for example, to create a Fancybox gallery with an infinite number of images.
+
 # 5.0.24 (2023-10-05)
 
 ### Bug Fixes

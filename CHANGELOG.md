@@ -1,8 +1,14 @@
+# 5.0.26 (2023-11-06)
+
+### Bug Fixes
+
+- **Carousel** Fix classic thumbnail CSS affecting dimensions
+
 # 5.0.25 (2023-11-03)
 
 ### Bug Fixes
 
-- **Fancybox** Issue with animations ([579](https://github.com/fancyapps/ui/issues/579))
+- **Fancybox** Fix an issue with animations ([579](https://github.com/fancyapps/ui/issues/579))
 
 ### Features
 

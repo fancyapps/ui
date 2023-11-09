@@ -1,3 +1,10 @@
+# 5.0.27 (2023-11-09)
+
+### Bug Fixes
+
+- **Fancybox** Fix an issue with keyboard navigation ([583](https://github.com/fancyapps/ui/issues/583))
+- **Fancybox** Fix an issue with scrollable content when using `wheel:slide` ([582](https://github.com/fancyapps/ui/issues/582))
+
 # 5.0.26 (2023-11-06)
 
 ### Bug Fixes

@@ -1,4 +1,5 @@
 import { Plugin } from "../../../shared/Base/Plugin";
+import { OptionsType as PanzoomOptionsType } from "../../../Panzoom/options";
 import type { Carousel } from "../../Carousel";
 import { OptionsType as CarouselOptionsType } from "../../options";
 export type ThumbsOptionsType = {
@@ -6,6 +7,10 @@ export type ThumbsOptionsType = {
      * Customize carousel options
      */
     Carousel?: Partial<CarouselOptionsType>;
+    /**
+     * Customize panzoom options
+     */
+    Panzoom?: Partial<PanzoomOptionsType>;
     /**
      * Class names for DOM elements
      */
@@ -63,36 +68,32 @@ export declare enum States {
 export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready" | "createSlide"> {
     static defaults: ThumbsOptionsType;
     type: "modern" | "classic";
+    get isModern(): boolean;
     container: HTMLElement | null;
     track: HTMLElement | null;
     private carousel;
-    private panzoom;
     private thumbWidth;
     private thumbClipWidth;
     private thumbHeight;
     private thumbGap;
     private thumbExtraGap;
-    private shouldCenter;
     state: States;
-    private formatThumb;
-    private getSlides;
     private onInitSlide;
     private onInitSlides;
-    private onRefreshM;
-    private onChangeM;
-    private onClickModern;
-    private onTransformM;
-    private buildClassic;
-    private buildModern;
-    private updateModern;
-    private refreshModern;
-    private centerModern;
-    private lazyLoadModern;
-    private resizeModernSlide;
-    private getModernThumbPos;
+    private onChange;
+    private onRefresh;
     isDisabled(): Boolean;
+    private getThumb;
+    private addSlide;
+    private getSlides;
+    private resizeModernSlide;
+    private updateProps;
     build(): void;
-    cleanup(): void;
+    private onClick;
+    private getShift;
+    private setProps;
+    private shiftModern;
+    private cleanup;
     attach(): void;
     detach(): void;
 }

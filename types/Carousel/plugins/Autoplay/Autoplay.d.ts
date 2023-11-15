@@ -18,7 +18,7 @@ export type AutoplayOptionsType = {
     /**
      * Change where progress bar is appended
      */
-    progressParentEl: HTMLElement | null | (() => HTMLElement | null);
+    progressParentEl: HTMLElement | null | ((any: any) => HTMLElement | null);
     /**
      * If element should be created to display the autoplay progress
      */

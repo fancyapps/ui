@@ -1,7 +1,7 @@
 import { Plugin } from "../../../shared/Base/Plugin";
 import type { AutoplayOptionsType } from "../../../Carousel/plugins/Autoplay/Autoplay";
 import { Fancybox } from "../../Fancybox";
-export type OptionsType = {
+type OptionsType = {
     /**
      * Custom options for Carousel Autoplay plugin instance, see relevant documentation for more information
      */
@@ -23,7 +23,6 @@ export type OptionsType = {
      */
     timeout: number;
 };
-export declare const defaultOptions: OptionsType;
 export type SlideshowOptionsType = Partial<OptionsType>;
 declare module "../../../Fancybox/options" {
     interface PluginsOptionsType {
@@ -40,3 +39,4 @@ export declare class Slideshow extends Plugin<Fancybox, SlideshowOptionsType, ""
     attach(): void;
     detach(): void;
 }
+export {};

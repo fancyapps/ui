@@ -1,7 +1,7 @@
 import { Plugin } from "../../../shared/Base/Plugin";
 import { ThumbsOptionsType as CarouselThumbsOptionsType } from "../../../Carousel/plugins/Thumbs/Thumbs";
 import { Fancybox } from "../../Fancybox";
-export type OptionsType = CarouselThumbsOptionsType & {
+type OptionsType = CarouselThumbsOptionsType & {
     /**
      *  Keyboard shortcut to toggle thumbnail container
      */
@@ -15,7 +15,6 @@ export type OptionsType = CarouselThumbsOptionsType & {
      */
     showOnStart: boolean;
 };
-export declare const defaultOptions: OptionsType;
 export type ThumbsOptionsType = Partial<OptionsType>;
 declare module "../../../Fancybox/options" {
     interface PluginsOptionsType {
@@ -28,6 +27,8 @@ export declare class Thumbs extends Plugin<Fancybox, ThumbsOptionsType, ""> {
     private hidden;
     get isEnabled(): boolean;
     get isHidden(): boolean;
+    private onClick;
+    private onCreateSlide;
     private onInit;
     private onResize;
     private onKeydown;
@@ -38,3 +39,4 @@ export declare class Thumbs extends Plugin<Fancybox, ThumbsOptionsType, ""> {
     attach(): void;
     detach(): void;
 }
+export {};

@@ -30,13 +30,14 @@ export type OptionsType = {
      */
     zoomOpacity: "auto" | boolean;
 };
-export declare const defaultOptions: OptionsType;
 declare module "../../../Carousel/types" {
     interface slideType {
         panzoom?: Panzoom;
         imageEl?: HTMLImageElement | HTMLPictureElement;
         srcset?: string;
         sizes?: string;
+        media?: string;
+        sources?: string;
     }
 }
 declare module "../../../Fancybox/options" {

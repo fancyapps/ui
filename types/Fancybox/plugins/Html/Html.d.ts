@@ -50,11 +50,11 @@ export type HtmlOptionsType = {
      * https://developers.google.com/youtube/player_parameters#Parameters
      */
     youtube: {
-        controls: 0 | 1;
-        enablejsapi: 0 | 1;
-        nocookie: 0 | 1;
-        rel: 0 | 1;
-        fs: 0 | 1;
+        controls?: 0 | 1;
+        enablejsapi?: 0 | 1;
+        nocookie?: 0 | 1;
+        rel?: 0 | 1;
+        fs?: 0 | 1;
     };
 };
 declare module "../../../Fancybox/options" {
@@ -62,7 +62,6 @@ declare module "../../../Fancybox/options" {
         Html?: Boolean | Partial<HtmlOptionsType>;
     }
 }
-export declare const defaultOptions: HtmlOptionsType;
 export declare const contentTypes: readonly ["image", "html", "ajax", "inline", "clone", "iframe", "map", "pdf", "html5video", "youtube", "vimeo"];
 type contentType = (typeof contentTypes)[number];
 declare module "../../../Carousel/types" {
@@ -84,7 +83,7 @@ declare module "../../../Carousel/types" {
 }
 export declare class Html extends Plugin<Fancybox, HtmlOptionsType, ""> {
     static defaults: HtmlOptionsType;
-    private onInitSlide;
+    private onBeforeInitSlide;
     private onCreateSlide;
     private onClearContent;
     private onSelectSlide;

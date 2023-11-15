@@ -38,7 +38,7 @@ export interface ComponentOptionsType {
     /**
      * The name of the transition animation when changing Carousel pages
      */
-    transition: "crossfade" | "fade" | "slide" | "classic" | string | false;
+    transition: "crossfade" | "fade" | "slide" | "classic" | string | false | ((any?: any) => "crossfade" | "fade" | "slide" | "classic");
     /**
      * Number of pages to preload before/after the active page
      */
@@ -70,15 +70,15 @@ export interface ComponentOptionsType {
     /**
      * If true, the Carousel will fill the free space if `infinite: false`
      */
-    fill: boolean;
+    fill: boolean | ((any?: any) => boolean);
     /**
      * If true, the Carousel will settle at any position after a swipe
      */
-    dragFree: boolean;
+    dragFree: boolean | ((any?: any) => boolean);
     /**
      * If true, the Carousel will adjust its height to the height of the currently active slide(s)
      */
-    adaptiveHeight: boolean;
+    adaptiveHeight: boolean | ((any?: any) => boolean);
     /**
      * Change direction of Carousel
      */
@@ -103,11 +103,6 @@ export interface ComponentOptionsType {
      * Optional event listeners
      */
     on?: Partial<Events>;
-    Autoplay?: any;
-    Dots?: any;
-    Navigation?: any;
-    Sync?: any;
-    Thumbs?: any;
 }
 export declare const defaultOptions: ComponentOptionsType;
 export type OptionsType = PluginsOptionsType & ComponentOptionsType;

@@ -2,6 +2,7 @@ import { Component } from "../shared/Base/Component";
 import { PluginsType, EventsType, Bounds, MatrixValues, ZoomOptions } from "./types";
 import { States } from "./consts";
 import { OptionsType } from "./options";
+export type * from "./plugins/index";
 export declare class Panzoom extends Component<OptionsType, EventsType> {
     static defaults: Partial<OptionsType>;
     static Plugins: PluginsType;
@@ -11,7 +12,6 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
     private clickTimer;
     private rAF;
     private isTicking;
-    private friction;
     private ignoreBounds;
     private isBouncingX;
     private isBouncingY;
@@ -20,6 +20,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
     private pwt;
     private cwd;
     private pmme;
+    private friction;
     /**
      * Current state of the instance
      */
@@ -100,6 +101,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
      * Axis that is currently locked
      */
     lockedAxis: false | "x" | "y";
+    get fits(): boolean;
     /**
      * True if the user is on a touch device
      */
@@ -203,6 +205,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
      * Calculate dimensions of contents and container
      */
     updateMetrics(silently?: boolean): void;
+    calculateBounds(): Bounds;
     /**
      * Get information about current content boundaries
      */

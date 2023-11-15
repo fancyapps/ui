@@ -30,8 +30,9 @@ export declare class Navigation extends Plugin<Carousel, NavigationOptionsType, 
     container: HTMLElement | null;
     prev: HTMLElement | null;
     next: HTMLElement | null;
+    private isDom;
     private onRefresh;
-    private createButton;
+    private addBtn;
     private build;
     cleanup(): void;
     attach(): void;

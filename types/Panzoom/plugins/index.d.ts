@@ -1,2 +1,2 @@
 import { PluginsType } from "../types";
-export declare const Plugins: PluginsType;
+export declare const PanzoomPlugins: PluginsType;

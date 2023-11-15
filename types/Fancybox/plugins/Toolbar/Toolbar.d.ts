@@ -39,7 +39,7 @@ export type ToolbarItemType = {
 export type ToolbarItemsType = Record<keyof typeof ToolbarItems | string, ToolbarItemType>;
 export type ToolbarItemKey = keyof PanzoomButtonsType | keyof ToolbarItemsType;
 export type ToolbarPosition = "left" | "middle" | "right";
-export type OptionsType = {
+type OptionsType = {
     /**
      * If absolutely position container;
      * "auto" - absolutely positioned if there is no item in the "middle" column
@@ -60,9 +60,8 @@ export type OptionsType = {
     /**
      * Change where toolbar container is appended
      */
-    parentEl: HTMLElement | null | (() => HTMLElement | null);
+    parentEl: HTMLElement | null | ((toolbar: Toolbar) => HTMLElement | null);
 };
-export declare const defaultOptions: OptionsType;
 export type ToolbarOptionsType = Partial<OptionsType>;
 declare module "../../../Fancybox/options" {
     interface PluginsOptionsType {
@@ -84,3 +83,4 @@ export declare class Toolbar extends Plugin<Fancybox, ToolbarOptionsType, ""> {
     attach(): void;
     detach(): void;
 }
+export {};

@@ -1,3 +1,11 @@
+# 5.0.28 (2023-11-15)
+
+### Features
+
+- **Fancybox** Added additional CSS variables to control transition durations ([523](https://github.com/fancyapps/ui/issues/523))
+- **Carousel** The navigation plugin reuses existing DOM elements
+- Improved TypeScript support
+
 # 5.0.27 (2023-11-09)
 
 ### Bug Fixes

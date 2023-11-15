@@ -2,6 +2,7 @@ import { OptionsType } from "./options";
 import { EventsType, PluginsType } from "./types";
 import { States, SlideStates } from "./consts";
 import { Component } from "../shared/Base/Component";
+export type * from "./plugins/index";
 import { Carousel } from "../Carousel/Carousel";
 import { slideType, userSlideType } from "../Carousel/types";
 declare module "../Carousel/types" {
@@ -194,11 +195,11 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     /**
      * Start Fancybox using the previously assigned selector
      */
-    static fromSelector(selector: string): void;
+    static fromSelector(selector: string, options?: Partial<OptionsType>): void;
     /**
      * Start Fancybox using the previously assigned selector for the given container
      */
-    static fromSelector(container: HTMLElement | null, selector: string): void;
+    static fromSelector(container: HTMLElement | null, selector: string, options?: Partial<OptionsType>): void;
     /**
      * Start Fancybox using HTML elements
      */

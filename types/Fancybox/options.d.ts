@@ -22,15 +22,15 @@ export interface ComponentOptionsType {
     /**
      * Should backdrop and UI elements fade in/out on start/close
      */
-    animated: boolean;
+    animated: boolean | ((instance: Fancybox) => boolean);
     /**
      * Set focus on first focusable element after displaying content
      */
-    autoFocus: boolean;
+    autoFocus: boolean | ((instance: Fancybox) => boolean);
     /**
      * The action to perform when the user clicks on the backdrop
      */
-    backdropClick: ClickAction | ((any?: any) => ClickAction | void);
+    backdropClick: ClickAction | ((instance: Fancybox) => ClickAction | void);
     /**
      * Change caption per slide
      */
@@ -54,11 +54,11 @@ export interface ComponentOptionsType {
     /**
      * The action to perform when the user clicks on the content
      */
-    contentClick: ClickAction | ((any?: any) => ClickAction | void);
+    contentClick: ClickAction | ((instance: Fancybox) => ClickAction | void);
     /**
      * The action to take when the user double-clicks on the content
      */
-    contentDblClick: ClickAction | ((any?: any) => ClickAction | void);
+    contentDblClick: ClickAction | ((instance: Fancybox) => ClickAction | void);
     /**
      * Default content type
      */
@@ -70,7 +70,7 @@ export interface ComponentOptionsType {
     /**
      * Enable drag-to-close gesture - drag content up/down to close instance
      */
-    dragToClose: boolean;
+    dragToClose: boolean | ((instance: Fancybox) => boolean);
     /**
      * If Fancybox should start in full-scren mode
      */
@@ -93,7 +93,7 @@ export interface ComponentOptionsType {
      * Class name to be applied to the content to hide it.
      * Note: If you disable image zoom, this class name will be used to run the image hide animation.
      */
-    hideClass: string | false;
+    hideClass: string | false | ((instance: Fancybox) => string | false);
     /**
      * If browser scrollbar should be hidden
      */
@@ -139,7 +139,7 @@ export interface ComponentOptionsType {
      * Class name to be applied to the content to reveal it.
      * Note: If you disable image zoom, this class name will be used to run the image reveal animation.
      */
-    showClass: string | false;
+    showClass: string | false | ((instance: Fancybox) => string | false);
     /**
      * Index of active slide on the start
      */
@@ -166,12 +166,6 @@ export interface ComponentOptionsType {
     event?: MouseEvent | undefined;
     triggerEl?: HTMLElement | null;
     delegate?: HTMLElement | null;
-    Hash?: any;
-    Html?: any;
-    Images?: any;
-    Slideshow?: any;
-    Thumbs?: any;
-    Toolbar?: any;
 }
 export declare const defaultOptions: ComponentOptionsType;
 export type OptionsType = PluginsOptionsType & ComponentOptionsType;

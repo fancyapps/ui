@@ -37,7 +37,11 @@ export type CarouselEventsType = ComponentEventsType
  */
  | "initLayout"
 /**
- * A slide object is created
+ * Priority event when the slide object is created
+ */
+ | "beforeInitSlide"
+/**
+ * The slide object is created
  */
  | "initSlide"
 /**

@@ -3,6 +3,7 @@ import { Panzoom } from "../Panzoom/Panzoom";
 import { PluginsType, CarouselEventsType, slideType, pageType, userSlideType } from "./types";
 import { OptionsType } from "./options";
 import { States } from "./consts";
+export type * from "./plugins/index";
 export declare class Carousel extends Component<OptionsType, CarouselEventsType> {
     static Panzoom: typeof Panzoom;
     static defaults: Partial<OptionsType>;
@@ -104,6 +105,7 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     private onSlideTo;
     private onChange;
     private onRefresh;
+    private onScroll;
     private onResize;
     private onBeforeTransform;
     private onEndAnimation;
@@ -135,6 +137,10 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
      */
     clearTransitions(): void;
     /**
+     * Create the slide(s) and add by the specified index
+     */
+    addSlide(index: number, what: userSlideType | Array<userSlideType>): void;
+    /**
      * Create slide(s) and prepend to the beginning of the carousel
      */
     prependSlide(what: userSlideType | Array<userSlideType>): void;
@@ -153,7 +159,7 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     /**
      * Get the progress of the active or selected page relative to the "center"
      */
-    getProgress(index?: number, raw?: boolean): number;
+    getProgress(index?: number, raw?: boolean, ignoreInfinite?: boolean): number;
     /**
      * Set the height of the viewport to match the maximum height of the slides on the current page
      */

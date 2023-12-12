@@ -45,6 +45,10 @@ export type CarouselEventsType = ComponentEventsType
  */
  | "initSlide"
 /**
+ * The slide object is removed from the carousel
+ */
+ | "destroySlide"
+/**
  * All slides have objects created
  */
  | "initSlides"

@@ -2,6 +2,8 @@ import { Plugin } from "../../../shared/Base/Plugin";
 import { OptionsType as PanzoomOptionsType } from "../../../Panzoom/options";
 import type { Carousel } from "../../Carousel";
 import { OptionsType as CarouselOptionsType } from "../../options";
+type ThumbsEventsType = "ready" | "createSlide" | "disabled";
+type ThumbsEvents = Record<ThumbsEventsType, (...args: any[]) => void>;
 export type ThumbsOptionsType = {
     /**
      * Customize carousel options
@@ -31,7 +33,7 @@ export type ThumbsOptionsType = {
     /**
      * Optional event listeners
      */
-    on?: Record<"ready", (...any: any) => void>;
+    on?: Partial<ThumbsEvents>;
     /**
      * Change where thumbnail container is appended
      */
@@ -65,7 +67,7 @@ export declare enum States {
     Ready = 1,
     Hidden = 2
 }
-export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready" | "createSlide"> {
+export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, ThumbsEventsType> {
     static defaults: ThumbsOptionsType;
     type: "modern" | "classic";
     get isModern(): boolean;
@@ -97,3 +99,4 @@ export declare class Thumbs extends Plugin<Carousel, ThumbsOptionsType, "ready" 
     attach(): void;
     detach(): void;
 }
+export {};

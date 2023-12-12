@@ -98,6 +98,7 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     private manageSlideVisiblity;
     private markSelectedSlides;
     private flipInfiniteTrack;
+    private lazyLoadImg;
     private lazyLoadSlide;
     private onAnimationEnd;
     private onDecel;

@@ -1,3 +1,12 @@
+# 5.0.29 (2023-12-12)
+
+### Bug Fixes
+
+- **Fancybox** Fix an issue with Carousel dimensions in Fancybox modal ([589](https://github.com/fancyapps/ui/issues/589))
+- **Fancybox** Fix an issue with Youtube video start time containing minutes ([596](https://github.com/fancyapps/ui/issues/596))
+- **Fancybox** Slideshow needs to restart after manually changing a gallery item
+- **Fancybox** Fix an issue with container custom position and closing animation
+
 # 5.0.28 (2023-11-15)
 
 ### Features

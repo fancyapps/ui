@@ -1,4 +1,4 @@
-export const en = {
+export const lv = {
   PANUP: "Bīdīt uz augšu",
   PANDOWN: "Bīdīt uz leju",
   PANLEFT: "Bīdīt pa kreisi",

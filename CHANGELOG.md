@@ -1,3 +1,13 @@
+# 5.0.30 (2023-12-14)
+
+### Bug Fixes
+
+- Fix l10n TS files ([598](https://github.com/fancyapps/ui/issues/598))
+
+### Features
+
+- **Carousel** Added new method `setPageFromPosition`, see [597](https://github.com/fancyapps/ui/issues/597)
+
 # 5.0.29 (2023-12-12)
 
 ### Bug Fixes

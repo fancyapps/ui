@@ -1,6 +1,6 @@
 import { ja as PANZOOM_JA } from "../Panzoom/ja";
 
-export const js = {
+export const ja = {
   ...PANZOOM_JA,
   CLOSE: "近い",
   NEXT: "次",

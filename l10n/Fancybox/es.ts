@@ -1,6 +1,6 @@
 import { es as PANZOOM_ES } from "../Panzoom/es";
 
-export const en = {
+export const es = {
   ...PANZOOM_ES,
   CLOSE: "Cerrar",
   NEXT: "Siguiente",

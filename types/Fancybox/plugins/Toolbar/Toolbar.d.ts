@@ -42,7 +42,7 @@ export type ToolbarPosition = "left" | "middle" | "right";
 type OptionsType = {
     /**
      * If absolutely position container;
-     * "auto" - absolutely positioned if there is no item in the "middle" column
+     * "auto" - absolutely positioned if there is no item in the middle column.
      */
     absolute: "auto" | boolean;
     /**

@@ -1,7 +1,7 @@
-import { en as PANZOOM_EN } from "../Panzoom/en";
+import { lv as PANZOOM_LV } from "../Panzoom/lv";
 
-export const en = {
-  ...PANZOOM_EN,
+export const lv = {
+  ...PANZOOM_LV,
   CLOSE: "Aizvērt",
   NEXT: "Nākošais",
   PREV: "Iepriekšējais",

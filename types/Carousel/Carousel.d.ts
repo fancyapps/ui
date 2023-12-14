@@ -181,6 +181,10 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
         page: number;
     };
     /**
+     * Update index of page based on Panzoom position
+     */
+    setPageFromPosition(): void;
+    /**
      * Destroy the instance
      */
     destroy(): void;

@@ -40,19 +40,15 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     private clickTimer;
     private pwt;
     private ignoreFocusChange;
+    private startedFs;
     state: States;
     id: number | string;
     container: HTMLElement | null;
-    footer: HTMLElement | null;
     caption: HTMLElement | null;
+    footer: HTMLElement | null;
     carousel: Carousel | null;
     lastFocus: HTMLElement | null;
     prevMouseMoveEvent: MouseEvent | undefined;
-    fsAPI: {
-        request: (el: Element) => Promise<void>;
-        exit: () => Promise<void> | undefined;
-        isFullscreen: () => HTMLElement | undefined;
-    } | undefined;
     get isIdle(): boolean;
     get isCompact(): boolean;
     constructor(userSlides?: Array<userSlideType>, userOptions?: Partial<OptionsType>, userPlugins?: PluginsType);

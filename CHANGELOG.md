@@ -1,3 +1,10 @@
+# 5.0.31 (2023-12-18)
+
+### Bug Fixes
+
+- **Fancybox** Fix an issue with fullscreen and multiple instances
+- **Carousel** Fix incorrect page selection when using margins, infinite navigation and `dragFree`
+
 # 5.0.30 (2023-12-14)
 
 ### Bug Fixes

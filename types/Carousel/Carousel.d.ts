@@ -176,12 +176,12 @@ export declare class Carousel extends Component<OptionsType, CarouselEventsType>
     /**
      * Get the page index for a given Panzoom position
      */
-    getPageFromPosition(pos: number): {
+    getPageFromPosition(pos?: number): {
         pageIndex: number;
         page: number;
     };
     /**
-     * Update index of page based on Panzoom position
+     * Manually update page index based on the Panzoom position
      */
     setPageFromPosition(): void;
     /**

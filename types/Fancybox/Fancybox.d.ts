@@ -106,7 +106,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     /**
      * Check if the given slide is opening slide
      */
-    isOpeningSlide(slide: slideType): boolean;
+    isOpeningSlide(slide?: slideType): boolean;
     /**
      * Show loading icon inside given slide
      */

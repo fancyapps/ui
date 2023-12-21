@@ -1,3 +1,9 @@
+# 5.0.32 (2023-12-21)
+
+### Bug Fixes
+
+- **Fancybox** Improved Hash plugin, see [264](https://github.com/fancyapps/ui/issues/264)
+
 # 5.0.31 (2023-12-18)
 
 ### Bug Fixes

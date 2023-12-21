@@ -16,10 +16,7 @@ declare module "../../../Fancybox/options" {
 }
 export declare const defaultOptions: HashOptionsType;
 export declare class Hash extends Plugin<Fancybox, HashOptionsType, ""> {
-    static defaults: HashOptionsType;
-    static hasSilentClose: boolean;
-    private origHash;
-    private timer;
+    private onReady;
     private onChange;
     private onClose;
     attach(): void;

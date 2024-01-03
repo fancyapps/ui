@@ -1,3 +1,9 @@
+# 5.0.33 (2024-01-03)
+
+### Bug Fixes
+
+- **Panzoom** Refactored code to correctly show the zoom-in cursor when click action is "iterateZoom"
+
 # 5.0.32 (2023-12-21)
 
 ### Bug Fixes

@@ -167,6 +167,7 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
     private initContent;
     private onLoad;
     private onError;
+    private getNextScale;
     /**
      * Initialize the resize observer
      */
@@ -205,6 +206,9 @@ export declare class Panzoom extends Component<OptionsType, EventsType> {
      * Calculate dimensions of contents and container
      */
     updateMetrics(silently?: boolean): void;
+    /**
+     * Calculate bounds based on the dimensions at the end of the current animation
+     */
     calculateBounds(): Bounds;
     /**
      * Get information about current content boundaries

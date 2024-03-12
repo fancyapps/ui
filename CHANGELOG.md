@@ -1,3 +1,14 @@
+# 5.0.34 (2024-03-12)
+
+### Bug Fixes
+
+- **Carousel** Animation direction of synchronized carousels ([579](https://github.com/fancyapps/ui/issues/622))
+- **Fancybox** Tweak CSS to work for Shopify
+
+### Features
+
+- **Fancybox** Support `data-width` and `data-height` attributes for images
+
 # 5.0.33 (2024-01-03)
 
 ### Bug Fixes

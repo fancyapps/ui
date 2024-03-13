@@ -60,6 +60,7 @@ export declare class Fancybox extends Component<OptionsType, EventsType> {
     private scale;
     private onClick;
     private onWheel;
+    private onScroll;
     private onKeydown;
     private onResize;
     private onFocus;

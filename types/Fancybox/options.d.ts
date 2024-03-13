@@ -44,6 +44,10 @@ export interface ComponentOptionsType {
      */
     closeButton: "auto" | boolean;
     /**
+     * If true, previously opened instance will be closed
+     */
+    closeExisting: boolean;
+    /**
      * If true, only one caption element will be used for all slides
      */
     commonCaption: boolean;
@@ -62,7 +66,7 @@ export interface ComponentOptionsType {
     /**
      * Default content type
      */
-    defaultType: "image" | "iframe" | "youtube" | "vimeo" | "inline" | "html";
+    defaultType: "image" | "iframe" | "youtube" | "vimeo" | "inline" | "html" | "ajax";
     /**
      * The default value of the CSS `display` property for hidden inline elements
      */
@@ -78,7 +82,7 @@ export interface ComponentOptionsType {
         autoStart: boolean;
     };
     /**
-     * If true, all matching elements will be grouped together in one group
+     * If true, all matching elements will be grouped together in one group regardless of the value of `data-fancybox` attribute
      */
     groupAll: boolean;
     /**
@@ -88,7 +92,7 @@ export interface ComponentOptionsType {
     /**
      * Change content height per slide
      */
-    height?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
+    height?: "auto" | number | ((instance: Fancybox, slide: slideType, origHeight: number) => "auto" | number);
     /**
      * Class name to be applied to the content to hide it.
      * Note: If you disable image zoom, this class name will be used to run the image hide animation.
@@ -158,7 +162,7 @@ export interface ComponentOptionsType {
     /**
      * Change content width per slide
      */
-    width?: "auto" | number | ((instance: Fancybox, slide: slideType) => "auto" | number);
+    width?: "auto" | number | ((instance: Fancybox, slide: slideType, origWidth: number) => "auto" | number);
     /**
      * Mouse wheel event listener
      */

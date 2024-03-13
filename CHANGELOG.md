@@ -1,8 +1,18 @@
+# 5.0.35 (2024-03-13)
+
+### Bug Fixes
+
+- **Fancybox** Scroll position after closing ([628](https://github.com/fancyapps/ui/issues/628))
+
+### Features
+
+- **Fancybox** Add option `closeExisting` ([629](https://github.com/fancyapps/ui/issues/629))
+
 # 5.0.34 (2024-03-12)
 
 ### Bug Fixes
 
-- **Carousel** Animation direction of synchronized carousels ([579](https://github.com/fancyapps/ui/issues/622))
+- **Carousel** Animation direction of synchronized carousels ([622](https://github.com/fancyapps/ui/issues/622))
 - **Fancybox** Tweak CSS to work for Shopify
 
 ### Features

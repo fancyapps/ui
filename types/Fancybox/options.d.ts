@@ -70,7 +70,7 @@ export interface ComponentOptionsType {
     /**
      * The default value of the CSS `display` property for hidden inline elements
      */
-    defaultDisplay: "block" | "flex" | string;
+    defaultDisplay: "flex" | "block" | string;
     /**
      * Enable drag-to-close gesture - drag content up/down to close instance
      */

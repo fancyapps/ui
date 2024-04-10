@@ -1,3 +1,10 @@
+# 5.0.36 (2024-04-10)
+
+### Bug Fixes
+
+- **Fancybox** Content flashes on close with Safari 17.4 ([642](https://github.com/fancyapps/ui/issues/642))
+- **Fancybox** Issue with `:empty` selector ([631](https://github.com/fancyapps/ui/issues/631))
+
 # 5.0.35 (2024-03-13)
 
 ### Bug Fixes

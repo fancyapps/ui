@@ -3,8 +3,8 @@ import { en as PANZOOM_EN } from "../Panzoom/en";
 export const ru = {
   ...PANZOOM_EN,
   CLOSE: "Закрыть",
-  NEXT: "Следущее",
-  PREV: "Предыдущее",
+  NEXT: "Вперёд",
+  PREV: "Назад",
   MODAL: "Можно закрыть это модальное окно нажав клавишу ESC.",
   ERROR: "Что-то пошло не так. Пожалуйста, повторите позже",
   IMAGE_ERROR: "Картинка не найдена",

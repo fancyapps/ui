@@ -3,8 +3,8 @@ import { zh_CN as PANZOOM_ZH_CN } from "../Panzoom/zh_CN";
 export const zh_CN = {
   ...PANZOOM_ZH_CN,
   CLOSE: "关闭",
-  NEXT: "上一个",
-  PREV: "下一个",
+  NEXT: "下一个",
+  PREV: "上一个",
   MODAL: "使用 ESC 键关闭",
   ERROR: "发生了错误，请稍后再试",
   IMAGE_ERROR: "找不到图像",

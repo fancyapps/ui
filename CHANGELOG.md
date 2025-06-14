@@ -1,3 +1,7 @@
+# 6.0.0 (2025-06-14)
+
+Major rewrite of many aspects of the project. See [Upgrading](https://fancyapps.com/resources/upgrading/) notes.
+
 # 5.0.36 (2024-04-10)
 
 ### Bug Fixes

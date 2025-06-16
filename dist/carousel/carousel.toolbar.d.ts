@@ -8,6 +8,7 @@ export type ToolbarItem = {
     tpl: string;
     click?: (instance: CarouselInstance, event: Event) => void;
 };
+declare const allToolbarItems: Record<string, ToolbarItem>;
 export type SuggestedProperties = "counter" | "autoplay" | "fullscreen" | "thumbs" | "moveLeft" | "moveRight" | "moveUp" | "moveDown" | "zoomIn" | "zoomOut" | "toggle1to1" | "toggleFull" | "rotateCCW" | "rotateCW" | "flipX" | "flipY" | "reset";
 export type ToolbarKey = SuggestedProperties | (string & {});
 export type ToolbarOptions = {
@@ -23,6 +24,10 @@ export type ToolbarOptions = {
      * If enabled; "auto" - enable only if there is at least one panzoom instance in the carousel
      */
     enabled: "auto" | boolean;
+    /**
+     * Collection of toolbar items that add new or overwrite existing items
+     */
+    items: Partial<typeof allToolbarItems>;
 };
 export type ToolbarInstance = ReturnType<typeof Toolbar>;
 declare module "./Carousel" {
@@ -45,3 +50,4 @@ export declare const Toolbar: () => {
      */
     isEnabled: () => boolean;
 };
+export {};

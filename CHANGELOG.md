@@ -1,4 +1,16 @@
+# 6.0.2 (2025-06-16)
+
+### Bug Fixes
+
+- **Carousel** Fix the default appearance of dots
+
+### Features
+
+- **Carousel** Add option `Toolbar.items` to add new or overwrite existing items
+
 # 6.0.1 (2025-06-16)
+
+### Bug Fixes
 
 - Fixed issue during server-side rendering
 

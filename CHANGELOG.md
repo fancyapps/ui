@@ -1,3 +1,7 @@
+# 6.0.1 (2025-06-16)
+
+- Fixed issue during server-side rendering
+
 # 6.0.0 (2025-06-14)
 
 Major rewrite of many aspects of the project. See [Upgrading](https://fancyapps.com/resources/upgrading/) notes.

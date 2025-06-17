@@ -377,6 +377,10 @@ export declare const Panzoom: {
          */
         on: <PanzoomEvent extends keyof PanzoomEventArgs>(what: PanzoomEvent | PanzoomEvent[], callback: (api: any, ...args: PanzoomEventArgs[PanzoomEvent]) => void) => PanzoomInstance;
         /**
+         * Version of the Panzoom
+         */
+        version: string;
+        /**
          * Check if the content scales up upon click
          */
         willZoomIn: () => boolean;

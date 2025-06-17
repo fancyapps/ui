@@ -1,3 +1,9 @@
+# 6.0.3 (2025-06-17)
+
+### Bug Fixes
+
+- **Fancybox** Fix the issue if it is inside a generated sandbox iframe
+
 # 6.0.2 (2025-06-16)
 
 ### Bug Fixes

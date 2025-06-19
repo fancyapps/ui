@@ -6,7 +6,7 @@ export type CompactmodeOptions = {
     mediaQuery: string;
 };
 export type CompactmodeInstance = ReturnType<typeof Compactmode>;
-declare module "./Fancybox" {
+declare module "./fancybox" {
     interface FancyboxOptions {
         Compactmode?: boolean | Partial<CompactmodeOptions>;
     }

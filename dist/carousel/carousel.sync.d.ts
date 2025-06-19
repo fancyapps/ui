@@ -18,7 +18,7 @@ export type SyncOptions = {
     target?: CarouselInstance;
 };
 export type SyncInstance = ReturnType<typeof Sync>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Sync?: boolean | Partial<SyncOptions>;
     }

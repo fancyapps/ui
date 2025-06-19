@@ -19,7 +19,7 @@ export type ControlsOptions = {
     svgAttr: Record<string, string>;
 };
 export type ControlsInstance = ReturnType<typeof Controls>;
-declare module "./Panzoom" {
+declare module "./panzoom" {
     interface PanzoomOptions {
         Controls?: boolean | Partial<ControlsOptions>;
     }

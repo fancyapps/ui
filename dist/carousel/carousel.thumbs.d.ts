@@ -26,7 +26,7 @@ export type ThumbsOptions = {
     type: "classic" | "modern";
 };
 export type ThumbsInstance = ReturnType<typeof Thumbs>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Thumbs?: Boolean | Partial<ThumbsOptions>;
     }

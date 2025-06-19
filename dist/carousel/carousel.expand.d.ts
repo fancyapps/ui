@@ -10,7 +10,7 @@ export type ExpandOptions = {
     el?: HTMLElement | ((ref: CarouselInstance) => HTMLElement | undefined | null);
 };
 export type ExpandInstance = ReturnType<typeof Expand>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Expand?: boolean | Partial<ExpandOptions>;
     }

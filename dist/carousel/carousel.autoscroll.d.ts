@@ -14,7 +14,7 @@ export type AutoscrollOptions = {
     speedOnHover?: number;
 };
 export type AutoscrollInstance = ReturnType<typeof Autoscroll>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Autoscroll?: boolean | Partial<AutoscrollOptions>;
     }

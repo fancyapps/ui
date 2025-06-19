@@ -22,7 +22,7 @@ export type AutoplayOptions = {
     timeout: number;
 };
 export type AutoplayInstance = ReturnType<typeof Autoplay>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Autoplay?: boolean | Partial<AutoplayOptions>;
     }

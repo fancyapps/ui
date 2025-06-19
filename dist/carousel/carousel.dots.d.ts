@@ -14,7 +14,7 @@ export type DotsOptions = {
     minCount: number;
 };
 export type DotsInstance = ReturnType<typeof Dots>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Dots?: boolean | Partial<DotsOptions>;
     }

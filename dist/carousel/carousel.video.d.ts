@@ -38,7 +38,7 @@ export type VideoOptions = {
     };
 };
 export type VideoInstance = ReturnType<typeof Video>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Video?: boolean | Partial<VideoOptions>;
     }

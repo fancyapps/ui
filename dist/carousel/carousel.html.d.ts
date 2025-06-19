@@ -6,7 +6,7 @@ export type HtmlOptions = {
     iframeAttr: Record<string, string>;
 };
 export type HtmlInstance = ReturnType<typeof Html>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Html?: boolean | Partial<HtmlOptions>;
     }

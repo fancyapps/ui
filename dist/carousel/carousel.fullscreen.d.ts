@@ -14,7 +14,7 @@ export type FullscreenOptions = {
     el?: HTMLElement | ((ref: CarouselInstance) => HTMLElement | undefined | null);
 };
 export type FullscreenInstance = ReturnType<typeof Fullscreen>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Fullscreen?: boolean | Partial<FullscreenOptions>;
     }

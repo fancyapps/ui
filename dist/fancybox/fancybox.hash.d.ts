@@ -1,11 +1,11 @@
 import { type FancyboxInstance, type Fancybox } from "./fancybox";
-declare module "../Carousel/Carousel" {
+declare module "../carousel/carousel" {
     interface CarouselSlide {
         fancybox?: string;
         slug?: string;
     }
 }
-declare module "./Fancybox" {
+declare module "./fancybox" {
     interface FancyboxOptions {
         Hash?: false;
     }

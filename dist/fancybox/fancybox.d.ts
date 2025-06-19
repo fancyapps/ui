@@ -1,7 +1,7 @@
 import "../panzoom/panzoom";
-import { Carousel, CarouselOptions, CarouselEventArgs, CarouselSlide, CarouselInstance } from "../carousel";
 export * from "../panzoom/panzoom";
-export * from "../carousel";
+import { Carousel, CarouselOptions, CarouselEventArgs, CarouselSlide, CarouselInstance } from "../carousel/carousel";
+export * from "../carousel/carousel";
 export * from "../carousel/carousel.zoomable";
 export * from "../carousel/carousel.sync";
 export * from "../carousel/carousel.lazyload";
@@ -12,8 +12,7 @@ export * from "../carousel/carousel.thumbs";
 export * from "../carousel/carousel.html";
 export * from "../carousel/carousel.video";
 export * from "../carousel/carousel.fullscreen";
-import "./fancybox.hash";
-declare module "../Carousel/Carousel" {
+declare module "../carousel/carousel" {
     interface CarouselSlide {
         src?: string;
         type?: "inline" | string;
@@ -25,6 +24,7 @@ declare module "../Carousel/Carousel" {
         thumbEl?: HTMLImageElement;
     }
 }
+import "./fancybox.hash";
 export declare enum FancyboxState {
     Init = 0,
     Ready = 1,

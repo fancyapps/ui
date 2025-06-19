@@ -11,7 +11,7 @@ export type LazyloadOptions = {
 };
 export type LazyloadInstance = ReturnType<typeof Lazyload>;
 type AnyImageSource = HTMLImageElement | HTMLSourceElement;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Lazyload?: boolean | Partial<LazyloadOptions>;
     }

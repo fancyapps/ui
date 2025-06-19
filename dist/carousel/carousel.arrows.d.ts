@@ -10,7 +10,7 @@ export type ArrowsOptions = {
     nextTpl: string;
 };
 export type ArrowsInstance = ReturnType<typeof Arrows>;
-declare module "./Carousel" {
+declare module "./carousel" {
     interface CarouselOptions {
         Arrows?: boolean | Partial<ArrowsOptions>;
     }

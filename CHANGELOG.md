@@ -1,3 +1,9 @@
+# 6.0.4 (2025-06-19)
+
+### Bug Fixes
+
+- **Fancybox** Make `.bind()` work the same as v5 for nested containers
+
 # 6.0.3 (2025-06-17)
 
 ### Bug Fixes

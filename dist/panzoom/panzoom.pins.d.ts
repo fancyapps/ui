@@ -6,12 +6,12 @@ export type Pin = {
     el: HTMLElement;
 };
 export type PinsInstance = ReturnType<typeof Pins>;
-declare module "../carousel/Carousel" {
+declare module "../carousel/carousel" {
     interface CarouselSlide {
         pins?: Pin[];
     }
 }
-declare module "./Panzoom" {
+declare module "./panzoom" {
     interface PanzoomOptions {
         Pins?: boolean | Partial<PinsOptions>;
     }

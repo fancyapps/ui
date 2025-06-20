@@ -45,7 +45,6 @@ type FancyboxKeyboardType = {
 };
 type PrefixedCarouselEventArgs = {
     [K in keyof CarouselEventArgs as `Carousel.${K}`]: [
-        any,
         CarouselInstance,
         ...CarouselEventArgs[K]
     ];
@@ -279,11 +278,11 @@ declare const CreateInstance: () => {
     /**
      * Unsubscribe from specific event
      */
-    off: <Event extends keyof FancyboxEventArgs>(event: Event, callback: (...args: FancyboxEventArgs[Event]) => void) => FancyboxInstance;
+    off: <FancyboxEvent extends keyof FancyboxEventArgs>(event: FancyboxEvent, callback: (api: any, ...args: FancyboxEventArgs[FancyboxEvent]) => void) => FancyboxInstance;
     /**
      * Subscribe to specific event
      */
-    on: <Event extends keyof FancyboxEventArgs>(event: Event, callback: (...args: FancyboxEventArgs[Event]) => void) => FancyboxInstance;
+    on: <FancyboxEvent extends keyof FancyboxEventArgs>(event: FancyboxEvent, callback: (...args: [any, ...FancyboxEventArgs[FancyboxEvent]]) => void) => FancyboxInstance;
     /**
      * Toggle idle state
      */

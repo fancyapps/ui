@@ -1,3 +1,9 @@
+# 6.0.5 (2025-06-20)
+
+### Bug Fixes
+
+- **Carousel** Update video dimensions when container dimensions change
+
 # 6.0.4 (2025-06-19)
 
 ### Bug Fixes

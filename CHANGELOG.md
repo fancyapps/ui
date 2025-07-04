@@ -1,3 +1,15 @@
+# 6.0.7 (2025-07-04)
+
+### Features
+
+- **Fancybox** Support zoom animation for images that have CSS `object-fit: contain`.
+
+# 6.0.6 (2025-07-03)
+
+### Bug Fixes
+
+- **Fancybox** Fix an issue with back button on Android devices ([761](https://github.com/fancyapps/ui/issues/761))
+
 # 6.0.5 (2025-06-20)
 
 ### Bug Fixes

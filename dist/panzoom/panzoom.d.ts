@@ -223,6 +223,10 @@ export interface PanzoomOptions {
      */
     plugins?: Record<string, PanzoomPlugin>;
     /**
+     * If the image download needs to be prevented
+     */
+    protected: Boolean;
+    /**
      * Default action to take on a single click event
      */
     singleClickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | false);

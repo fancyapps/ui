@@ -1,3 +1,11 @@
+# 6.0.8 (2025-07-07)
+
+### Features
+
+- **Carousel** Add `thumbClass` attribute to slides, which allows to set a custom class name for thumbnails
+- **Carousel** Show all visible slides if the viewport element has CSS `overflow:visible`
+- **Panzoom** Add option `protected`
+
 # 6.0.7 (2025-07-04)
 
 ### Features

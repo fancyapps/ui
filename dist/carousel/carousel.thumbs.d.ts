@@ -35,6 +35,7 @@ declare module "./carousel" {
     }
     interface CarouselSlide {
         thumbSrc?: string | HTMLImageElement;
+        thumbClass?: string;
     }
 }
 export declare const Thumbs: () => {

@@ -1,3 +1,9 @@
+# 6.0.9 (2025-07-08)
+
+### Bug Fixes
+
+- **Carousel** Fix an issue with position resetting when toggling visibility ([666](https://github.com/fancyapps/ui/issues/666))
+
 # 6.0.8 (2025-07-07)
 
 ### Features

@@ -1,3 +1,10 @@
+# 6.0.10 (2025-07-10)
+
+### Bug Fixes
+
+- **Carousel** Fix Vimeo link recognition issue ([692](https://github.com/fancyapps/ui/issues/692))
+- **Carousel** Fix an issue with video aspect ratio in some cases
+
 # 6.0.9 (2025-07-08)
 
 ### Bug Fixes

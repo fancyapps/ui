@@ -1,0 +1,26 @@
+export declare const fr_FR: {
+    ERROR: string;
+    NEXT: string;
+    PREV: string;
+    GOTO: string;
+    DOWNLOAD: string;
+    TOGGLE_FULLSCREEN: string;
+    TOGGLE_EXPAND: string;
+    TOGGLE_THUMBS: string;
+    TOGGLE_AUTOPLAY: string;
+    IMAGE_ERROR: string;
+    MOVE_UP: string;
+    MOVE_DOWN: string;
+    MOVE_LEFT: string;
+    MOVE_RIGHT: string;
+    ZOOM_IN: string;
+    ZOOM_OUT: string;
+    TOGGLE_FULL: string;
+    TOGGLE_1TO1: string;
+    ITERATE_ZOOM: string;
+    ROTATE_CCW: string;
+    ROTATE_CW: string;
+    FLIP_X: string;
+    FLIP_Y: string;
+    RESET: string;
+};

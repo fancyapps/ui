@@ -1,3 +1,7 @@
+# 6.0.11 (2025-07-10)
+
+- Add Spanish, French, Italian, Latvian translations
+
 # 6.0.10 (2025-07-10)
 
 ### Bug Fixes

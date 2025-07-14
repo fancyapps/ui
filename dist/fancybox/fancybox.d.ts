@@ -15,13 +15,15 @@ export * from "../carousel/carousel.fullscreen";
 declare module "../carousel/carousel" {
     interface CarouselSlide {
         src?: string;
-        type?: "inline" | string;
+        type?: "inline" | "clone" | "ajax" | string;
         triggerEl?: HTMLElement | undefined;
         delegateEl?: HTMLElement | undefined;
         closeButtonEl?: HTMLElement | undefined;
         placeholderEl?: HTMLElement | undefined;
         thumb?: string | HTMLImageElement;
         thumbEl?: HTMLImageElement;
+        xhr?: XMLHttpRequest;
+        filter?: string;
     }
 }
 import "./fancybox.hash";
@@ -99,6 +101,7 @@ type FancyboxEvents = {
     [key in keyof FancyboxEventArgs]: (api: FancyboxInstance, ...args: FancyboxEventArgs[key]) => void;
 };
 export interface FancyboxOptions {
+    ajax: Document | XMLHttpRequestBodyInit | null;
     /**
      * The action to perform when the user clicks on the backdrop
      */

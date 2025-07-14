@@ -227,7 +227,7 @@ export interface CarouselOptions {
     /**
      *  HTML template for error message
      */
-    errorTpl: string | ((slide: Partial<CarouselSlide>) => string);
+    errorTpl: string | ((ref: CarouselInstance, slide: Partial<CarouselSlide>) => string);
     /**
      * If true, the Carousel will fill the free space if `infinite: false`
      */
@@ -239,7 +239,7 @@ export interface CarouselOptions {
     /**
      * Optional options for Gestures instance
      */
-    gestures?: Partial<GesturesOptions> | false | (() => Partial<GesturesOptions> | false);
+    gestures?: Partial<GesturesOptions> | false | ((ref: CarouselInstance) => Partial<GesturesOptions> | false);
     /**
      * If true, the Carousel will scroll infinitely
      */
@@ -288,7 +288,7 @@ export interface CarouselOptions {
     /**
      *  HTML template for spinner element
      */
-    spinnerTpl: string | ((slide: Partial<CarouselSlide>) => string);
+    spinnerTpl: string | ((ref: CarouselInstance, slide: Partial<CarouselSlide>) => string);
     /**
      * Optional custom style attributes for the container
      */

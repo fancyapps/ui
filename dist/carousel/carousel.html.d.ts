@@ -17,8 +17,8 @@ declare module "./carousel" {
         aspectRatio?: string;
         contentEl?: HTMLElement;
         height?: string | number;
-        src?: "iframe" | "pdf" | "map" | string;
-        type?: string;
+        src?: string;
+        type?: "iframe" | "pdf" | "map" | string;
         width?: string | number;
     }
 }

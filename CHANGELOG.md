@@ -1,3 +1,10 @@
+# 6.0.13 (2025-07-16)
+
+### Features
+
+- **Carousel** Keep slides in DOM ([768](https://github.com/fancyapps/ui/issues/768))
+- **Carousel** Add new API method `getVisibleSlides()` to get slides with elements visible in the viewport
+
 # 6.0.12 (2025-07-14)
 
 ### Features

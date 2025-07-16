@@ -412,6 +412,10 @@ export declare const Carousel: {
          */
         getViewportDim: () => number;
         /**
+         * Get slides with elements visible in the viewport
+         */
+        getVisibleSlides: (pos?: number) => CarouselSlide[];
+        /**
          * Slide to the selected page
          */
         goTo: (newPageIndex: number, args?: CarouselGoToArgs) => void;

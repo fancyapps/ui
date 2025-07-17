@@ -1,3 +1,9 @@
+# 6.0.14 (2025-07-17)
+
+### Features
+
+- **Carousel** Sync Thumbs when adding Carousel slides
+
 # 6.0.13 (2025-07-16)
 
 ### Features

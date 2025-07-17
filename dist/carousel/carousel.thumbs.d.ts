@@ -1,4 +1,4 @@
-import { CarouselOptions, CarouselInstance, type Carousel } from "./carousel";
+import { CarouselOptions, type CarouselInstance, type Carousel } from "./carousel";
 export type ThumbsOptions = {
     /**
      * Optional custom Carousel options
@@ -39,7 +39,7 @@ declare module "./carousel" {
     }
 }
 export declare const Thumbs: () => {
-    init: (_carouselRef: CarouselInstance, _carousel: typeof Carousel) => void;
+    init: (_instanceRef: CarouselInstance, _carousel: typeof Carousel) => void;
     destroy: () => void;
     /**
      * Get reference to the container DOM element

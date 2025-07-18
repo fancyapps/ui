@@ -1,3 +1,9 @@
+# 6.0.15 (2025-07-18)
+
+### Bug Fixes
+
+- **Panzoom** Resize content if caption size changes
+
 # 6.0.14 (2025-07-17)
 
 ### Features

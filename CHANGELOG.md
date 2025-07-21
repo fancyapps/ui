@@ -1,3 +1,9 @@
+# 6.0.16 (2025-07-21)
+
+### Bug Fixes
+
+- **Fancybox** Fix issues with the `<picture>` element
+
 # 6.0.15 (2025-07-18)
 
 ### Bug Fixes

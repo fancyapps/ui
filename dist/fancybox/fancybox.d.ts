@@ -89,6 +89,10 @@ export interface FancyboxEventArgs extends PrefixedCarouselEventArgs {
      */
     keydown: [KeyboardEvent];
     /**
+     * A wheel event is detected
+     */
+    wheel: [WheelEvent, number];
+    /**
      * Closing is ongoing
      */
     close: [Event | undefined];
@@ -217,6 +221,10 @@ export interface FancyboxOptions {
      * Event that triggered the Fancybox (usually click the event on the trigger element)
      */
     triggerEvent: MouseEvent | undefined;
+    /**
+     * The action to perform when wheel event is detected
+     */
+    wheel?: "slide" | "close";
     /**
      * Enable zoom animation from the thumbnail to the final image when opening the Fancybox
      */

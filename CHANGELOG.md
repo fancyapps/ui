@@ -1,3 +1,9 @@
+# 6.0.17 (2025-07-25)
+
+### Features
+
+- **Fancybox** Add option `wheel` ([757](https://github.com/fancyapps/ui/issues/757))
+
 # 6.0.16 (2025-07-21)
 
 ### Bug Fixes

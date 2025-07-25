@@ -288,7 +288,7 @@ export interface CarouselOptions {
     /**
      *  HTML template for spinner element
      */
-    spinnerTpl: string | ((ref: CarouselInstance, slide: Partial<CarouselSlide>) => string);
+    spinnerTpl: string;
     /**
      * Optional custom style attributes for the container
      */
@@ -355,6 +355,10 @@ export declare const Carousel: {
          * Get the last `mousemove` event above the carousel
          */
         getLastMouseMove: () => MouseEvent;
+        /**
+         * Get current option
+         */
+        getOption: <T extends keyof CarouselOptions>(name: T) => Exclude<CarouselOptions[T], Function>;
         /**
          * Get current options
          */

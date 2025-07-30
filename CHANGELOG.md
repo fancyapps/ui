@@ -1,3 +1,14 @@
+# 6.0.18 (2025-07-30)
+
+### Features
+
+- **Fancybox** Add `shouldClose` event
+
+### Bug Fixes
+
+- **Carousel** Fix the position of the infinite carousel after adding slides
+- **Fancybox** Fix `dragToClose` if gestures are disabled for carousel
+
 # 6.0.17 (2025-07-25)
 
 ### Features

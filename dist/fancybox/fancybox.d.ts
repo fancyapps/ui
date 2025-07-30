@@ -93,6 +93,10 @@ export interface FancyboxEventArgs extends PrefixedCarouselEventArgs {
      */
     wheel: [WheelEvent, number];
     /**
+     * Closing has begun and can be prevented
+     */
+    shouldClose: [Event, Event?];
+    /**
      * Closing is ongoing
      */
     close: [Event | undefined];
@@ -222,7 +226,7 @@ export interface FancyboxOptions {
      */
     triggerEvent: MouseEvent | undefined;
     /**
-     * The action to perform when wheel event is detected
+     * Optional action to take when a wheel event is detected
      */
     wheel?: "slide" | "close";
     /**

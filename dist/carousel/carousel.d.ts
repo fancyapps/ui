@@ -239,7 +239,7 @@ export interface CarouselOptions {
     /**
      * Optional options for Gestures instance
      */
-    gestures?: Partial<GesturesOptions> | false | ((ref: CarouselInstance) => Partial<GesturesOptions> | false);
+    gestures?: Partial<GesturesOptions> | false | ((ref: CarouselInstance) => Partial<GesturesOptions> | true | false);
     /**
      * If true, the Carousel will scroll infinitely
      */

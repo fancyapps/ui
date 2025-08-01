@@ -1,3 +1,10 @@
+# 6.0.19 (2025-08-01)
+
+### Bug Fixes
+
+- **Carousel** Preserve container class `f-carousel` after destrying
+- **Fancybox** Fix CSS to support vertical thumbnails
+
 # 6.0.18 (2025-07-30)
 
 ### Features

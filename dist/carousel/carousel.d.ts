@@ -456,6 +456,10 @@ export declare const Carousel: {
          */
         isSettled: () => boolean;
         /**
+         * Check if carousel is vertical
+         */
+        isVertical: () => boolean;
+        /**
          * Translate text with current language strings
          */
         localize: (str: string, params?: Array<[string, any]>) => string;

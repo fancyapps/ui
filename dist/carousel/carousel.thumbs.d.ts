@@ -37,10 +37,18 @@ declare module "./carousel" {
         thumbSrc?: string | HTMLImageElement;
         thumbClass?: string;
     }
+    interface CarouselEventArgs {
+        "thumbs:ready": [];
+        "thumbs:destroy": [];
+    }
 }
 export declare const Thumbs: () => {
     init: (_instanceRef: CarouselInstance, _carousel: typeof Carousel) => void;
     destroy: () => void;
+    /**
+     * Get reference to the container DOM element
+     */
+    getCarousel: () => CarouselInstance | undefined;
     /**
      * Get reference to the container DOM element
      */

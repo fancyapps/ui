@@ -1,3 +1,9 @@
+# 6.0.20 (2025-08-04)
+
+### Bug Fixes
+
+- **Carousel** Fix issue with the click event on touch devices in some cases
+
 # 6.0.19 (2025-08-01)
 
 ### Bug Fixes

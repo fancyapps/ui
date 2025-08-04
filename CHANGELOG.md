@@ -1,3 +1,9 @@
+# 6.0.21 (2025-08-04)
+
+### Features
+
+- **Carousel** Add optional `prevClass` and `nextClass` options to Arrows plugin
+
 # 6.0.20 (2025-08-04)
 
 ### Bug Fixes

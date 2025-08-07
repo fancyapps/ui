@@ -1,3 +1,17 @@
+# 6.0.22 (2025-08-07)
+
+### Bug Fixes
+
+- **Carousel** Fix Autoscroll to wait until carousel transition is complete
+- **Carousel** Fix arrow position for vertical thumbnails
+- **Carousel** Fix issue with some events and Vue
+- **Fancybox** Fix double tap to zoom to corresponding coordinates in compact mode
+
+### Features
+
+- **Carousel** Add support for the `data-thumb-alt` attribute to set a custom `alt` tag for thumbnails
+- **Carousel** Tween option now also affects animation after swipe to allow customize
+
 # 6.0.21 (2025-08-04)
 
 ### Features

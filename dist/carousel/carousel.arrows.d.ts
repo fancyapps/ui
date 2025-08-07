@@ -1,19 +1,19 @@
 import { CarouselInstance } from "./carousel";
 export type ArrowsOptions = {
     /**
-     * Optional custom class name for left arrow
+     * Optional custom class name for the left arrow
      */
     prevClass?: string;
     /**
-     * HTML template for left arrow
+     * HTML template for left arrow icon
      */
     prevTpl: string;
     /**
-     * Optional custom class name for right arrow
+     * Optional custom class name for the right arrow
      */
     nextClass?: string;
     /**
-     * HTML template for right arrow
+     * HTML template for right arrow icon
      */
     nextTpl: string;
 };

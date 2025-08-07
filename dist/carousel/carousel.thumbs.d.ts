@@ -35,6 +35,7 @@ declare module "./carousel" {
     }
     interface CarouselSlide {
         thumbSrc?: string | HTMLImageElement;
+        thumbAlt?: string;
         thumbClass?: string;
     }
     interface CarouselEventArgs {

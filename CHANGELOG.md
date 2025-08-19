@@ -1,3 +1,9 @@
+# 6.0.23 (2025-08-19)
+
+### Bug Fixes
+
+- **Fancybox** Fix page scrolling issue after closing on iOS ([789](https://github.com/fancyapps/ui/issues/789))
+
 # 6.0.22 (2025-08-07)
 
 ### Bug Fixes

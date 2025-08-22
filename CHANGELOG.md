@@ -1,3 +1,13 @@
+# 6.0.24 (2025-08-22)
+
+### Bug Fixes
+
+- **Carousel** Avoid removing slides during initialization
+
+### Features
+
+- **Carousel** Toggle `aria-disabled` attribute for custom navigation elements
+
 # 6.0.23 (2025-08-19)
 
 ### Bug Fixes

@@ -1,3 +1,9 @@
+# 6.0.25 (2025-08-25)
+
+### Bug Fixes
+
+- **Carousel** Fix thumbnail position in RTL mode
+
 # 6.0.24 (2025-08-22)
 
 ### Bug Fixes

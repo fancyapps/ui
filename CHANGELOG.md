@@ -1,3 +1,12 @@
+# 6.0.26 (2025-08-29)
+
+### Bug Fixes
+
+- **Carousel** Fix visible pins just before the image appears
+- **Carousel** Add `aria-hidden="true"` to inactive slides
+- **Fancybox** Support main template without `<dialog>` element
+- **Fancybox** Reorganize CSS to make it easier to change the progress bar color
+
 # 6.0.25 (2025-08-25)
 
 ### Bug Fixes

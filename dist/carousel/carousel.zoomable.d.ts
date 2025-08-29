@@ -5,6 +5,8 @@ export type ZoomableInstance = ReturnType<typeof Zoomable>;
 declare module "./carousel" {
     interface CarouselEventArgs {
         "panzoom:init": [CarouselSlide];
+        "panzoom:initPlugins": [CarouselSlide];
+        "panzoom:initLayout": [CarouselSlide];
         "panzoom:click": [CarouselSlide, GesturesEventObject];
         "panzoom:dblClick": [CarouselSlide, GesturesEventObject];
         "panzoom:wheel": [CarouselSlide, WheelEvent, Number];

@@ -1,3 +1,11 @@
+# 6.0.27 (2025-09-02)
+
+### Bug Fixes
+
+- **Panzoom** Support other content types, not just images
+- **Carousel** Use `inert` attribute on invisible slides to prevent focusable elements from being focused using keyboard navigation
+- **Fancybox** Do not add `-1` to gallery URLs that contain only one image
+
 # 6.0.26 (2025-08-29)
 
 ### Bug Fixes

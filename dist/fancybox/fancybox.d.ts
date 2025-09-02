@@ -145,7 +145,7 @@ export interface FancyboxOptions {
     /**
      * The name of the attribute used for grouping
      */
-    groupAttr: string;
+    groupAttr: false | string;
     /**
      * Class name to be applied to the content to hide it.
      * Note: If you disable `zoomEffect`, this class name will be used to run the image hide animation.

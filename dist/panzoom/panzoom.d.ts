@@ -300,6 +300,10 @@ export declare const Panzoom: {
          */
         getContainer: () => HTMLElement;
         /**
+         * Get reference to the content DOM element
+         */
+        getContent: () => HTMLElement;
+        /**
          * Get original width and height of the content, which can be adjusted using the `width` and `height` options
          */
         getFullDim: () => {

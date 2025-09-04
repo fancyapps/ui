@@ -9,9 +9,9 @@ export type ThumbsOptions = {
      */
     minCount: number;
     /**
-     * Optional element to place thumbnail container
+     * Optional element to place the container
      */
-    parentEl?: HTMLElement | null | (() => HTMLElement | null);
+    parentEl?: HTMLElement | null | ((instance: CarouselInstance) => HTMLElement | null);
     /**
      * If the thumbnail bar should automatically appear after the carousel is initialized
      */

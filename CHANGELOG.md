@@ -1,3 +1,13 @@
+# 6.0.28 (2025-09-04)
+
+### Bug Fixes
+
+- **Carousel** Fix incorrect page count in some cases
+
+### Features
+
+- **Carousel** Add `parentEl` option to the Toolbar plugin
+
 # 6.0.27 (2025-09-02)
 
 ### Bug Fixes

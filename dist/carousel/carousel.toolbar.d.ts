@@ -28,6 +28,10 @@ export type ToolbarOptions = {
      * Collection of toolbar items that add new or overwrite existing items
      */
     items: Partial<typeof allToolbarItems>;
+    /**
+     * Optional element to place the container
+     */
+    parentEl?: HTMLElement | null | ((instance: CarouselInstance) => HTMLElement | null);
 };
 export type ToolbarInstance = ReturnType<typeof Toolbar>;
 declare module "./carousel" {

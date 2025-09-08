@@ -1,3 +1,13 @@
+# 6.0.29 (2025-09-08)
+
+### Bug Fixes
+
+- **Fancybox** Fix incorrect image sizes in some cases
+
+### Features
+
+- **Fancybox** Improved support for Panzoom's `startPos` option to set initial image size and position
+
 # 6.0.28 (2025-09-04)
 
 ### Bug Fixes

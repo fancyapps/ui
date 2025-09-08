@@ -240,11 +240,11 @@ export interface PanzoomOptions {
     startPos?: {
         x: number;
         y: number;
-        scale: number;
+        scale: number | PanzoomZoomLevel;
     } | ((ref: PanzoomInstance) => {
         x: number;
         y: number;
-        scale: number;
+        scale: number | PanzoomZoomLevel;
     } | undefined);
     /**
      * Default action to take on a wheel event
@@ -329,6 +329,17 @@ export declare const Panzoom: {
          * Get content transformation scale for the specified scale level
          */
         getScale: (level?: "min" | "base" | "cover" | "full" | "max") => number;
+        /**
+         * Get calculated values ​​for the initial position
+         */
+        getStartPosition: () => {
+            scale: number;
+            x: number;
+            y: number;
+            angle: number;
+            flipX: number;
+            flipY: number;
+        };
         /**
          * Get current state of the Panzoom instance
          */

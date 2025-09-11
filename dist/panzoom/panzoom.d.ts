@@ -35,7 +35,8 @@ export declare enum PanzoomAction {
     RotateCCW = "rotateCCW",
     RotateCW = "rotateCW",
     FlipX = "flipX",
-    FlipY = "flipY"
+    FlipY = "flipY",
+    ToggleFS = "toggleFS"
 }
 export declare enum PanzoomZoomLevel {
     Cover = "cover",
@@ -99,6 +100,14 @@ export interface PanzoomEventArgs {
      * Content did not load successfully
      */
     error: [];
+    /**
+     * Enter full-screen mode
+     */
+    enterFS: [];
+    /**
+     * Exit full-screen mode
+     */
+    exitFS: [];
     /**
      * Initialization has started
      */
@@ -277,6 +286,10 @@ export declare const Panzoom: {
          */
         canZoomOut: () => boolean;
         /**
+         * Check if the content scale is less than the full size
+         */
+        canZoomToFull: () => boolean;
+        /**
          * Destroy instance and clean up
          */
         destroy: () => PanzoomInstance;
@@ -325,6 +338,10 @@ export declare const Panzoom: {
          * Get current options
          */
         getOptions: () => PanzoomOptions;
+        /**
+         * Get all initialized plugins
+         */
+        getPlugins: () => Partial<PanzoomPlugins>;
         /**
          * Get content transformation scale for the specified scale level
          */
@@ -396,6 +413,10 @@ export declare const Panzoom: {
          */
         on: <PanzoomEvent extends keyof PanzoomEventArgs>(what: PanzoomEvent | PanzoomEvent[], callback: (api: any, ...args: PanzoomEventArgs[PanzoomEvent]) => void) => PanzoomInstance;
         /**
+         * Toggle full screen mode
+         */
+        toggleFS: () => void;
+        /**
          * Version of the Panzoom
          */
         version: string;
@@ -425,6 +446,7 @@ export declare const Panzoom: {
             FLIP_X: string;
             FLIP_Y: string;
             RESET: string;
+            TOGGLE_FS: string;
         };
     };
     getDefaults(): PanzoomOptions;

@@ -27,4 +27,5 @@ export declare const it_IT: {
     FLIP_X: string;
     FLIP_Y: string;
     RESET: string;
+    TOGGLE_FS: string;
 };

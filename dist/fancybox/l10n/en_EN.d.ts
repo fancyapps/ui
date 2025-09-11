@@ -27,4 +27,5 @@ export declare const en_EN: {
     FLIP_X: string;
     FLIP_Y: string;
     RESET: string;
+    TOGGLE_FS: string;
 };

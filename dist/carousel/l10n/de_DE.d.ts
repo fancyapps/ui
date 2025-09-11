@@ -23,4 +23,5 @@ export declare const de_DE: {
     FLIP_X: string;
     FLIP_Y: string;
     RESET: string;
+    TOGGLE_FS: string;
 };

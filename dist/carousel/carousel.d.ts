@@ -384,7 +384,7 @@ export declare const Carousel: {
          */
         getPages: () => CarouselPage[];
         /**
-         * Getsall initialized plugins
+         * Get all initialized plugins
          */
         getPlugins: () => Partial<CarouselPlugins>;
         /**
@@ -526,6 +526,7 @@ export declare const Carousel: {
             FLIP_X: string;
             FLIP_Y: string;
             RESET: string;
+            TOGGLE_FS: string;
         };
     };
     getDefaults(): CarouselOptions;

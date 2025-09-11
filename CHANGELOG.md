@@ -1,3 +1,14 @@
+# 6.0.30 (2025-09-11)
+
+### Bug Fixes
+
+- **Panzoom** Fix issue with the reset button
+- **Panzoom** Disable `toggleFull` and `toggle1to1` buttons if image cannot be enlarged
+
+### Features
+
+- **Panzoom** Add `toggleFS()` method and the corresponding `toggleFS` button
+
 # 6.0.29 (2025-09-08)
 
 ### Bug Fixes

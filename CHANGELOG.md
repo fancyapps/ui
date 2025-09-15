@@ -1,3 +1,10 @@
+# 6.0.31 (2025-09-15)
+
+### Bug Fixes
+
+- **Fancybox** Resize images to initial size when navigating the carousel
+- **Fancybox** Support the `autoStart` option of the carousel Autoplay plugin
+
 # 6.0.30 (2025-09-11)
 
 ### Bug Fixes

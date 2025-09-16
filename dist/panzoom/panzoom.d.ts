@@ -417,6 +417,10 @@ export declare const Panzoom: {
          */
         toggleFS: () => void;
         /**
+         * Update the state of controls
+         */
+        updateControls: (parentEl?: HTMLElement) => void;
+        /**
          * Version of the Panzoom
          */
         version: string;

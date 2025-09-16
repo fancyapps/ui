@@ -1,3 +1,13 @@
+# 6.0.32 (2025-09-16)
+
+### Bug Fixes
+
+- **Fancybox** Fix issue with `dragToClose` after rapid multiple clicks and drags
+
+### Features
+
+- **Panzoom** Make the `iterateZoom` button available
+
 # 6.0.31 (2025-09-15)
 
 ### Bug Fixes

@@ -1,6 +1,7 @@
 import "../panzoom/panzoom";
 export * from "../panzoom/panzoom";
 import { Carousel, CarouselOptions, CarouselEventArgs, CarouselSlide, CarouselInstance } from "../carousel/carousel";
+import "./fancybox.hash";
 export * from "../carousel/carousel";
 export * from "../carousel/carousel.zoomable";
 export * from "../carousel/carousel.sync";
@@ -26,7 +27,6 @@ declare module "../carousel/carousel" {
         filter?: string;
     }
 }
-import "./fancybox.hash";
 export declare enum FancyboxState {
     Init = 0,
     Ready = 1,

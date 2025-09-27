@@ -126,7 +126,7 @@ export interface CarouselEventArgs {
     /**
      * Click event has been detected
      */
-    click: [MouseEvent];
+    click: [MouseEvent | TouchEvent];
     /**
      * Content is loaded on one of the slides
      */

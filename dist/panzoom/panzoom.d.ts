@@ -401,6 +401,10 @@ export declare const Panzoom: {
          */
         isFullsize: () => boolean;
         /**
+         * Check if "mousemove" mode is enabled
+         */
+        isMousemoveMode: () => boolean;
+        /**
          * Translate text with current language strings
          */
         localize: (str: string, params?: Array<[string, any]>) => string;

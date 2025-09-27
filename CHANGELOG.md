@@ -1,3 +1,14 @@
+# 6.0.33 (2025-09-27)
+
+### Bug Fixes
+
+- **Fancybox** Fix issue with captions containing special characters ([805](https://github.com/fancyapps/ui/issues/805))
+- **Fancybox** Fix issues with touch events
+
+### Features
+
+- **Fancybox** Slightly scale the image smaller as the user drags an image up/down to close
+
 # 6.0.32 (2025-09-16)
 
 ### Bug Fixes

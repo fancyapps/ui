@@ -1,4 +1,6 @@
+export declare function isTouchEvent(ev: TouchEvent | MouseEvent): ev is TouchEvent;
 export declare function getCurrentPosition(event: InputEvent): Point[];
+export declare function getTargetPosition(event: InputEvent): Point[];
 export declare function getChangedPosition(event: InputEvent): Point[];
 export declare function getMidpoint(touches: Point[]): Point;
 export declare function getDistance(data: Point[]): number;

@@ -1,1 +1,1 @@
-export declare const map: (n?: number, start1?: number, stop1?: number, start2?: number, stop2?: number, withinBounds?: boolean) => number;
+export declare const map: (inputValue?: number, inputLower?: number, inputUpper?: number, outputLower?: number, outputUpper?: number, withinBounds?: boolean) => number;

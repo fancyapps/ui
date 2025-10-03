@@ -44,7 +44,7 @@ declare module "./carousel" {
     }
 }
 export declare const Thumbs: () => {
-    init: (_instanceRef: CarouselInstance, _carousel: typeof Carousel) => void;
+    init: (carousel: CarouselInstance, carouselConstructor: typeof Carousel) => void;
     destroy: () => void;
     /**
      * Get reference to the container DOM element

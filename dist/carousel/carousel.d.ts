@@ -112,7 +112,7 @@ export interface CarouselEventArgs {
      */
     "*": [string, ...any];
     /**
-     * New slide object is created
+     * slide object is processed and added to the collection
      */
     addSlide: [CarouselSlide];
     /**
@@ -131,6 +131,10 @@ export interface CarouselEventArgs {
      * Content is loaded on one of the slides
      */
     contentReady: [CarouselSlide];
+    /**
+     * New slide object is created
+     */
+    createSlide: [CarouselSlide];
     /**
      * Instance is detroyed
      */
@@ -156,7 +160,7 @@ export interface CarouselEventArgs {
      */
     initPlugins: [];
     /**
-     * Slides are initialized
+     * All slides are initialized
      */
     initSlides: [];
     /**

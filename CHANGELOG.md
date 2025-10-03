@@ -1,3 +1,16 @@
+# 6.0.34 (2025-10-03)
+
+### Bug Fixes
+
+- **Panzoom** Fixed panning issue on touch devices after multiple touches
+- **Carousel** Fix issue with the default Shopify theme
+- **Carousel** Watch for viewport element resize events instead of the container
+- **Fancybox** When dragging to close, use the base scale of the current Panzoom instance for scaling
+
+### Features
+
+- **Carousel** Add a new event `createSlide` that can be used to customize the slide object before it is processed by plugins
+
 # 6.0.33 (2025-09-27)
 
 ### Bug Fixes

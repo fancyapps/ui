@@ -21,9 +21,9 @@ export type ThumbsOptions = {
      */
     thumbTpl: string;
     /**
-     * Choose a type - "classic" (syncs two instances of the carousel) or "modern" (Apple Photos style)
+     * Choose a type - "classic" (syncs two instances of the carousel), "modern" (Apple Photos style) or "scrollable" (scrollable container)
      */
-    type: "classic" | "modern";
+    type: "classic" | "modern" | "scrollable";
 };
 export type ThumbsInstance = ReturnType<typeof Thumbs>;
 declare module "./carousel" {
@@ -54,6 +54,10 @@ export declare const Thumbs: () => {
      * Get reference to the container DOM element
      */
     getContainer: () => HTMLElement;
+    /**
+     * Get current type
+     */
+    getType: () => "classic" | "modern" | "scrollable";
     /**
      * Check if thumbnails are enabled
      */

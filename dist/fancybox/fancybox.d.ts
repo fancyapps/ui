@@ -184,6 +184,10 @@ export interface FancyboxOptions {
      */
     mainTpl: string | (() => string);
     /**
+     * If Fancybox should be true modal window
+     */
+    modal: boolean;
+    /**
      * Event listeners
      */
     on: Partial<FancyboxEvents>;

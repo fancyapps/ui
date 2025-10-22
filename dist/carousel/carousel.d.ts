@@ -112,7 +112,7 @@ export interface CarouselEventArgs {
      */
     "*": [string, ...any];
     /**
-     * slide object is processed and added to the collection
+     * Slide object is processed and added to the collection
      */
     addSlide: [CarouselSlide];
     /**
@@ -376,6 +376,10 @@ export declare const Carousel: {
          */
         getPageIndex: (slideIndex?: number) => number;
         /**
+         * Get page index from position of the carousel track
+         */
+        getPageIndexFromPosition: (position: number) => number;
+        /**
          * Get page progress
          */
         getPageProgress: (pageIndex?: number, ignoreInfinite?: boolean) => number;
@@ -483,6 +487,10 @@ export declare const Carousel: {
          * Move to the previous page
          */
         prev: (args?: CarouselGoToArgs) => CarouselInstance;
+        /**
+         * Perform a hard reset of the carousel after it has been initialized
+         */
+        reInit: (options?: Partial<CarouselOptions>, plugins?: Record<string, CarouselPlugin>) => /*elided*/ any;
         /**
          * Remove slide at the selected position
          */

@@ -1,3 +1,17 @@
+# 6.1.0 (2025-10-22)
+
+### Features
+
+- **Carousel** Add a new thumbnail type "scrollable", which also allows Fancybox to display thumbnails in v3 style
+- **Carousel** Add a `reInit()` method to reinitialize the carousel with new options
+- **Carousel** Expose the `getPageIndexFromPosition()` method which helps to build creative interactions
+- **Fancybox** Add a new option `modal` to allow other content to be placed above the `<dialog>` element
+- **Fancybox** Support custom slugs in Hash plugin
+
+### Bug Fixes
+
+- **Fancybox** Fix zoom-out animation when carousel animates with CSS
+
 # 6.0.34 (2025-10-03)
 
 ### Bug Fixes

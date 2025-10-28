@@ -1,3 +1,15 @@
+# 6.1.1 (2025-10-28)
+
+### Bug Fixes
+
+- **Carousel** When executing `reInit()`, preserve the order of DOM elements
+- **Carousel** When removing carousel slides, remove the corresponding thumbnails
+- **Fancybox** Sync with the carousel on the page when Hash plugins launch Fancybox on page load
+
+### Features
+
+- **Carousel** When navigating, toggle the `aria-current` attribute for elements with `[data-carousel-go-to]` attribute
+
 # 6.1.0 (2025-10-22)
 
 ### Features

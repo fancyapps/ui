@@ -275,12 +275,12 @@ export interface CarouselOptions {
     /**
      * Optional function to customize how each slide position is set in the rendering
      */
-    setTransform?: (ref: CarouselInstance, slide: CarouselSlide, state: {
+    setTransform?: false | ((ref: CarouselInstance, slide: CarouselSlide, state: {
         x: number;
         y: number;
         xPercent: number;
         yPercent: number;
-    }) => void;
+    }) => void);
     /**
      * Virtual slides
      */
@@ -490,7 +490,7 @@ export declare const Carousel: {
         /**
          * Perform a hard reset of the carousel after it has been initialized
          */
-        reInit: (options?: Partial<CarouselOptions>, plugins?: Record<string, CarouselPlugin>) => /*elided*/ any;
+        reInit: (options?: Partial<CarouselOptions>, plugins?: Record<string, CarouselPlugin>) => CarouselInstance;
         /**
          * Remove slide at the selected position
          */

@@ -1,3 +1,10 @@
+# 6.1.2 (2025-10-29)
+
+### Bug Fixes
+
+- **Carousel** Fix issue with missing `is-draggable` class name in some cases
+- **Fancybox** The `fromSelector` method should accept custom options if two parameters are passed
+
 # 6.1.1 (2025-10-28)
 
 ### Bug Fixes

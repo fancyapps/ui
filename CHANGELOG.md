@@ -1,3 +1,14 @@
+# 6.1.3 (2025-11-04)
+
+### Bug Fixes
+
+- **Carousel** Add support for `data-thumb-class` for all thumb types
+
+### Features
+
+- **Fancybox** Scroll page to the trigger element when Fancybox is launched from a URL hash
+- **Fancybox** Add support for `Fancybox.bind(groupSelector: string, itemSelector: string, userOptions?: Partial<FancyboxOptions>)`
+
 # 6.1.2 (2025-10-29)
 
 ### Bug Fixes
@@ -19,6 +30,11 @@
 
 # 6.1.0 (2025-10-22)
 
+### Bug Fixes
+
+- **Fancybox** Fix zoom-out animation when carousel animates with CSS
+- **Carousel** Eliminate initialization delay
+
 ### Features
 
 - **Carousel** Add a new thumbnail type "scrollable", which also allows Fancybox to display thumbnails in v3 style
@@ -26,10 +42,6 @@
 - **Carousel** Expose the `getPageIndexFromPosition()` method which helps to build creative interactions
 - **Fancybox** Add a new option `modal` to allow other content to be placed above the `<dialog>` element
 - **Fancybox** Support custom slugs in Hash plugin
-
-### Bug Fixes
-
-- **Fancybox** Fix zoom-out animation when carousel animates with CSS
 
 # 6.0.34 (2025-10-03)
 

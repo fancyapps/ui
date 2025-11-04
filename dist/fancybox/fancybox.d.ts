@@ -285,7 +285,7 @@ declare const CreateInstance: () => {
     /**
      * Run instance initialization
      */
-    init: (slides?: Partial<CarouselSlide>[], options?: Partial<FancyboxOptions>) => FancyboxInstance;
+    init: (userSlides?: Partial<CarouselSlide>[], userOptions?: Partial<FancyboxOptions>) => FancyboxInstance | undefined;
     /**
      * Check if the given slide is the current slide in the carousel
      */
@@ -308,33 +308,61 @@ declare const CreateInstance: () => {
     toggleIdle(force?: boolean): void;
 };
 /**
- * Add a click handler that launches Fancybox after clicking on items that match the provided selector
+ * Add a click handler that launches Fancybox after clicking on items matching the given `item_selector`
  */
-declare function bind(selector?: string, userOptions?: Partial<FancyboxOptions>): void;
+declare function bind(itemSelector?: string, userOptions?: Partial<FancyboxOptions>): void;
 /**
- * Add a click handler to the given container that launches Fancybox after clicking items that match the provided selector
+ * Add a click handler that launches Fancybox after clicking on items matching the given `item_selector` and located inside the given container
  */
-declare function bind(container: HTMLElement | null, selector: string, userOptions?: Partial<FancyboxOptions>): void;
+declare function bind(container: HTMLElement | null, itemSelector: string, userOptions?: Partial<FancyboxOptions>): void;
 /**
- * Remove selector from the list of selectors that triggers Fancybox
+ * Add a click handler that launches Fancybox after clicking on items matching the given `item_selector` and located in a container matching `group_selector`
  */
-declare function unbind(selector: string): void;
+declare function bind(groupSelector: string, itemSelector: string, userOptions?: Partial<FancyboxOptions>): void;
 /**
- * Remove all or one selector from the list of selectors that triggers Fancybox for the given container
+ * Add a click handler that launches Fancybox after clicking on items matching the given `item_selector` and located inside the given container
  */
-declare function unbind(container: HTMLElement | null, selector?: string): void;
+declare function bind(container: HTMLElement | null, groupSelector: string, itemSelector: string, userOptions?: Partial<FancyboxOptions>): void;
+/**
+ * Remove the click handler that launches Fancybox after clicking on items matching the given `item_selector`
+ */
+declare function unbind(item_selector: string): void;
+/**
+ * Remove the click handler that launches Fancybox after clicking on items that match the given `item_selector` and are in the given container
+ */
+declare function unbind(container: HTMLElement | null, selector: string): void;
+/**
+ * Remove the click handler that launches Fancybox after clicking on items matching the given `item_selector` and located in a container matching the `group_selector`
+ */
+declare function unbind(group_selector: string, item_selector: string): void;
+/**
+ * Remove the click handler that launches Fancybox after clicking on items that match the given `item_selector` and are in the given container
+ */
+declare function unbind(container: HTMLElement | null, group_selector: string, item_selector: string): void;
 /**
  * Start Fancybox using the previously assigned selector
  */
-declare function fromSelector(selector: string, options?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
+declare function fromSelector(itemSelector: string, userOptions?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
 /**
  * Start Fancybox using the previously assigned selector for the given container
  */
-declare function fromSelector(container: HTMLElement | null, selector: string, options?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
+declare function fromSelector(container: HTMLElement | null, itemSelector: string, userOptions?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
+/**
+ * Start Fancybox using the previously assigned selector and located in a container matching `group_selector`
+ */
+declare function fromSelector(groupSelector: string, itemSelector: string, userOptions?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
+/**
+ * Start Fancybox using the previously assigned selector and located in a container matching `group_selector`
+ */
+declare function fromSelector(container: HTMLElement | null, groupSelector: string, itemSelector: string, userOptions?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
 /**
  * Start Fancybox using click event
  */
 declare function fromEvent(event: MouseEvent): FancyboxInstance | undefined;
+/**
+ * Start Fancybox using the DOM element that matches the selector used previously in the `bind()` method
+ */
+declare function fromTriggerEl(triggerEl: HTMLElement, userOptions?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
 /**
  * Start Fancybox using HTML elements
  */
@@ -354,7 +382,7 @@ declare const Fancybox: {
     /**
      * A collection of all elements that have a click event assigned and the corresponding options.
      */
-    openers: Map<HTMLElement, Map<string, Partial<FancyboxOptions>>>;
+    openers: Map<HTMLElement, Map<string, Map<string, Partial<FancyboxOptions>>>>;
     /**
      * Add a click handler that launches Fancybox after clicking on items that match the provided selector
      */
@@ -380,6 +408,10 @@ declare const Fancybox: {
      */
     fromSelector: typeof fromSelector;
     /**
+     * Start Fancybox using an element that matches the previously assigned selector
+     */
+    fromTriggerEl: typeof fromTriggerEl;
+    /**
      * Retrieve reference to the current carousel of the highest active Fancybox instance
      */
     getCarousel: () => CarouselInstance | undefined;
@@ -398,7 +430,7 @@ declare const Fancybox: {
     /**
      * Create new Fancybox instance with provided options
      */
-    show: (slides?: Partial<CarouselSlide>[], options?: Partial<FancyboxOptions>) => FancyboxInstance;
+    show: (slides?: Partial<CarouselSlide>[], options?: Partial<FancyboxOptions>) => FancyboxInstance | undefined;
     /**
      * Remove selector from the list of selectors that triggers Fancybox
      */

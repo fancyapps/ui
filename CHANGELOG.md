@@ -1,3 +1,9 @@
+# 6.1.4 (2025-11-05)
+
+### Bug Fixes
+
+- **Fancybox** Fix issue with the close button above images when the toolbar is disabled ([805](https://github.com/fancyapps/ui/issues/815))
+
 # 6.1.3 (2025-11-04)
 
 ### Bug Fixes

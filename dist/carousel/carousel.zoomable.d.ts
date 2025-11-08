@@ -7,6 +7,7 @@ declare module "./carousel" {
         "panzoom:init": [CarouselSlide];
         "panzoom:initPlugins": [CarouselSlide];
         "panzoom:initLayout": [CarouselSlide];
+        "panzoom:ready": [CarouselSlide];
         "panzoom:touchStart": [CarouselSlide, GesturesEventObject];
         "panzoom:touchEnd": [CarouselSlide, GesturesEventObject];
         "panzoom:click": [CarouselSlide, GesturesEventObject];

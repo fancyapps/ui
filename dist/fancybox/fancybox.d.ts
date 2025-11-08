@@ -133,7 +133,7 @@ export interface FancyboxOptions {
     /**
      * Enable drag-to-close gesture - drag content up/down to close instance
      */
-    dragToClose: boolean;
+    dragToClose: boolean | ((instance: FancyboxInstance) => boolean);
     /**
      * Enable fade animation for interface elements when opening/closing
      */
@@ -330,7 +330,7 @@ declare function unbind(item_selector: string): void;
 /**
  * Remove the click handler that launches Fancybox after clicking on items that match the given `item_selector` and are in the given container
  */
-declare function unbind(container: HTMLElement | null, selector: string): void;
+declare function unbind(container: HTMLElement | null, selector?: string): void;
 /**
  * Remove the click handler that launches Fancybox after clicking on items matching the given `item_selector` and located in a container matching the `group_selector`
  */

@@ -1,8 +1,15 @@
+# 6.1.5 (2025-11-08)
+
+### Bug Fixes
+
+- **Carousel** Fix issue with a horizontally scrollable element in a horizontally oriented carousel ([817](https://github.com/fancyapps/ui/issues/817))
+- **Gestures** Check if the target should be ignored inside shadow DOM and also outside it
+
 # 6.1.4 (2025-11-05)
 
 ### Bug Fixes
 
-- **Fancybox** Fix issue with the close button above images when the toolbar is disabled ([805](https://github.com/fancyapps/ui/issues/815))
+- **Fancybox** Fix issue with the close button above images when the toolbar is disabled ([815](https://github.com/fancyapps/ui/issues/815))
 
 # 6.1.3 (2025-11-04)
 

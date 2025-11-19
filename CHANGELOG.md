@@ -1,3 +1,9 @@
+# 6.1.6 (2025-11-19)
+
+### Bug Fixes
+
+- **Carousel** Fix issue with dragging when the carousel is inside an element that has `overflow:clip` ([820](https://github.com/fancyapps/ui/issues/820))
+
 # 6.1.5 (2025-11-08)
 
 ### Bug Fixes

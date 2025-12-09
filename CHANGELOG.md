@@ -1,3 +1,10 @@
+# 6.1.7 (2025-12-09)
+
+### Bug Fixes
+
+- **Carousel** Add `referrerpolicy` attribute to the video iframe tag ([827](https://github.com/fancyapps/ui/issues/827))
+- **Carousel** Set the correct value for the `aria-label` attribute of the thumb button ([822](https://github.com/fancyapps/ui/issues/822))
+
 # 6.1.6 (2025-11-19)
 
 ### Bug Fixes

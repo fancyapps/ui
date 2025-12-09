@@ -4,4 +4,7 @@ export type PlainObject = {
 export type PlainObjectOf<T> = {
     [name: string]: T;
 };
-export declare const isPlainObject: (obj: any) => obj is PlainObject;
+/**
+ * Check if the given object is a plain object
+ */
+export declare const isPlainObject: (obj: unknown) => obj is PlainObject;

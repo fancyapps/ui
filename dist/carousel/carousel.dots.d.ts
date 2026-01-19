@@ -5,6 +5,14 @@ export type DotsOptions = {
      */
     dotTpl: string;
     /**
+     * From what number of slides to show "dynamic" dots
+     */
+    dynamicFrom: number | false;
+    /**
+     * Number of extra full sized dots
+     */
+    dynamicPadd: number;
+    /**
      * The maximum number of pages at which to create dots
      */
     maxCount: number;

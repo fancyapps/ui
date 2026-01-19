@@ -1,3 +1,13 @@
+# 6.1.8 (2026-01-19)
+
+### Bug Fixes
+
+- **Carousel** Fix Firefox error messages in the console when dragging outside the window
+
+### Features
+
+- **Carousel** Add an Instagram-style "dynamic" mode to the Dots
+
 # 6.1.7 (2025-12-09)
 
 ### Bug Fixes

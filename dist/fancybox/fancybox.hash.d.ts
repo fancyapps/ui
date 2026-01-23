@@ -7,7 +7,9 @@ declare module "../carousel/carousel" {
 }
 declare module "./fancybox" {
     interface FancyboxOptions {
-        Hash?: false;
+        Hash?: false | {
+            slug?: string;
+        };
     }
 }
 export declare const Hash: {

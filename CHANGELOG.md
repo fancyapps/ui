@@ -1,3 +1,9 @@
+# 6.1.9 (2026-01-23)
+
+### Features
+
+- **Fancybox** Add `slug` option to Hash plugin ([821](https://github.com/fancyapps/ui/issues/821))
+
 # 6.1.8 (2026-01-19)
 
 ### Bug Fixes

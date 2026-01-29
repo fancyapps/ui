@@ -128,6 +128,10 @@ export interface CarouselEventArgs {
      */
     click: [MouseEvent | TouchEvent];
     /**
+     * Content is loading on one of the slides
+     */
+    contentLoading: [CarouselSlide];
+    /**
      * Content is loaded on one of the slides
      */
     contentReady: [CarouselSlide];

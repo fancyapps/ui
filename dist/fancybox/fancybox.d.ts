@@ -374,6 +374,11 @@ declare const Fancybox: {
                 init: (fancybox: FancyboxInstance) => void;
                 destroy: () => void;
             };
+            getInfoFromURL: () => {
+                urlHash: string;
+                urlSlug: string;
+                urlIndex: number;
+            };
             startFromUrl: () => void;
             setup(_f: typeof Fancybox): void;
         };

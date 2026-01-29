@@ -1,6 +1,6 @@
 {
   "name": "@fancyapps/ui",
-  "version": "6.1.9",
+  "version": "6.1.10",
   "description": "Robust JavaScript UI Component Library",
   "files": [
     "dist",

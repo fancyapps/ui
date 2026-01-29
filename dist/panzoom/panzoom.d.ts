@@ -143,7 +143,8 @@ export interface PanzoomEventArgs {
     /**
      * Viewport CSS properties are updated
      */
-    render: [];
+    render: [
+    ];
     /**
      * Double click event detected
      */

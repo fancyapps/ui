@@ -17,6 +17,11 @@ export declare const Hash: {
         init: (fancybox: FancyboxInstance) => void;
         destroy: () => void;
     };
+    getInfoFromURL: () => {
+        urlHash: string;
+        urlSlug: string;
+        urlIndex: number;
+    };
     startFromUrl: () => void;
     setup(_f: typeof Fancybox): void;
 };

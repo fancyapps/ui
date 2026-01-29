@@ -1,8 +1,19 @@
+# 6.1.10 (2026-01-29)
+
+### Bug Fixes
+
+- **Carousel** Fix an issue with non-infinite carousels when swiping the page vertically
+- **Fancybox** Fix an issue with the Hash plugin when an iframe element is active
+
+### Features
+
+- **Carousel** Add `preload` and `autosize` options for iframes to the HTML plugin
+
 # 6.1.9 (2026-01-23)
 
 ### Features
 
-- **Fancybox** Add `slug` option to Hash plugin ([821](https://github.com/fancyapps/ui/issues/821))
+- **Fancybox** Add `slug` option to the Hash plugin ([821](https://github.com/fancyapps/ui/issues/821))
 
 # 6.1.8 (2026-01-19)
 

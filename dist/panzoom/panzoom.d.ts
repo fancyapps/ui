@@ -184,11 +184,11 @@ export interface PanzoomOptions {
     /**
      * Default action to take on a click event
      */
-    clickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | false);
+    clickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | number | false);
     /**
      * Default action to take on a double click event
      */
-    dblClickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | false);
+    dblClickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | number | false);
     /**
      * Optional event to use to calculate the initial mouse position
      */
@@ -239,7 +239,7 @@ export interface PanzoomOptions {
     /**
      * Default action to take on a single click event
      */
-    singleClickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | false);
+    singleClickAction: PanzoomAction | false | ((ref: PanzoomInstance) => PanzoomAction | number | false);
     /**
      *  HTML template for spinner element
      */
@@ -344,7 +344,7 @@ export declare const Panzoom: {
          */
         getPlugins: () => Partial<PanzoomPlugins>;
         /**
-         * Get content transformation scale for the specified scale level
+         * Get the current content transformation scale or at the specified scale level
          */
         getScale: (level?: "min" | "base" | "cover" | "full" | "max") => number;
         /**

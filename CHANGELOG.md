@@ -1,3 +1,16 @@
+# 6.1.11 (2026-02-18)
+
+### Bug Fixes
+
+- **Carousel** Support "complex" values for gap ([839](https://github.com/fancyapps/ui/issues/839))
+- **Fancybox** Fix an issue with `slug` option ([835](https://github.com/fancyapps/ui/issues/835))
+
+### Features
+
+- **Panzoom** Enable the creation of a custom click zoom flow by making the `clickAction` and `dblClickAction` options to accept a method that returns a number
+- **Fancybox** Add `closeButtonTpl` option to the close button template created above the content
+- **Fancybox** Add a new plugin "Sidebar" that changes the layout to create a sidebar
+
 # 6.1.10 (2026-01-29)
 
 ### Bug Fixes

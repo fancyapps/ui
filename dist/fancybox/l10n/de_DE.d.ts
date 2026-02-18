@@ -5,6 +5,8 @@ export declare const de_DE: {
     MODAL: string;
     ELEMENT_NOT_FOUND: string;
     IFRAME_ERROR: string;
+    NO_CAPTION: string;
+    TOGGLE_SIDEBAR: string;
     ERROR: string;
     GOTO: string;
     DOWNLOAD: string;

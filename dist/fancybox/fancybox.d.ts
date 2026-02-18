@@ -123,6 +123,10 @@ export interface FancyboxOptions {
      */
     closeButton: "auto" | boolean;
     /**
+     * Close button template created above content
+     */
+    closeButtonTpl: string;
+    /**
      * If true, previously opened instance will be closed
      */
     closeExisting: boolean;
@@ -294,6 +298,10 @@ declare const CreateInstance: () => {
      * Check if there is another instance on top of this one
      */
     isTopMost: () => boolean;
+    /**
+     * Translate text with current language strings
+     */
+    localize: (str: string, params?: Array<[string, any]>) => string;
     /**
      * Unsubscribe from specific event
      */

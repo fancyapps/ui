@@ -36,7 +36,7 @@ export type ToolbarOptions = {
 export type ToolbarInstance = ReturnType<typeof Toolbar>;
 declare module "./carousel" {
     interface CarouselOptions {
-        Toolbar?: boolean | Partial<ToolbarOptions>;
+        Toolbar?: false | Partial<ToolbarOptions>;
     }
     interface CarouselPlugins {
         Toolbar: CarouselPlugin & ToolbarInstance;

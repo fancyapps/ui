@@ -1,3 +1,10 @@
+# 6.1.12 (2026-02-23)
+
+### Bug Fixes
+
+- **Carousel** Fix an issue when combining the `adaptiveHeight` option and the Autoplay plugin ([840](https://github.com/fancyapps/ui/issues/840))
+- **Fancybox** Fix an issue with `history.scrollRestoration` in the Hash plugin ([841](https://github.com/fancyapps/ui/issues/841))
+
 # 6.1.11 (2026-02-18)
 
 ### Bug Fixes

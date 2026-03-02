@@ -1,3 +1,16 @@
+# 6.1.13 (2026-03-02)
+
+### Bug Fixes
+
+- **Panzoom** Avoid content duplication when performing multiple reinitializations
+- **Panzoom** Show default buttons on the toolbar if none are specified
+- **Fancybox** Make image visible outside viewport when closing and using sidebar plugin
+
+### Features
+
+- **Fancybox** Add additional CSS variables to the sidebar plugin
+- Add translations into Turkish, Ukrainian and Chinese
+
 # 6.1.12 (2026-02-23)
 
 ### Bug Fixes

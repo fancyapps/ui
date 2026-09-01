@@ -1,0 +1,2 @@
+/*! License details at fancyapps.com/license */
+import{pt_BR as e}from"../../panzoom/l10n/pt_BR.js";const o=Object.assign(Object.assign({},e),{ERROR:"Algo deu errado. <br /> Tente novamente mais tarde.",NEXT:"Próxima página",PREV:"Página anterior",GOTO:"Ir para a página #%d",DOWNLOAD:"Baixar",TOGGLE_FULLSCREEN:"Alternar modo de tela cheia",TOGGLE_EXPAND:"Alternar modo de tamanho completo",TOGGLE_THUMBS:"Alternar miniaturas",TOGGLE_AUTOPLAY:"Alternar apresentação de slides"});export{o as pt_BR};

@@ -1,0 +1,2 @@
+/*! License details at fancyapps.com/license */
+import{pt_BR as e}from"../../carousel/l10n/pt_BR.js";const o=Object.assign(Object.assign({},e),{CLOSE:"Fechar",NEXT:"Próximo",PREV:"Anterior",MODAL:"Você pode fechar este conteúdo modal com a tecla ESC",ELEMENT_NOT_FOUND:"Elemento HTML não encontrado",IFRAME_ERROR:"Erro ao carregar a página",NO_CAPTION:"Sem legenda",TOGGLE_SIDEBAR:"Alternar barra lateral"});export{o as pt_BR};

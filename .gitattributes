@@ -1,0 +1,33 @@
+# Normalize all text files to LF in the repository and on checkout.
+# Keeps release diffs free of CRLF/LF churn regardless of contributor OS.
+* text=auto eol=lf
+
+# Explicit types (belt and braces for the files this repo actually ships)
+*.js    text eol=lf
+*.mjs   text eol=lf
+*.cjs   text eol=lf
+*.ts    text eol=lf
+*.json  text eol=lf
+*.css   text eol=lf
+*.md    text eol=lf
+*.yml   text eol=lf
+*.yaml  text eol=lf
+
+# Minified bundles are build output: collapse them in GitHub diffs
+# (local `git diff` is unaffected)
+*.umd.js linguist-generated=true
+
+# Never touch binaries
+*.png  binary
+*.jpg  binary
+*.jpeg binary
+*.gif  binary
+*.webp binary
+*.avif binary
+*.ico  binary
+*.svgz binary
+*.woff binary
+*.woff2 binary
+*.ttf  binary
+*.eot  binary
+*.zip  binary

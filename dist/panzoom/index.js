@@ -1,2 +1,2 @@
 /*! License details at fancyapps.com/license */
-export{PANZOOM_DEFAULT_POS,Panzoom,PanzoomAction,PanzoomZoomLevel}from"./panzoom.js";
+export{PANZOOM_DEFAULT_POS,Panzoom,PanzoomAction,PanzoomState,PanzoomZoomLevel}from"./panzoom.js";

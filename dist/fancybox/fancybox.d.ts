@@ -1,19 +1,18 @@
-import "../panzoom/panzoom";
-export * from "../panzoom/panzoom";
-import { Carousel, CarouselOptions, CarouselEventArgs, CarouselSlide, CarouselInstance } from "../carousel/carousel";
-import "./fancybox.hash";
-export * from "../carousel/carousel";
-export * from "../carousel/carousel.zoomable";
-export * from "../carousel/carousel.sync";
-export * from "../carousel/carousel.lazyload";
-export * from "../carousel/carousel.arrows";
-export * from "../carousel/carousel.toolbar";
-export * from "../carousel/carousel.autoplay";
-export * from "../carousel/carousel.thumbs";
-export * from "../carousel/carousel.html";
-export * from "../carousel/carousel.video";
-export * from "../carousel/carousel.fullscreen";
-declare module "../carousel/carousel" {
+export * from "../panzoom/panzoom.js";
+import { Carousel, CarouselOptions, CarouselEventArgs, CarouselSlide, CarouselInstance } from "../carousel/carousel.js";
+import { Hash } from "./fancybox.hash.js";
+export * from "../carousel/carousel.js";
+export * from "../carousel/carousel.zoomable.js";
+export * from "../carousel/carousel.sync.js";
+export * from "../carousel/carousel.lazyload.js";
+export * from "../carousel/carousel.arrows.js";
+export * from "../carousel/carousel.toolbar.js";
+export * from "../carousel/carousel.autoplay.js";
+export * from "../carousel/carousel.thumbs.js";
+export * from "../carousel/carousel.html.js";
+export * from "../carousel/carousel.video.js";
+export * from "../carousel/carousel.fullscreen.js";
+declare module "../carousel/carousel.js" {
     interface CarouselSlide {
         src?: string;
         type?: "inline" | "clone" | "ajax" | string;
@@ -135,7 +134,8 @@ export interface FancyboxOptions {
      */
     delegateEl: HTMLElement | undefined;
     /**
-     * Enable drag-to-close gesture - drag content up/down to close instance
+     * Enable drag-to-close gesture - drag content up/down to close instance.
+     * Re-checked on every pointer press, so it can be changed while open.
      */
     dragToClose: boolean | ((instance: FancyboxInstance) => boolean);
     /**
@@ -377,19 +377,7 @@ declare function fromTriggerEl(triggerEl: HTMLElement, userOptions?: Partial<Fan
 declare function fromNodes(nodes: Array<HTMLElement>, options?: Partial<FancyboxOptions>): FancyboxInstance | undefined;
 declare const Fancybox: {
     Plugins: {
-        Hash: {
-            (): {
-                init: (fancybox: FancyboxInstance) => void;
-                destroy: () => void;
-            };
-            getInfoFromURL: () => {
-                urlHash: string;
-                urlSlug: string;
-                urlIndex: number;
-            };
-            startFromUrl: () => void;
-            setup(_f: typeof Fancybox): void;
-        };
+        Hash: typeof Hash;
     };
     version: string;
     /**

@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type VideoOptions = {
     /**
      * If videos should start playing automatically after they are displayed
@@ -38,7 +38,7 @@ export type VideoOptions = {
     };
 };
 export type VideoInstance = ReturnType<typeof Video>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Video?: boolean | Partial<VideoOptions>;
     }

@@ -1,2 +1,0 @@
-/*! License details at fancyapps.com/license */
-(function(e,t){typeof exports==`object`&&typeof module<`u`?t(exports):typeof define==`function`&&define.amd?define([`exports`],t):(e=typeof globalThis<`u`?globalThis:e||self,t(e.window=e.window||{}))})(this,function(e){Object.defineProperty(e,Symbol.toStringTag,{value:`Module`});let t=function(e){return e[e.Init=0]=`Init`,e[e.Ready=1]=`Ready`,e[e.Destroyed=2]=`Destroyed`,e}({});e.CarouselSlideContentState=function(e){return e[e.Loading=0]=`Loading`,e[e.Loaded=1]=`Loaded`,e[e.Error=2]=`Error`,e}({}),e.CarouselState=t});

@@ -68,27 +68,37 @@ export interface GesturesEventArgs {
     doubleTap: [GesturesEventObject];
 }
 export type GesturesInstance = ReturnType<typeof Gestures>;
-export declare const Gestures: {
-    (containerEl: HTMLElement | null, userOptions?: Partial<GesturesOptions>): {
-        /** Initialize Gestures instance */
-        init: () => GesturesInstance;
-        /**
-         * Add event listener
-         */
-        on: <Event extends keyof GesturesEventArgs>(ev: Event, clb: (...args: GesturesEventArgs[Event]) => void) => GesturesInstance;
-        /**
-         * Remove event listener
-         */
-        off: <Event extends keyof GesturesEventArgs>(event: Event, callback: (...args: GesturesEventArgs[Event]) => void) => GesturesInstance;
-        /**
-         * Check if a pointer device is currently pressed down or active
-         */
-        isPointerDown: () => boolean;
-        /**
-         * Destroy instance and clean up
-         */
-        destroy: () => void;
-    };
-    isClickAllowed(): boolean;
+export declare function Gestures(containerEl: HTMLElement | null, userOptions?: Partial<GesturesOptions>): {
+    /** Initialize Gestures instance */
+    init: () => GesturesInstance;
+    /**
+     * Add event listener
+     */
+    on: <Event extends keyof GesturesEventArgs>(ev: Event, clb: (...args: GesturesEventArgs[Event]) => void) => GesturesInstance;
+    /**
+     * Remove event listener
+     */
+    off: <Event extends keyof GesturesEventArgs>(event: Event, callback: (...args: GesturesEventArgs[Event]) => void) => GesturesInstance;
+    /**
+     * Allow gestures to be recognized
+     */
+    enable: () => GesturesInstance;
+    /**
+     * Stop recognizing gestures, leaving input for the browser to handle
+     * natively. Resets any gesture that is already in progress.
+     */
+    disable: () => GesturesInstance;
+    /**
+     * Check if a pointer device is currently pressed down or active
+     */
+    isPointerDown: () => boolean;
+    /**
+     * Destroy instance and clean up
+     */
+    destroy: () => void;
 };
+export declare namespace Gestures {
+    var _a: () => boolean;
+    export { _a as isClickAllowed };
+}
 export {};

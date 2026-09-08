@@ -1,4 +1,4 @@
-import { CarouselInstance } from "../carousel";
+import { CarouselInstance } from "../carousel/index.js";
 export type AutoplayOptions = {
     /**
      * If Autoplay should start automatically after Carousel initialization
@@ -22,7 +22,7 @@ export type AutoplayOptions = {
     timeout: number;
 };
 export type AutoplayInstance = ReturnType<typeof Autoplay>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Autoplay?: boolean | Partial<AutoplayOptions>;
     }

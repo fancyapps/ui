@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type FullscreenOptions = {
     /**
      * If the carousel should be set to full screen automatically after initialization
@@ -14,7 +14,7 @@ export type FullscreenOptions = {
     el?: HTMLElement | ((ref: CarouselInstance) => HTMLElement | undefined | null);
 };
 export type FullscreenInstance = ReturnType<typeof Fullscreen>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Fullscreen?: boolean | Partial<FullscreenOptions>;
     }

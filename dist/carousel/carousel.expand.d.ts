@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type ExpandOptions = {
     /**
      * Toolbar button template
@@ -10,7 +10,7 @@ export type ExpandOptions = {
     el?: HTMLElement | ((ref: CarouselInstance) => HTMLElement | undefined | null);
 };
 export type ExpandInstance = ReturnType<typeof Expand>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Expand?: boolean | Partial<ExpandOptions>;
     }

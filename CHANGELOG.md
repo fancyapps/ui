@@ -1,3 +1,18 @@
+# 6.1.15 (2026-09-08)
+
+### Bug Fixes
+
+- **Carousel** Fix external controls (`data-carousel-target`) when the button is nested inside a carousel or wraps child elements
+- **Carousel** Fix custom Toolbar items being skipped when their name matches a built-in `Object` property
+- **Fancybox** Prevent the instance from closing when a text-selection drag started inside the content is released over the backdrop
+- **Fancybox** Preserve slide `alt` text when opening through a delegated trigger
+
+### Features
+
+- **Fancybox** Allow the `dragToClose` option to be changed while an instance is open
+- **Gestures** Add `enable()` and `disable()` methods to stop and resume gesture recognition
+- Add translations into Brazilian, Portuguese and Traditional Chinese
+
 # 6.1.14 (2026-04-29)
 
 ### Bug Fixes

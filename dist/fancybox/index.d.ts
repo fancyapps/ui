@@ -1,1 +1,1 @@
-export * from "./fancybox";
+export * from "./fancybox.js";

@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type ArrowsOptions = {
     /**
      * Optional custom class name for the left arrow
@@ -18,7 +18,7 @@ export type ArrowsOptions = {
     nextTpl: string;
 };
 export type ArrowsInstance = ReturnType<typeof Arrows>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Arrows?: boolean | Partial<ArrowsOptions>;
     }

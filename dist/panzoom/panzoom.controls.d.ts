@@ -1,5 +1,5 @@
-import { type PanzoomInstance } from "./panzoom";
-import { type PanzoomButtonName } from "../shared/buttons";
+import { type PanzoomInstance } from "./panzoom.js";
+import { type PanzoomButtonName } from "../shared/buttons.js";
 export type ControlsItem = {
     tpl: string;
     click?: (instanceRef: PanzoomInstance, event: Event) => void;
@@ -20,7 +20,7 @@ export type ControlsOptions = {
     svgAttr: Record<string, string>;
 };
 export type ControlsInstance = ReturnType<typeof Controls>;
-declare module "./panzoom" {
+declare module "./panzoom.js" {
     interface PanzoomOptions {
         Controls?: boolean | Partial<ControlsOptions>;
     }

@@ -1,4 +1,4 @@
-import { type PanzoomInstance } from "./panzoom";
+import { type PanzoomInstance } from "./panzoom.js";
 export type PinsOptions = {};
 export type Pin = {
     x: string | number;
@@ -6,12 +6,12 @@ export type Pin = {
     el: HTMLElement;
 };
 export type PinsInstance = ReturnType<typeof Pins>;
-declare module "../carousel/carousel" {
+declare module "../carousel/carousel.js" {
     interface CarouselSlide {
         pins?: Pin[];
     }
 }
-declare module "./panzoom" {
+declare module "./panzoom.js" {
     interface PanzoomOptions {
         Pins?: boolean | Partial<PinsOptions>;
     }

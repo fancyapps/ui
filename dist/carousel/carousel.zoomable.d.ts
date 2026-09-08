@@ -1,8 +1,8 @@
-import { GesturesEventObject } from "../libs/gestures";
-import { type PanzoomOptions, type PanzoomInstance, type PanzoomRenderInfo, PanzoomAction } from "../panzoom/panzoom";
-import { type CarouselInstance, type CarouselSlide } from "./carousel";
+import { GesturesEventObject } from "../libs/gestures.js";
+import { type PanzoomOptions, type PanzoomInstance, type PanzoomRenderInfo, PanzoomAction } from "../panzoom/panzoom.js";
+import { type CarouselInstance, type CarouselSlide } from "./carousel.js";
 export type ZoomableInstance = ReturnType<typeof Zoomable>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselEventArgs {
         "panzoom:init": [CarouselSlide];
         "panzoom:initPlugins": [CarouselSlide];

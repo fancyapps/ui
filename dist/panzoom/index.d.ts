@@ -1,1 +1,1 @@
-export * from "./panzoom";
+export * from "./panzoom.js";

@@ -1,13 +1,4 @@
 export declare const en_EN: {
-    ERROR: string;
-    NEXT: string;
-    PREV: string;
-    GOTO: string;
-    DOWNLOAD: string;
-    TOGGLE_FULLSCREEN: string;
-    TOGGLE_EXPAND: string;
-    TOGGLE_THUMBS: string;
-    TOGGLE_AUTOPLAY: string;
     IMAGE_ERROR: string;
     MOVE_UP: string;
     MOVE_DOWN: string;
@@ -24,4 +15,13 @@ export declare const en_EN: {
     FLIP_Y: string;
     RESET: string;
     TOGGLE_FS: string;
+    ERROR: string;
+    NEXT: string;
+    PREV: string;
+    GOTO: string;
+    DOWNLOAD: string;
+    TOGGLE_FULLSCREEN: string;
+    TOGGLE_EXPAND: string;
+    TOGGLE_THUMBS: string;
+    TOGGLE_AUTOPLAY: string;
 };

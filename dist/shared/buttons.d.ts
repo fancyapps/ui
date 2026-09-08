@@ -1,25 +1,23 @@
-import { type PanzoomInstance } from "../panzoom";
-export type ControlsItem = {
+type PanzoomButton = {
     tpl: string;
-    click?: (instanceRef: PanzoomInstance, event: Event) => void;
 };
 declare const BUTTON_DATA: {
-    readonly moveLeft: readonly ["moveLeft", "MOVE_LEFT", "<path d=\"M5 12h14M5 12l6 6M5 12l6-6\"/>"];
-    readonly moveRight: readonly ["moveRight", "MOVE_RIGHT", "<path d=\"M5 12h14M13 18l6-6M13 6l6 6\"/>"];
-    readonly moveUp: readonly ["moveUp", "MOVE_UP", "<path d=\"M12 5v14M18 11l-6-6M6 11l6-6\"/>"];
-    readonly moveDown: readonly ["moveDown", "MOVE_DOWN", "<path d=\"M12 5v14M18 13l-6 6M6 13l6 6\"/>"];
+    readonly moveLeft: readonly ["moveLeft", "MOVE_LEFT", '<path d="M5 12h14M5 12l6 6M5 12l6-6"/>'];
+    readonly moveRight: readonly ["moveRight", "MOVE_RIGHT", '<path d="M5 12h14M13 18l6-6M13 6l6 6"/>'];
+    readonly moveUp: readonly ["moveUp", "MOVE_UP", '<path d="M12 5v14M18 11l-6-6M6 11l6-6"/>'];
+    readonly moveDown: readonly ["moveDown", "MOVE_DOWN", '<path d="M12 5v14M18 13l-6 6M6 13l6 6"/>'];
     readonly zoomOut: readonly ["zoomOut", "ZOOM_OUT", string];
     readonly zoomIn: readonly ["zoomIn", "ZOOM_IN", string];
     readonly toggleFull: readonly ["toggleFull", "TOGGLE_FULL", string];
     readonly iterateZoom: readonly ["iterateZoom", "ITERATE_ZOOM", string];
-    readonly toggle1to1: readonly ["toggleFull", "TOGGLE_FULL", "<path d=\"M3.51 3.07c5.74.02 11.48-.02 17.22.02 1.37.1 2.34 1.64 2.18 3.13 0 4.08.02 8.16 0 12.23-.1 1.54-1.47 2.64-2.79 2.46-5.61-.01-11.24.02-16.86-.01-1.36-.12-2.33-1.65-2.17-3.14 0-4.07-.02-8.16 0-12.23.1-1.36 1.22-2.48 2.42-2.46Z\"/><path d=\"M5.65 8.54h1.49v6.92m8.94-6.92h1.49v6.92M11.5 9.4v.02m0 5.18v0\"/>"];
-    readonly rotateCCW: readonly ["rotateCCW", "ROTATE_CCW", "<path d=\"M15 4.55a8 8 0 0 0-6 14.9M9 15v5H4M18.37 7.16v.01M13 19.94v.01M16.84 18.37v.01M19.37 15.1v.01M19.94 11v.01\"/>"];
-    readonly rotateCW: readonly ["rotateCW", "ROTATE_CW", "<path d=\"M9 4.55a8 8 0 0 1 6 14.9M15 15v5h5M5.63 7.16v.01M4.06 11v.01M4.63 15.1v.01M7.16 18.37v.01M11 19.94v.01\"/>"];
-    readonly flipX: readonly ["flipX", "FLIP_X", "<path d=\"M12 3v18M16 7v10h5L16 7M8 7v10H3L8 7\"/>"];
-    readonly flipY: readonly ["flipY", "FLIP_Y", "<path d=\"M3 12h18M7 16h10L7 21v-5M7 8h10L7 3v5\"/>"];
-    readonly reset: readonly ["reset", "RESET", "<path d=\"M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4\"/>"];
-    readonly toggleFS: readonly ["toggleFS", "TOGGLE_FS", "<g><path d=\"M14.5 9.5 21 3m0 0h-6m6 0v6M3 21l6.5-6.5M3 21v-6m0 6h6\"/></g><g><path d=\"m14 10 7-7m-7 7h6m-6 0V4M3 21l7-7m0 0v6m0-6H4\"/></g>"];
+    readonly toggle1to1: readonly ["toggleFull", "TOGGLE_FULL", '<path d="M3.51 3.07c5.74.02 11.48-.02 17.22.02 1.37.1 2.34 1.64 2.18 3.13 0 4.08.02 8.16 0 12.23-.1 1.54-1.47 2.64-2.79 2.46-5.61-.01-11.24.02-16.86-.01-1.36-.12-2.33-1.65-2.17-3.14 0-4.07-.02-8.16 0-12.23.1-1.36 1.22-2.48 2.42-2.46Z"/><path d="M5.65 8.54h1.49v6.92m8.94-6.92h1.49v6.92M11.5 9.4v.02m0 5.18v0"/>'];
+    readonly rotateCCW: readonly ["rotateCCW", "ROTATE_CCW", '<path d="M15 4.55a8 8 0 0 0-6 14.9M9 15v5H4M18.37 7.16v.01M13 19.94v.01M16.84 18.37v.01M19.37 15.1v.01M19.94 11v.01"/>'];
+    readonly rotateCW: readonly ["rotateCW", "ROTATE_CW", '<path d="M9 4.55a8 8 0 0 1 6 14.9M15 15v5h5M5.63 7.16v.01M4.06 11v.01M4.63 15.1v.01M7.16 18.37v.01M11 19.94v.01"/>'];
+    readonly flipX: readonly ["flipX", "FLIP_X", '<path d="M12 3v18M16 7v10h5L16 7M8 7v10H3L8 7"/>'];
+    readonly flipY: readonly ["flipY", "FLIP_Y", '<path d="M3 12h18M7 16h10L7 21v-5M7 8h10L7 3v5"/>'];
+    readonly reset: readonly ["reset", "RESET", '<path d="M20 11A8.1 8.1 0 0 0 4.5 9M4 5v4h4M4 13a8.1 8.1 0 0 0 15.5 2m.5 4v-4h-4"/>'];
+    readonly toggleFS: readonly ["toggleFS", "TOGGLE_FS", '<g><path d="M14.5 9.5 21 3m0 0h-6m6 0v6M3 21l6.5-6.5M3 21v-6m0 6h6"/></g><g><path d="m14 10 7-7m-7 7h6m-6 0V4M3 21l7-7m0 0v6m0-6H4"/></g>'];
 };
 export type PanzoomButtonName = keyof typeof BUTTON_DATA;
-declare const PanzoomButtons: Record<PanzoomButtonName, ControlsItem>;
+declare const PanzoomButtons: Record<PanzoomButtonName, PanzoomButton>;
 export { PanzoomButtons };

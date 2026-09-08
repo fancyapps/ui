@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type LazyloadOptions = {
     /**
      * Show loading animation during loading
@@ -11,7 +11,7 @@ export type LazyloadOptions = {
 };
 export type LazyloadInstance = ReturnType<typeof Lazyload>;
 type AnyImageSource = HTMLImageElement | HTMLSourceElement;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Lazyload?: boolean | Partial<LazyloadOptions>;
     }

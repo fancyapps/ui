@@ -1,4 +1,4 @@
-import { CarouselInstance } from "../carousel";
+import { CarouselInstance } from "../carousel/index.js";
 export declare enum ToolbarColumn {
     Left = "left",
     middle = "middle",
@@ -34,7 +34,7 @@ export type ToolbarOptions = {
     parentEl?: HTMLElement | null | ((instance: CarouselInstance) => HTMLElement | null);
 };
 export type ToolbarInstance = ReturnType<typeof Toolbar>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Toolbar?: false | Partial<ToolbarOptions>;
     }

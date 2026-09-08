@@ -1,4 +1,4 @@
-import { type FancyboxInstance } from "./fancybox";
+import { type FancyboxInstance } from "./fancybox.js";
 export type SidebarOptions = {
     /**
      * Default content to display in the sidebar if the active slide has no caption
@@ -14,7 +14,7 @@ export type SidebarOptions = {
     showOnStart: boolean;
 };
 export type SidebarInstance = ReturnType<typeof Sidebar>;
-declare module "./fancybox" {
+declare module "./fancybox.js" {
     interface FancyboxOptions {
         Sidebar?: false | Partial<SidebarOptions>;
     }

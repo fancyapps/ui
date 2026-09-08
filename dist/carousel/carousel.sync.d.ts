@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type SyncOptions = {
     /**
      * Synchronize when the instance's active page changes
@@ -18,7 +18,7 @@ export type SyncOptions = {
     target?: CarouselInstance;
 };
 export type SyncInstance = ReturnType<typeof Sync>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Sync?: boolean | Partial<SyncOptions>;
     }

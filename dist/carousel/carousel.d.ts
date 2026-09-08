@@ -1,11 +1,11 @@
-import { TweenInstance } from "../libs/tween";
-import { GesturesInstance, GesturesOptions } from "../libs/gestures";
+import { TweenInstance } from "../libs/tween.js";
+import { GesturesInstance, GesturesOptions } from "../libs/gestures.js";
 export type CarouselInstance = ReturnType<typeof Carousel>;
 export interface CarouselHTMLElement extends HTMLElement {
     carousel?: CarouselInstance;
 }
-export { CarouselState, CarouselSlideContentState } from "./carousel.state";
-import { CarouselState, CarouselSlideContentState } from "./carousel.state";
+export { CarouselState, CarouselSlideContentState } from "./carousel.state.js";
+import { CarouselState, CarouselSlideContentState } from "./carousel.state.js";
 export interface CarouselSlide {
     /**
      * DOM element of the slide
@@ -316,212 +316,203 @@ export type CarouselPlugin = () => {
 export type CarouselPluginInstance = ReturnType<CarouselPlugin>;
 export interface CarouselPlugins extends Record<string, CarouselPluginInstance> {
 }
-export declare const Carousel: {
-    (userContainerEl: HTMLElement | null, userOptions?: Partial<CarouselOptions>, userPlugins?: Record<string, CarouselPlugin>): {
-        /**
-         * Add one or multiple virtual slides
-         */
-        add: (oneOrMoreSlides: Partial<CarouselSlide> | Partial<CarouselSlide>[], position?: number) => CarouselInstance;
-        /**
-         * Check if carousel can slide to the previous page
-         */
-        canGoPrev: () => boolean;
-        /**
-         * Check if carousel can slide to the next page
-         */
-        canGoNext: () => boolean;
-        /**
-         * Destroy instance and clean up
-         */
-        destroy: () => CarouselInstance;
-        /**
-         * Emit event to listeners
-         */
-        emit: <CarouselEvent extends keyof CarouselEventArgs>(event: CarouselEvent, ...args: CarouselEventArgs[CarouselEvent]) => void;
-        /**
-         * Filter slides using the selector
-         */
-        filter: (selector?: string) => CarouselInstance;
-        /**
-         * Get reference to the container DOM element
-         */
-        getContainer: () => HTMLElement | null;
-        /**
-         * Get value for the spacing between slides
-         */
-        getGapDim: () => number;
-        /**
-         * Get reference to the Gestures instance
-         */
-        getGestures: () => GesturesInstance | undefined;
-        /**
-         * Get the last `mousemove` event above the carousel
-         */
-        getLastMouseMove: () => MouseEvent | undefined;
-        /**
-         * Get current option
-         */
-        getOption: <T extends keyof CarouselOptions>(name: T) => Exclude<CarouselOptions[T], Function>;
-        /**
-         * Get current options
-         */
-        getOptions: () => CarouselOptions;
-        /**
-         * Get current page object
-         */
-        getPage: () => CarouselPage;
-        /**
-         * Get current page index
-         */
-        getPageIndex: (slideIndex?: number) => number;
-        /**
-         * Get page index from position of the carousel track
-         */
-        getPageIndexFromPosition: (position: number) => number;
-        /**
-         * Get page progress
-         */
-        getPageProgress: (pageIndex?: number, ignoreInfinite?: boolean) => number;
-        /**
-         *  Check what percentage of the page is visible
-         */
-        getPageVisibility: (pageIndex?: number) => number;
-        /**
-         * Get all page objects
-         */
-        getPages: () => CarouselPage[];
-        /**
-         * Get all initialized plugins
-         */
-        getPlugins: () => Partial<CarouselPlugins>;
-        /**
-         * Get current position of the carousel track
-         */
-        getPosition: (ignoreInfinite?: boolean) => number;
-        /**
-         *  Get all slides
-         */
-        getSlides: () => CarouselSlide[];
-        /**
-         * Get current state of the instance
-         */
-        getState: () => CarouselState;
-        /**
-         * Get total width of all slides (or height for a vertical carousel)
-         */
-        getTotalSlideDim: (addExtraGapForInfinite?: boolean) => number;
-        /**
-         * Get reference to the Tween instance
-         */
-        getTween: () => TweenInstance | undefined;
-        /**
-         * Get reference to the viewport DOM element
-         */
-        getViewport: () => HTMLElement | null;
-        /**
-         * Get width of the vieewport element (or height for a vertical carousel)
-         */
-        getViewportDim: () => number;
-        /**
-         * Get slides with elements visible in the viewport
-         */
-        getVisibleSlides: (pos?: number) => CarouselSlide[];
-        /**
-         * Slide to the selected page
-         */
-        goTo: (newPageIndex: number, args?: CarouselGoToArgs) => void;
-        /**
-         * Check if carousel has moved to another page at least once
-         */
-        hasNavigated: () => boolean;
-        /**
-         * Remove DOM element containing the error message from the slide
-         */
-        hideError: (slide: CarouselSlide) => void;
-        /**
-         * Remove DOM element containing loading indicator from the slide
-         */
-        hideLoading: (slide: CarouselSlide) => void;
-        /**
-         * Initialize Carousel instance
-         */
-        init: () => CarouselInstance;
-        /**
-         * Check if infinite navigation is enabled
-         */
-        isInfinite: () => boolean;
-        /**
-         * Check if slide change CSS transition is currently running
-         */
-        isInTransition: () => boolean;
-        /**
-         * Check if carousel direction is from right to left
-         */
-        isRTL: () => boolean;
-        /**
-         * Check if current page is in place
-         */
-        isSettled: () => boolean;
-        /**
-         * Check if carousel is vertical
-         */
-        isVertical: () => boolean;
-        /**
-         * Translate text with current language strings
-         */
-        localize: (str: string, params?: Array<[string, any]>) => string;
-        /**
-         * Move to the next page
-         */
-        next: (args?: CarouselGoToArgs) => CarouselInstance;
-        /**
-         * Remove event listener
-         */
-        off: <CarouselEvent extends keyof CarouselEventArgs>(what: CarouselEvent | CarouselEvent[], callback: (api: any, ...args: CarouselEventArgs[CarouselEvent]) => void) => CarouselInstance;
-        /**
-         * Add event listener
-         */
-        on: <CarouselEvent extends keyof CarouselEventArgs>(what: CarouselEvent | CarouselEvent[], callback: (api: any, ...args: CarouselEventArgs[CarouselEvent]) => void) => CarouselInstance;
-        /**
-         * Move to the previous page
-         */
-        prev: (args?: CarouselGoToArgs) => CarouselInstance;
-        /**
-         * Perform a hard reset of the carousel after it has been initialized
-         */
-        reInit: (options?: Partial<CarouselOptions>, plugins?: Record<string, CarouselPlugin>) => CarouselInstance;
-        /**
-         * Remove slide at the selected position
-         */
-        remove: (position?: number) => CarouselInstance;
-        /**
-         * Set new position of the track
-         */
-        setPosition: (newPosition: number) => void;
-        /**
-         * Show error message on selected slide
-         */
-        showError: (slide: CarouselSlide, message?: string) => CarouselInstance;
-        /**
-         * Show loading indicator on selected slide
-         */
-        showLoading: (slide: CarouselSlide) => CarouselInstance;
-        /**
-         * Version of the Carousel
-         */
-        version: string;
-    };
-    l10n: {
+export declare function Carousel(userContainerEl: HTMLElement | null, userOptions?: Partial<CarouselOptions>, userPlugins?: Record<string, CarouselPlugin>): {
+    /**
+     * Add one or multiple virtual slides
+     */
+    add: (oneOrMoreSlides: Partial<CarouselSlide> | Partial<CarouselSlide>[], position?: number) => CarouselInstance;
+    /**
+     * Check if carousel can slide to the previous page
+     */
+    canGoPrev: () => boolean;
+    /**
+     * Check if carousel can slide to the next page
+     */
+    canGoNext: () => boolean;
+    /**
+     * Destroy instance and clean up
+     */
+    destroy: () => CarouselInstance;
+    /**
+     * Emit event to listeners
+     */
+    emit: <CarouselEvent extends keyof CarouselEventArgs>(event: CarouselEvent, ...args: CarouselEventArgs[CarouselEvent]) => void;
+    /**
+     * Filter slides using the selector
+     */
+    filter: (selector?: string) => CarouselInstance;
+    /**
+     * Get reference to the container DOM element
+     */
+    getContainer: () => HTMLElement | null;
+    /**
+     * Get value for the spacing between slides
+     */
+    getGapDim: () => number;
+    /**
+     * Get reference to the Gestures instance
+     */
+    getGestures: () => GesturesInstance | undefined;
+    /**
+     * Get the last `mousemove` event above the carousel
+     */
+    getLastMouseMove: () => MouseEvent | undefined;
+    /**
+     * Get current option
+     */
+    getOption: <T extends keyof CarouselOptions>(name: T) => Exclude<CarouselOptions[T], Function>;
+    /**
+     * Get current options
+     */
+    getOptions: () => CarouselOptions;
+    /**
+     * Get current page object
+     */
+    getPage: () => CarouselPage;
+    /**
+     * Get current page index
+     */
+    getPageIndex: (slideIndex?: number) => number;
+    /**
+     * Get page index from position of the carousel track
+     */
+    getPageIndexFromPosition: (position: number) => number;
+    /**
+     * Get page progress
+     */
+    getPageProgress: (pageIndex?: number, ignoreInfinite?: boolean) => number;
+    /**
+     *  Check what percentage of the page is visible
+     */
+    getPageVisibility: (pageIndex?: number) => number;
+    /**
+     * Get all page objects
+     */
+    getPages: () => CarouselPage[];
+    /**
+     * Get all initialized plugins
+     */
+    getPlugins: () => Partial<CarouselPlugins>;
+    /**
+     * Get current position of the carousel track
+     */
+    getPosition: (ignoreInfinite?: boolean) => number;
+    /**
+     *  Get all slides
+     */
+    getSlides: () => CarouselSlide[];
+    /**
+     * Get current state of the instance
+     */
+    getState: () => CarouselState;
+    /**
+     * Get total width of all slides (or height for a vertical carousel)
+     */
+    getTotalSlideDim: (addExtraGapForInfinite?: boolean) => number;
+    /**
+     * Get reference to the Tween instance
+     */
+    getTween: () => TweenInstance | undefined;
+    /**
+     * Get reference to the viewport DOM element
+     */
+    getViewport: () => HTMLElement | null;
+    /**
+     * Get width of the vieewport element (or height for a vertical carousel)
+     */
+    getViewportDim: () => number;
+    /**
+     * Get slides with elements visible in the viewport
+     */
+    getVisibleSlides: (pos?: number) => CarouselSlide[];
+    /**
+     * Slide to the selected page
+     */
+    goTo: (newPageIndex: number, args?: CarouselGoToArgs) => void;
+    /**
+     * Check if carousel has moved to another page at least once
+     */
+    hasNavigated: () => boolean;
+    /**
+     * Remove DOM element containing the error message from the slide
+     */
+    hideError: (slide: CarouselSlide) => void;
+    /**
+     * Remove DOM element containing loading indicator from the slide
+     */
+    hideLoading: (slide: CarouselSlide) => void;
+    /**
+     * Initialize Carousel instance
+     */
+    init: () => CarouselInstance;
+    /**
+     * Check if infinite navigation is enabled
+     */
+    isInfinite: () => boolean;
+    /**
+     * Check if slide change CSS transition is currently running
+     */
+    isInTransition: () => boolean;
+    /**
+     * Check if carousel direction is from right to left
+     */
+    isRTL: () => boolean;
+    /**
+     * Check if current page is in place
+     */
+    isSettled: () => boolean;
+    /**
+     * Check if carousel is vertical
+     */
+    isVertical: () => boolean;
+    /**
+     * Translate text with current language strings
+     */
+    localize: (str: string, params?: Array<[string, any]>) => string;
+    /**
+     * Move to the next page
+     */
+    next: (args?: CarouselGoToArgs) => CarouselInstance;
+    /**
+     * Remove event listener
+     */
+    off: <CarouselEvent extends keyof CarouselEventArgs>(what: CarouselEvent | CarouselEvent[], callback: (api: any, ...args: CarouselEventArgs[CarouselEvent]) => void) => CarouselInstance;
+    /**
+     * Add event listener
+     */
+    on: <CarouselEvent extends keyof CarouselEventArgs>(what: CarouselEvent | CarouselEvent[], callback: (api: any, ...args: CarouselEventArgs[CarouselEvent]) => void) => CarouselInstance;
+    /**
+     * Move to the previous page
+     */
+    prev: (args?: CarouselGoToArgs) => CarouselInstance;
+    /**
+     * Perform a hard reset of the carousel after it has been initialized
+     */
+    reInit: (options?: Partial<CarouselOptions>, plugins?: Record<string, CarouselPlugin>) => CarouselInstance;
+    /**
+     * Remove slide at the selected position
+     */
+    remove: (position?: number) => CarouselInstance;
+    /**
+     * Set new position of the track
+     */
+    setPosition: (newPosition: number) => void;
+    /**
+     * Show error message on selected slide
+     */
+    showError: (slide: CarouselSlide, message?: string) => CarouselInstance;
+    /**
+     * Show loading indicator on selected slide
+     */
+    showLoading: (slide: CarouselSlide) => CarouselInstance;
+    /**
+     * Version of the Carousel
+     */
+    version: string;
+};
+export declare namespace Carousel {
+    var l10n: {
         en_EN: {
-            ERROR: string;
-            NEXT: string;
-            PREV: string;
-            GOTO: string;
-            DOWNLOAD: string;
-            TOGGLE_FULLSCREEN: string;
-            TOGGLE_EXPAND: string;
-            TOGGLE_THUMBS: string;
-            TOGGLE_AUTOPLAY: string;
             IMAGE_ERROR: string;
             MOVE_UP: string;
             MOVE_DOWN: string;
@@ -538,7 +529,16 @@ export declare const Carousel: {
             FLIP_Y: string;
             RESET: string;
             TOGGLE_FS: string;
+            ERROR: string;
+            NEXT: string;
+            PREV: string;
+            GOTO: string;
+            DOWNLOAD: string;
+            TOGGLE_FULLSCREEN: string;
+            TOGGLE_EXPAND: string;
+            TOGGLE_THUMBS: string;
+            TOGGLE_AUTOPLAY: string;
         };
     };
-    getDefaults(): CarouselOptions;
-};
+    var getDefaults: () => CarouselOptions;
+}

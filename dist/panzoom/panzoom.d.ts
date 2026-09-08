@@ -1,5 +1,5 @@
-import { TweenInstance } from "../libs/tween";
-import { GesturesOptions, GesturesEventObject, GesturesInstance } from "../libs/gestures";
+import { TweenInstance } from "../libs/tween.js";
+import { GesturesOptions, GesturesEventObject, GesturesInstance } from "../libs/gestures.js";
 export type PanzoomInstance = ReturnType<typeof Panzoom>;
 export type PanzoomRenderInfo = {
     x: number;
@@ -272,173 +272,173 @@ export type PanzoomPlugin = () => {
 export type PanzoomPluginInstance = ReturnType<PanzoomPlugin>;
 export interface PanzoomPlugins extends Record<string, PanzoomPluginInstance> {
 }
-export declare const Panzoom: {
-    (containerEl: HTMLElement | null, userOptions?: Partial<PanzoomOptions>, userPlugins?: Record<string, PanzoomPlugin>): {
-        /**
-         * Check if content is scaled up and touch gestures are enabled
-         */
-        canDrag: () => boolean;
-        /**
-         * Check if the content scale is less than the maximum size
-         */
-        canZoomIn: () => boolean;
-        /**
-         * Check if the content scale is larger than the minimum size
-         */
-        canZoomOut: () => boolean;
-        /**
-         * Check if the content scale is less than the full size
-         */
-        canZoomToFull: () => boolean;
-        /**
-         * Destroy instance and clean up
-         */
-        destroy: () => PanzoomInstance;
-        /**
-         * Emit event to listeners
-         */
-        emit: <PanzoomEvent extends keyof PanzoomEventArgs>(event: PanzoomEvent, ...args: PanzoomEventArgs[PanzoomEvent]) => void;
-        /**
-         * Execute action
-         */
-        execute: (action: PanzoomAction, params?: Partial<GesturesEventObject>) => void;
-        /**
-         * Get the bounds of the content in the container, optionally for custom scale size
-         */
-        getBoundaries: (scale?: number) => {
-            x: [number, number];
-            y: [number, number];
-        };
-        /**
-         * Get reference to the container DOM element
-         */
-        getContainer: () => HTMLElement | null;
-        /**
-         * Get reference to the content DOM element
-         */
-        getContent: () => HTMLElement | undefined;
-        /**
-         * Get original width and height of the content, which can be adjusted using the `width` and `height` options
-         */
-        getFullDim: () => {
-            width: number;
-            height: number;
-        };
-        /**
-         * Get reference to the Gestures instance
-         */
-        getGestures: () => GesturesInstance | undefined;
-        /**
-         * Get the position of the content given the current mouse position, optionally for custom scale size
-         */
-        getMousemovePos: (scale: number) => {
-            x: number;
-            y: number;
-        };
-        /**
-         * Get current options
-         */
-        getOptions: () => PanzoomOptions;
-        /**
-         * Get all initialized plugins
-         */
-        getPlugins: () => Partial<PanzoomPlugins>;
-        /**
-         * Get the current content transformation scale or at the specified scale level
-         */
-        getScale: (level?: "min" | "base" | "cover" | "full" | "max") => number;
-        /**
-         * Get calculated values ​​for the initial position
-         */
-        getStartPosition: () => {
-            scale: number;
-            x: number;
-            y: number;
-            angle: number;
-            flipX: number;
-            flipY: number;
-        };
-        /**
-         * Get current state of the Panzoom instance
-         */
-        getState: () => PanzoomState;
-        /**
-         * Get the current state of the content's transformation or the state at the end of the ongoing animation, if it is currently animated
-         */
-        getTransform: (afterAnimation?: boolean) => {
-            x: number;
-            y: number;
-            scale: number;
-            angle: number;
-            flipX: number;
-            flipY: number;
-        };
-        /**
-         * Get reference to the Tween instance
-         */
-        getTween: () => TweenInstance | undefined;
-        /**
-         * Get reference to the viewport DOM element
-         */
-        getViewport: () => HTMLElement | undefined;
-        /**
-         * Get reference to the wrapper DOM element
-         */
-        getWrapper: () => HTMLElement | undefined;
-        /**
-         * Initialize the Panzoom instance
-         */
-        init: () => PanzoomInstance;
-        /**
-         * Check if the content is being dragged
-         */
-        isDragging: () => boolean;
-        /**
-         * Check if the content is scaled up
-         */
-        isExpanded: () => boolean;
-        /**
-         * Check if the content is being viewed in its original size
-         */
-        isFullsize: () => boolean;
-        /**
-         * Check if "mousemove" mode is enabled
-         */
-        isMousemoveMode: () => boolean;
-        /**
-         * Translate text with current language strings
-         */
-        localize: (str: string, params?: Array<[string, any]>) => string;
-        /**
-         * Remove event listener
-         */
-        off: <PanzoomEvent extends keyof PanzoomEventArgs>(what: PanzoomEvent | PanzoomEvent[], callback: (api: any, ...args: PanzoomEventArgs[PanzoomEvent]) => void) => PanzoomInstance;
-        /**
-         * Add event listener
-         */
-        on: <PanzoomEvent extends keyof PanzoomEventArgs>(what: PanzoomEvent | PanzoomEvent[], callback: (api: any, ...args: PanzoomEventArgs[PanzoomEvent]) => void) => PanzoomInstance;
-        /**
-         * Toggle full screen mode
-         */
-        toggleFS: () => void;
-        /**
-         * Update the state of controls
-         */
-        updateControls: (parentEl?: HTMLElement) => void;
-        /**
-         * Version of the Panzoom
-         */
-        version: string;
-        /**
-         * Check if the content scales up upon click
-         */
-        willZoomIn: () => boolean;
-        /**
-         * Check if the content scales down upon click
-         */
-        willZoomOut: () => boolean;
+export declare function Panzoom(containerEl: HTMLElement | null, userOptions?: Partial<PanzoomOptions>, userPlugins?: Record<string, PanzoomPlugin>): {
+    /**
+     * Check if content is scaled up and touch gestures are enabled
+     */
+    canDrag: () => boolean;
+    /**
+     * Check if the content scale is less than the maximum size
+     */
+    canZoomIn: () => boolean;
+    /**
+     * Check if the content scale is larger than the minimum size
+     */
+    canZoomOut: () => boolean;
+    /**
+     * Check if the content scale is less than the full size
+     */
+    canZoomToFull: () => boolean;
+    /**
+     * Destroy instance and clean up
+     */
+    destroy: () => PanzoomInstance;
+    /**
+     * Emit event to listeners
+     */
+    emit: <PanzoomEvent extends keyof PanzoomEventArgs>(event: PanzoomEvent, ...args: PanzoomEventArgs[PanzoomEvent]) => void;
+    /**
+     * Execute action
+     */
+    execute: (action: PanzoomAction, params?: Partial<GesturesEventObject>) => void;
+    /**
+     * Get the bounds of the content in the container, optionally for custom scale size
+     */
+    getBoundaries: (scale?: number) => {
+        x: [number, number];
+        y: [number, number];
     };
-    l10n: {
+    /**
+     * Get reference to the container DOM element
+     */
+    getContainer: () => HTMLElement | null;
+    /**
+     * Get reference to the content DOM element
+     */
+    getContent: () => HTMLElement | undefined;
+    /**
+     * Get original width and height of the content, which can be adjusted using the `width` and `height` options
+     */
+    getFullDim: () => {
+        width: number;
+        height: number;
+    };
+    /**
+     * Get reference to the Gestures instance
+     */
+    getGestures: () => GesturesInstance | undefined;
+    /**
+     * Get the position of the content given the current mouse position, optionally for custom scale size
+     */
+    getMousemovePos: (scale: number) => {
+        x: number;
+        y: number;
+    };
+    /**
+     * Get current options
+     */
+    getOptions: () => PanzoomOptions;
+    /**
+     * Get all initialized plugins
+     */
+    getPlugins: () => Partial<PanzoomPlugins>;
+    /**
+     * Get the current content transformation scale or at the specified scale level
+     */
+    getScale: (level?: "min" | "base" | "cover" | "full" | "max") => number;
+    /**
+     * Get calculated values ​​for the initial position
+     */
+    getStartPosition: () => {
+        x: number;
+        y: number;
+        angle: number;
+        flipX: number;
+        flipY: number;
+        scale: number;
+    };
+    /**
+     * Get current state of the Panzoom instance
+     */
+    getState: () => PanzoomState;
+    /**
+     * Get the current state of the content's transformation or the state at the end of the ongoing animation, if it is currently animated
+     */
+    getTransform: (afterAnimation?: boolean) => {
+        x: number;
+        y: number;
+        scale: number;
+        angle: number;
+        flipX: number;
+        flipY: number;
+    };
+    /**
+     * Get reference to the Tween instance
+     */
+    getTween: () => TweenInstance | undefined;
+    /**
+     * Get reference to the viewport DOM element
+     */
+    getViewport: () => HTMLElement | undefined;
+    /**
+     * Get reference to the wrapper DOM element
+     */
+    getWrapper: () => HTMLElement | undefined;
+    /**
+     * Initialize the Panzoom instance
+     */
+    init: () => PanzoomInstance;
+    /**
+     * Check if the content is being dragged
+     */
+    isDragging: () => boolean;
+    /**
+     * Check if the content is scaled up
+     */
+    isExpanded: () => boolean;
+    /**
+     * Check if the content is being viewed in its original size
+     */
+    isFullsize: () => boolean;
+    /**
+     * Check if "mousemove" mode is enabled
+     */
+    isMousemoveMode: () => boolean;
+    /**
+     * Translate text with current language strings
+     */
+    localize: (str: string, params?: Array<[string, any]>) => string;
+    /**
+     * Remove event listener
+     */
+    off: <PanzoomEvent extends keyof PanzoomEventArgs>(what: PanzoomEvent | PanzoomEvent[], callback: (api: any, ...args: PanzoomEventArgs[PanzoomEvent]) => void) => PanzoomInstance;
+    /**
+     * Add event listener
+     */
+    on: <PanzoomEvent extends keyof PanzoomEventArgs>(what: PanzoomEvent | PanzoomEvent[], callback: (api: any, ...args: PanzoomEventArgs[PanzoomEvent]) => void) => PanzoomInstance;
+    /**
+     * Toggle full screen mode
+     */
+    toggleFS: () => void;
+    /**
+     * Update the state of controls
+     */
+    updateControls: (parentEl?: HTMLElement) => void;
+    /**
+     * Version of the Panzoom
+     */
+    version: string;
+    /**
+     * Check if the content scales up upon click
+     */
+    willZoomIn: () => boolean;
+    /**
+     * Check if the content scales down upon click
+     */
+    willZoomOut: () => boolean;
+};
+export declare namespace Panzoom {
+    var l10n: {
         en_EN: {
             IMAGE_ERROR: string;
             MOVE_UP: string;
@@ -458,6 +458,6 @@ export declare const Panzoom: {
             TOGGLE_FS: string;
         };
     };
-    getDefaults(): PanzoomOptions;
-};
+    var getDefaults: () => PanzoomOptions;
+}
 export {};

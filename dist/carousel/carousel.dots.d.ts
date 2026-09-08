@@ -1,4 +1,4 @@
-import { CarouselInstance } from "../carousel";
+import { CarouselInstance } from "../carousel/index.js";
 export type DotsOptions = {
     /**
      * HTML template for dot element
@@ -22,7 +22,7 @@ export type DotsOptions = {
     minCount: number;
 };
 export type DotsInstance = ReturnType<typeof Dots>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Dots?: boolean | Partial<DotsOptions>;
     }

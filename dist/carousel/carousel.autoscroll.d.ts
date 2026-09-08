@@ -1,4 +1,4 @@
-import { CarouselInstance } from "./carousel";
+import { CarouselInstance } from "./carousel.js";
 export type AutoscrollOptions = {
     /**
      * If Autoscroll should start automatically after Carousel initialization
@@ -14,7 +14,7 @@ export type AutoscrollOptions = {
     speedOnHover?: number;
 };
 export type AutoscrollInstance = ReturnType<typeof Autoscroll>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Autoscroll?: boolean | Partial<AutoscrollOptions>;
     }

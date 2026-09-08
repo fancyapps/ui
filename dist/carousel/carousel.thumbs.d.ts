@@ -1,4 +1,4 @@
-import { CarouselOptions, type CarouselInstance, type Carousel } from "./carousel";
+import { CarouselOptions, type CarouselInstance, type Carousel } from "./carousel.js";
 export type ThumbsOptions = {
     /**
      * Optional custom Carousel options
@@ -26,7 +26,7 @@ export type ThumbsOptions = {
     type: "classic" | "modern" | "scrollable";
 };
 export type ThumbsInstance = ReturnType<typeof Thumbs>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Thumbs?: false | Partial<ThumbsOptions>;
     }

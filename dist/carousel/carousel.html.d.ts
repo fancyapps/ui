@@ -1,4 +1,4 @@
-import { type CarouselInstance } from "./carousel";
+import { type CarouselInstance } from "./carousel.js";
 export type HtmlOptions = {
     /**
      * If resize the iframe element to match the dimensions of the iframe page content
@@ -14,7 +14,7 @@ export type HtmlOptions = {
     preload: boolean;
 };
 export type HtmlInstance = ReturnType<typeof Html>;
-declare module "./carousel" {
+declare module "./carousel.js" {
     interface CarouselOptions {
         Html?: boolean | Partial<HtmlOptions>;
     }

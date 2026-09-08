@@ -1,4 +1,4 @@
-import { type FancyboxInstance } from "./fancybox";
+import { type FancyboxInstance } from "./fancybox.js";
 export type CompactmodeOptions = {
     /**
      * A string specifying the media query to watch
@@ -6,7 +6,7 @@ export type CompactmodeOptions = {
     mediaQuery: string;
 };
 export type CompactmodeInstance = ReturnType<typeof Compactmode>;
-declare module "./fancybox" {
+declare module "./fancybox.js" {
     interface FancyboxOptions {
         Compactmode?: boolean | Partial<CompactmodeOptions>;
     }
